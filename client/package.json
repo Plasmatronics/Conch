@@ -1,0 +1,29 @@
+{
+	"name": "client",
+	"version": "1.0.0",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc -b && vite build",
+		"lint": "eslint .",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"@chakra-ui/react": "^2.8.2",
+		"@emotion/react": "^11.11.1",
+		"@emotion/styled": "^11.11.0",
+		"framer-motion": "^10.16.4",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"react-router-dom": "^6.20.1"
+	},
+	"devDependencies": {
+		"@types/react": "^18.2.37",
+		"@types/react-dom": "^18.2.15",
+		"@vitejs/plugin-react": "^4.1.1",
+		"typescript": "^5.2.2",
+		"vite": "^5.0.0"
+	},
+	"author": "Nicholas Bruno",
+	"license": "ISC",
+	"description": "Family Tree App Client"
+}
