@@ -17,7 +17,7 @@ const documentSchema = new mongoose.Schema(
 			required: [true, "A document must belong to a user"],
 		},
 		involves: {
-			type: [mongoose.Schema.Types.ObjectId],
+			type: [mongoose.Schema.ObjectId],
 			ref: "FamilyTreeMember",
 			required: [true, "A document must have involved users"],
 		},

@@ -24,7 +24,7 @@ const mediaSchema = new mongoose.Schema(
 			required: [true, "Media must belong to a user"],
 		},
 		involves: {
-			type: [mongoose.Schema.Types.ObjectId],
+			type: [mongoose.Schema.ObjectId],
 			ref: "FamilyTreeMember",
 			required: [true, "Media must have involved users"],
 		},

@@ -20,7 +20,7 @@ const storySchema = new mongoose.Schema(
 			required: [true, "A story must belong to a user"],
 		},
 		involves: {
-			type: [mongoose.Schema.Types.ObjectId],
+			type: [mongoose.Schema.ObjectId],
 			ref: "FamilyTreeMember",
 			required: [true, "A story must have involved users"],
 		},
