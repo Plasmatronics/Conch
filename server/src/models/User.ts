@@ -5,6 +5,11 @@ interface UserInterface extends Document {
 	name: string;
 	email: string;
 	password: string;
+	storiesContributed: mongoose.Types.ObjectId[];
+	likes: mongoose.Types.ObjectId[];
+	mediaProvided: mongoose.Types.ObjectId[];
+	documentsUploaded: mongoose.Types.ObjectId[];
+	familyTreeMember: mongoose.Types.ObjectId[];
 	createdAt: Date;
 	_passwordConfirm?: string;
 }
@@ -31,6 +36,26 @@ const userSchema = new mongoose.Schema<UserInterface>(
 			minlength: 8,
 			select: false,
 		},
+		storiesContributed: {
+			type: [mongoose.Schema.ObjectId],
+			ref: "Story",
+		},
+		likes: {
+			type: [mongoose.Schema.ObjectId],
+			ref: "Like",
+		},
+		mediaProvided: {
+			type: [mongoose.Schema.ObjectId],
+			ref: "Media",
+		},
+		documentsUploaded: {
+			type: [mongoose.Schema.ObjectId],
+			ref: "Document",
+		},
+		familyTreeMember: {
+			type: [mongoose.Schema.ObjectId],
+			ref: "FamilyTreeMember",
+		},
 		createdAt: {
 			type: Date,
 			default: Date.now(),
@@ -54,5 +79,4 @@ userSchema.pre("save", function (next) {
 	next();
 });
 
-const User = mongoose.model("User", userSchema);
-export default User;
+export const User = mongoose.model("User", userSchema);
