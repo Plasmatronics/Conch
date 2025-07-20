@@ -1,0 +1,30 @@
+{
+	"name": "server",
+	"version": "1.0.0",
+	"main": "index.ts",
+	"type": "module",
+	"scripts": {
+		"start": "tsx server.ts",
+		"dev": "tsx watch server.ts",
+		"lint": "cd .. && npm run lint",
+		"lint:fix": "cd .. && npx eslint server/**/*.ts --fix",
+		"format": "cd .. && npx prettier --write server/**/*.ts"
+	},
+	"dependencies": {
+		"dotenv": "^17.2.0",
+		"express": "^5.1.0",
+		"mongodb": "^6.17.0",
+		"mongoose": "^8.16.4",
+		"zod": "^4.0.5"
+	},
+	"author": "Nicholas Bruno",
+	"license": "ISC",
+	"description": "",
+	"devDependencies": {
+		"@types/express": "^5.0.3",
+		"@types/morgan": "^1.9.10",
+		"@types/node": "^24.0.14",
+		"morgan": "^1.10.1",
+		"tsx": "^4.20.3"
+	}
+}
