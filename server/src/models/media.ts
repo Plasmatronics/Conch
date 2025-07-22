@@ -1,6 +1,17 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 
-const mediaSchema = new mongoose.Schema(
+export interface IMedia {
+	mediaUrl: string;
+	description?: string;
+	type: "photo" | "video";
+	author: mongoose.Types.ObjectId;
+	involves: mongoose.Types.ObjectId[];
+	createdAt: Date;
+}
+
+export type MediaDoc = IMedia & Document;
+
+const mediaSchema = new mongoose.Schema<MediaDoc>(
 	{
 		mediaUrl: {
 			type: String,

@@ -1,6 +1,6 @@
-export { User } from "./user";
-export { Story } from "./story";
-export { Media } from "./media";
-export { Document } from "./document";
-export { FamilyTreeMember } from "./familyTreeMember";
-export { Like } from "./like";
+export * from "./user";
+export * from "./story";
+export * from "./media";
+export * from "./document";
+export * from "./familyTreeMember";
+export * from "./like";
