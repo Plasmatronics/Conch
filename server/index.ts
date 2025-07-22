@@ -10,8 +10,13 @@ import {
 } from "./src/routes";
 import { AppError } from "./src/utils";
 import { globalErrorHandler } from "./src/controllers";
+import { fileURLToPath } from "url";
+import path from "path";
 
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 if (process.env.NODE_ENV === "development") {
 	app.use(morgan("dev"));
@@ -29,7 +34,7 @@ app.use("/api/documents", documentRouter);
 app.use("/api/stories", storyRouter);
 
 //if app reaches this route it must be a 404 error
-app.all("*", (req, _, next) => {
+app.use((req, _, next) => {
 	next(new AppError(404, `Can't find ${req.originalUrl} on this server!`));
 });
 

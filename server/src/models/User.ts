@@ -1,7 +1,7 @@
 import mongoose, { Document } from "mongoose";
 import validator from "validator";
 
-interface UserInterface extends Document {
+export interface IUser {
 	name: string;
 	email: string;
 	password: string;
@@ -14,7 +14,9 @@ interface UserInterface extends Document {
 	_passwordConfirm?: string;
 }
 
-const userSchema = new mongoose.Schema<UserInterface>(
+export type UserDoc = IUser & Document;
+
+const userSchema = new mongoose.Schema<UserDoc>(
 	{
 		name: {
 			type: String,

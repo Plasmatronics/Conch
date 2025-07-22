@@ -1,6 +1,16 @@
-import mongoose from "mongoose";
+import mongoose, { Document as MongooseDocument } from "mongoose";
 
-const documentSchema = new mongoose.Schema(
+export interface IDocument {
+	fileUrl: string;
+	type: string;
+	author: mongoose.Types.ObjectId;
+	involves: mongoose.Types.ObjectId[];
+	createdAt?: Date;
+}
+
+export type DocumentDoc = IDocument & MongooseDocument;
+
+const documentSchema = new mongoose.Schema<DocumentDoc>(
 	{
 		fileUrl: {
 			type: String,
@@ -19,7 +29,7 @@ const documentSchema = new mongoose.Schema(
 		involves: {
 			type: [mongoose.Schema.ObjectId],
 			ref: "FamilyTreeMember",
-			required: [true, "A document must have involved users"],
+			required: [true, "A document must have involved tree members"],
 		},
 		createdAt: {
 			type: Date,

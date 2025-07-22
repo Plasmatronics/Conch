@@ -1,6 +1,16 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 
-const likeSchema = new mongoose.Schema(
+export interface ILike {
+	fileUrl: string;
+	target: mongoose.Types.ObjectId | string;
+	targetType: "Media" | "Document";
+	author: mongoose.Types.ObjectId | string;
+	createdAt: Date;
+}
+
+export type LikeDoc = ILike & Document;
+
+const likeSchema = new mongoose.Schema<LikeDoc>(
 	{
 		fileUrl: {
 			type: String,

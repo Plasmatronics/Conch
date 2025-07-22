@@ -1,6 +1,17 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 
-const storySchema = new mongoose.Schema(
+export interface IStory {
+	title: string;
+	content: string;
+	author: mongoose.Types.ObjectId;
+	involves: mongoose.Types.ObjectId[];
+	createdAt: Date;
+	storyDate?: Date;
+}
+
+export type StoryDoc = IStory & Document;
+
+const storySchema = new mongoose.Schema<StoryDoc>(
 	{
 		title: {
 			type: String,
