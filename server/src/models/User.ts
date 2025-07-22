@@ -1,5 +1,7 @@
 import mongoose, { Document } from "mongoose";
 import validator from "validator";
+import { AppError } from "../utils";
+import { hashPassword } from "../utils/password";
 
 export interface IUser {
 	name: string;
@@ -76,9 +78,34 @@ userSchema.virtual("passwordConfirm").set(function (value: string) {
 
 userSchema.pre("save", function (next) {
 	if (this.password !== this._passwordConfirm) {
-		return next(new Error("Passwords are not the same!"));
+		return next(new AppError(400, "Passwords are not the same!"));
 	}
 	next();
+});
+
+//password hashing only if password has been modified
+userSchema.pre("save", async function (next) {
+	try {
+		if (!this.isModified("password")) return next();
+
+		this.password = await hashPassword(this.password);
+		if (!this.password) {
+			throw new AppError(400, "Couldn't safely and securely store password");
+		}
+		next();
+	} catch (err) {
+		if (err instanceof AppError) {
+			return next(err);
+		}
+
+		console.error("💥", err);
+		return next(
+			new AppError(
+				500,
+				err instanceof Error ? err.message : "Something went very wrong",
+			),
+		);
+	}
 });
 
 export const User = mongoose.model("User", userSchema);

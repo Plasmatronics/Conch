@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Document, Model, Types } from "mongoose";
 import { AppError } from "../utils";
+import { User } from "../models";
 
 type CrudOperation = "create" | "read" | "update" | "delete" | "getAll";
 
@@ -18,6 +19,7 @@ const simpleCrud =
 		try {
 			const id = req.params.id;
 			let doc: T | T[] | null = null;
+			let userObj = null;
 			let statusCode = 200;
 			let errMessage = "This document could not be found";
 
@@ -30,6 +32,11 @@ const simpleCrud =
 			switch (operation) {
 				case "create":
 					doc = await Model.create(req.body);
+					if (doc instanceof User) {
+						userObj = doc.toObject();
+						delete userObj.password;
+					}
+
 					statusCode = 201;
 
 					if (!doc) errMessage = "Could not create this document";
@@ -61,7 +68,7 @@ const simpleCrud =
 
 			if (operation !== "getAll" && !doc) throw new AppError(404, errMessage);
 
-			res.status(statusCode).json({ status: "success", data: doc });
+			res.status(statusCode).json({ status: "success", data: userObj || doc });
 		} catch (err) {
 			if (err instanceof AppError) {
 				return next(err);
