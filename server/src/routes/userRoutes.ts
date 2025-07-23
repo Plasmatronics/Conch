@@ -1,16 +1,17 @@
 import express from "express";
-import {
-	createUser,
-	deleteUser,
-	getAllUsers,
-	getUser,
-	updateUser,
-} from "../controllers/userController";
+import { userController } from "../controllers/userController";
 
 const router = express.Router();
 //read, update, delete
-router.route("/").get(getAllUsers).post(createUser);
+router
+	.route("/")
+	.get(userController.getAllUsers)
+	.post(userController.createUser);
 
-router.route("/:id").get(getUser).patch(updateUser).delete(deleteUser);
+router
+	.route("/:id")
+	.get(userController.getUser)
+	.patch(userController.updateUser)
+	.delete(userController.deleteUser);
 
 export { router as userRouter };

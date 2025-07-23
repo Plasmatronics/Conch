@@ -1,12 +1,20 @@
 import { Document } from "../models";
 import { handlerFactory } from "./controllerFactory";
 
-export const createDocument = handlerFactory.createOne(Document);
+const createDocument = handlerFactory.createOne(Document);
 
-export const getDocument = handlerFactory.readOne(Document);
+const getDocument = handlerFactory.readOne(Document);
 
-export const updateDocument = handlerFactory.updateOne(Document);
+const updateDocument = handlerFactory.updateOne(Document);
 
-export const deleteDocument = handlerFactory.deleteOne(Document);
+const deleteDocument = handlerFactory.deleteOne(Document);
 
-export const getAllDocuments = handlerFactory.getAll(Document);
+const getAllDocuments = handlerFactory.getAll(Document);
+
+export const documentController = {
+	createDocument,
+	getDocument,
+	updateDocument,
+	deleteDocument,
+	getAllDocuments,
+};

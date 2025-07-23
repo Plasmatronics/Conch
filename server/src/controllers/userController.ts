@@ -1,12 +1,20 @@
 import { User } from "../models";
 import { handlerFactory } from "./controllerFactory";
 
-export const createUser = handlerFactory.createOne(User);
+const createUser = handlerFactory.createOne(User);
 
-export const getUser = handlerFactory.readOne(User);
+const getUser = handlerFactory.readOne(User);
 
-export const updateUser = handlerFactory.updateOne(User);
+const updateUser = handlerFactory.updateOne(User);
 
-export const deleteUser = handlerFactory.deleteOne(User);
+const deleteUser = handlerFactory.deleteOne(User);
 
-export const getAllUsers = handlerFactory.getAll(User);
+const getAllUsers = handlerFactory.getAll(User);
+
+export const userController = {
+	createUser,
+	getUser,
+	updateUser,
+	deleteUser,
+	getAllUsers,
+};

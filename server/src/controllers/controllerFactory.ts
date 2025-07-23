@@ -63,7 +63,7 @@ const readOne =
  */
 const updateOne =
 	<T extends Document>(Model: Model<T>) =>
-	async (req: Request, res: Response, next: NextFunction) => {
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
 			const { id } = req.params;
 
