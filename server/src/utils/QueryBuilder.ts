@@ -9,7 +9,7 @@ interface QueryString {
 	[key: string]: unknown;
 }
 
-/** Exposes paginate, sort, filter, limitFields, and limitQuantity methods on accepted query using acceped queryString. */
+/** Exposes paginate, sort, filter, limitFields, and limitQuantity methods on the accepted query using the accepted queryString. */
 export class QueryBuilder<T extends Document> {
 	public query: Query<T[], T>;
 	public queryString: QueryString;
