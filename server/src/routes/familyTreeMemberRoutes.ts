@@ -1,20 +1,17 @@
 import express from "express";
-import {
-	createFamilyTreeMember,
-	deleteFamilyTreeMember,
-	getAllFamilyTreeMembers,
-	getFamilyTreeMember,
-	updateFamilyTreeMember,
-} from "../controllers/familyTreeMemberController";
+import { familyTreeMemberController } from "../controllers/familyTreeMemberController";
 
 const router = express.Router();
 //read, update, delete
-router.route("/").get(getAllFamilyTreeMembers).post(createFamilyTreeMember);
+router
+	.route("/")
+	.get(familyTreeMemberController.getAllFamilyTreeMembers)
+	.post(familyTreeMemberController.createFamilyTreeMember);
 
 router
 	.route("/:id")
-	.get(getFamilyTreeMember)
-	.patch(updateFamilyTreeMember)
-	.delete(deleteFamilyTreeMember);
+	.get(familyTreeMemberController.getFamilyTreeMember)
+	.patch(familyTreeMemberController.updateFamilyTreeMember)
+	.delete(familyTreeMemberController.deleteFamilyTreeMember);
 
 export { router as familyTreeMemberRouter };

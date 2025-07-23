@@ -1,12 +1,20 @@
 import { Story } from "../models";
 import { handlerFactory } from "./controllerFactory";
 
-export const createStory = handlerFactory.createOne(Story);
+const createStory = handlerFactory.createOne(Story);
 
-export const getStory = handlerFactory.readOne(Story);
+const getStory = handlerFactory.readOne(Story);
 
-export const updateStory = handlerFactory.updateOne(Story);
+const updateStory = handlerFactory.updateOne(Story);
 
-export const deleteStory = handlerFactory.deleteOne(Story);
+const deleteStory = handlerFactory.deleteOne(Story);
 
-export const getAllStories = handlerFactory.getAll(Story);
+const getAllStories = handlerFactory.getAll(Story);
+
+export const storyController = {
+	createStory,
+	getStory,
+	updateStory,
+	deleteStory,
+	getAllStories,
+};

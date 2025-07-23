@@ -1,16 +1,17 @@
 import express from "express";
-import {
-	createStory,
-	deleteStory,
-	getAllStories,
-	getStory,
-	updateStory,
-} from "../controllers/storyController";
+import { storyController } from "../controllers/storyController";
 
 const router = express.Router();
 //read, update, delete
-router.route("/").get(getAllStories).post(createStory);
+router
+	.route("/")
+	.get(storyController.getAllStories)
+	.post(storyController.createStory);
 
-router.route("/:id").get(getStory).patch(updateStory).delete(deleteStory);
+router
+	.route("/:id")
+	.get(storyController.getStory)
+	.patch(storyController.updateStory)
+	.delete(storyController.deleteStory);
 
 export { router as storyRouter };
