@@ -2,93 +2,148 @@ import { Request, Response, NextFunction } from "express";
 import { Document, Model, Types } from "mongoose";
 import { AppError } from "../utils";
 import { User } from "../models";
-
-type CrudOperation = "create" | "read" | "update" | "delete" | "getAll";
+import { catchError } from "../utils/catchError";
+import { QueryBuilder } from "../utils/QueryBuilder";
 
 /**
- * Generates a CRUD handler for a given operation on a Mongoose model.
- *
- * @param operation - One of 5 basic CRUD operations.
- * @returns A function that accepts a Mongoose model and returns an Express request handler.
+ * Creates a new document
  */
-
-const simpleCrud =
-	(operation: CrudOperation) =>
+const createOne =
 	<T extends Document>(Model: Model<T>) =>
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const id = req.params.id;
-			let doc: T | T[] | null = null;
+			const doc: T | T[] | null = await Model.create(req.body);
 			let userObj = null;
-			let statusCode = 200;
-			let errMessage = "This document could not be found";
 
-			if (["read", "update", "delete"].includes(operation)) {
-				if (!Types.ObjectId.isValid(id)) {
-					throw new AppError(400, "Invalid ID format");
-				}
+			if (doc instanceof User) {
+				userObj = doc.toObject();
+				delete userObj.password;
 			}
 
-			switch (operation) {
-				case "create":
-					doc = await Model.create(req.body);
-					if (doc instanceof User) {
-						userObj = doc.toObject();
-						delete userObj.password;
-					}
+			if (!userObj && !doc)
+				throw new AppError(400, "could not create document");
 
-					statusCode = 201;
-
-					if (!doc) errMessage = "Could not create this document";
-					break;
-				case "read":
-					doc = await Model.findById(id);
-
-					if (!doc) errMessage = "Could not find this document";
-					break;
-				case "update":
-					doc = await Model.findByIdAndUpdate(id, req.body, {
-						new: true,
-						runValidators: true,
-					});
-
-					if (!doc) errMessage = "Could not update this document";
-					break;
-				case "delete":
-					doc = await Model.findByIdAndDelete(id);
-
-					if (!doc) errMessage = "Could not delete this document";
-					break;
-				case "getAll":
-					//getting no results back from get all isn't an error
-					doc = await Model.find();
-
-					break;
-			}
-
-			if (operation !== "getAll" && !doc) throw new AppError(404, errMessage);
-
-			res.status(statusCode).json({ status: "success", data: userObj || doc });
+			res.status(201).json({
+				status: "success",
+				data: userObj || doc,
+			});
 		} catch (err) {
-			if (err instanceof AppError) {
-				return next(err);
-			}
-
-			console.error("💥", err);
-			return next(
-				new AppError(
-					500,
-					err instanceof Error ? err.message : "Something went very wrong",
-				),
-			);
+			catchError(err, next);
 		}
 	};
 
-const createOne = simpleCrud("create");
-const readOne = simpleCrud("read");
-const updateOne = simpleCrud("update");
-const deleteOne = simpleCrud("delete");
-const getAll = simpleCrud("getAll");
+/**
+ * Reads a single document by ID
+ */
+const readOne =
+	<T extends Document>(Model: Model<T>) =>
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params;
+
+			if (!Types.ObjectId.isValid(id)) {
+				throw new AppError(400, "Invalid ID format");
+			}
+
+			const doc = await Model.findById(id);
+
+			if (!doc) {
+				throw new AppError(404, "Could not find this document");
+			}
+
+			res.status(200).json({
+				status: "success",
+				data: doc,
+			});
+		} catch (err) {
+			catchError(err, next);
+		}
+	};
+
+/**
+ * Updates a document by ID
+ */
+const updateOne =
+	<T extends Document>(Model: Model<T>) =>
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params;
+
+			if (!Types.ObjectId.isValid(id)) {
+				throw new AppError(400, "Invalid ID format");
+			}
+
+			const doc = await Model.findByIdAndUpdate(id, req.body, {
+				new: true,
+				runValidators: true,
+			});
+
+			if (!doc) {
+				throw new AppError(404, "Could not update this document");
+			}
+
+			res.status(200).json({
+				status: "success",
+				data: doc,
+			});
+		} catch (err) {
+			catchError(err, next);
+		}
+	};
+
+/**
+ * Deletes a document by ID
+ */
+const deleteOne =
+	<T extends Document>(Model: Model<T>) =>
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params;
+
+			if (!Types.ObjectId.isValid(id)) {
+				throw new AppError(400, "Invalid ID format");
+			}
+
+			const doc = await Model.findByIdAndDelete(id);
+
+			if (!doc) {
+				throw new AppError(404, "Could not delete this document");
+			}
+
+			res.status(204).json({
+				status: "success",
+				data: null,
+			});
+		} catch (err) {
+			catchError(err, next);
+		}
+	};
+
+/**
+ * Gets all documents
+ */
+const getAll =
+	<T extends Document>(Model: Model<T>) =>
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const docQuery = new QueryBuilder(Model.find(), req.query)
+				.filter()
+				.paginate()
+				.sort()
+				.limitFields()
+				.limitQuantity();
+
+			const docs = await docQuery.query;
+
+			res.status(200).json({
+				status: "success",
+				length: docs.length,
+				data: docs,
+			});
+		} catch (err) {
+			catchError(err, next);
+		}
+	};
 
 export const handlerFactory = {
 	createOne,

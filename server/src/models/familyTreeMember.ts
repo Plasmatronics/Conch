@@ -57,7 +57,7 @@ export interface IFamilyTreeMember extends Document {
 	dateOfDeath: Date;
 	deathLocation: ILocation;
 	createdAt: Date;
-	relationtoRootMember: string;
+	relationToRootMember: string;
 	favThings?: IMemberFavThings;
 	stories?: mongoose.Types.ObjectId[];
 	documents?: mongoose.Types.ObjectId[];
@@ -102,7 +102,7 @@ const familyTreeMemberSchema = new mongoose.Schema<FamilyTreeMemberDoc>(
 			default: Date.now(),
 			select: false,
 		},
-		relationtoRootMember: {
+		relationToRootMember: {
 			type: String,
 			required: [
 				true,
