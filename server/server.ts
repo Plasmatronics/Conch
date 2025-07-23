@@ -28,3 +28,29 @@ const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
 	console.log(`App running on port ${port}`);
 });
+
+const shutDownServer = async () => {
+	try {
+		await new Promise<void>((resolve, reject) => {
+			server.close((err) => {
+				if (err) reject(err);
+				console.log("server closed");
+				resolve();
+			});
+		});
+
+		await mongoose.disconnect();
+		console.log("mongoose disconnected");
+		process.exit(0);
+	} catch (err: unknown) {
+		if (err instanceof Error) {
+			console.error(err.message);
+		} else {
+			console.error("Server could not shut down");
+		}
+		process.exit(1);
+	}
+};
+
+process.on("SIGINT", shutDownServer);
+process.on("SIGTERM", shutDownServer);
