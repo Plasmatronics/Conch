@@ -46,7 +46,7 @@ export class QueryBuilder<T extends Document> {
 			delete queryObj[queryParam];
 		});
 
-		//finds all comparison operators and return them in mongoose notation
+		// Finds all comparison operators and returns them in mongoose notation.
 		const filterJSON = JSON.stringify(queryObj).replace(
 			/\b(gte|gt|lte|lt|ne)\b/g,
 			(match) => `$${match}`,
