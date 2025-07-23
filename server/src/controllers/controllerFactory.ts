@@ -1,9 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Document, Model, Types } from "mongoose";
-import { AppError } from "../utils";
+import { AppError, catchError, QueryBuilder } from "../utils";
 import { User } from "../models";
-import { catchError } from "../utils/catchError";
-import { QueryBuilder } from "../utils/QueryBuilder";
 
 /**
  * Creates a new document
@@ -130,8 +128,7 @@ const getAll =
 				.filter()
 				.paginate()
 				.sort()
-				.limitFields()
-				.limitQuantity();
+				.limitFields();
 
 			const docs = await docQuery.query;
 

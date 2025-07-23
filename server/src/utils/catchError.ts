@@ -1,5 +1,5 @@
 import { NextFunction } from "express";
-import { AppError } from "./appError";
+import { AppError } from "./AppError";
 
 export const catchError = (err: unknown, next: NextFunction) => {
 	if (err instanceof AppError) {

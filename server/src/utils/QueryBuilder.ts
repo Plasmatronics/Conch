@@ -1,12 +1,12 @@
 import { Document, Query } from "mongoose";
-import { AppError } from "./appError";
+import { AppError } from "./AppError";
 
 interface QueryString {
 	page?: string;
 	limit?: string;
 	sort?: string;
 	fields?: string;
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 /** Exposes paginate, sort, filter, limitFields, and limitQuantity methods on accepted query using acceped queryString. */
@@ -68,14 +68,6 @@ export class QueryBuilder<T extends Document> {
 				this.queryString.fields,
 			);
 			this.query = this.query.select(includedFields);
-		}
-		return this;
-	}
-
-	public limitQuantity() {
-		if (this.queryString.limit) {
-			const limitQuantity = Number(this.queryString.limit);
-			this.query = this.query.limit(limitQuantity);
 		}
 		return this;
 	}

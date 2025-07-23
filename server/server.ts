@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 import dotenv from "dotenv";
 import app from "./index";
 
@@ -12,7 +12,7 @@ const db = dbURI
 	.replace("<DATABASE_PASSWORD>", dbPassword)
 	.replace("<DATABASE_USERNAME>", dbUsername);
 
-export const startServer = async () => {
+const startServer = async () => {
 	try {
 		const connection = await mongoose.connect(db);
 
@@ -29,7 +29,7 @@ const server = app.listen(port, () => {
 	console.log(`App running on port ${port}`);
 });
 
-export const shutDownServer = async () => {
+const shutDownServer = async () => {
 	try {
 		await new Promise<void>((resolve, reject) => {
 			server.close((err) => {

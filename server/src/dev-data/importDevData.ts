@@ -1,8 +1,16 @@
 import fs from "fs";
-import { shutDownServer, startServer } from "../../server";
 import { FamilyTreeMember } from "../models";
 import { fileURLToPath } from "url";
 import path from "path";
+import mongoose from "mongoose";
+
+const dbURI = process.env.DATABASE || "";
+const dbPassword = process.env.DATABASE_PASSWORD || "";
+const dbUsername = process.env.DATABASE_USERNAME || "";
+
+const db = dbURI
+	.replace("<DATABASE_USERNAME>", dbUsername)
+	.replace("<DATABASE_PASSWORD>", dbPassword);
 
 const importDevData = async () => {
 	try {
@@ -11,10 +19,10 @@ const importDevData = async () => {
 		const devDataJSON = fs.readFileSync(`${__dirname}/devData.json`, "utf-8");
 		const devDataObj = JSON.parse(devDataJSON);
 
-		await startServer();
+		await mongoose.connect(db);
 		const result = await FamilyTreeMember.insertMany(devDataObj);
 		console.log(`Inserted ${result.length} family tree members`);
-		await shutDownServer();
+		await mongoose.disconnect();
 	} catch (err) {
 		if (err instanceof Error) {
 			console.error(err.message);
@@ -26,11 +34,10 @@ const importDevData = async () => {
 
 const deleteDevData = async () => {
 	try {
-		await startServer();
+		await mongoose.connect(db);
 		const result = await FamilyTreeMember.deleteMany();
 		console.log(`Deleted ${result.deletedCount} family tree members`);
-
-		await shutDownServer();
+		await mongoose.disconnect();
 	} catch (err) {
 		if (err instanceof Error) {
 			console.error(err.message);
