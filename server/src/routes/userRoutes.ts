@@ -1,13 +1,17 @@
 import express from "express";
-import { userController } from "../controllers/userController";
+import { authController, userController } from "../controllers";
 
 const router = express.Router();
-//read, update, delete
-router
-	.route("/")
-	.get(userController.getAllUsers)
-	.post(userController.createUser);
 
+router.route("/login").post(authController.login);
+
+router.route("/signup").post(authController.signup);
+
+router.use(authController.protect);
+
+router.route("/logout").get(authController.logout);
+
+router.route("/").get(userController.getAllUsers);
 router
 	.route("/:id")
 	.get(userController.getUser)

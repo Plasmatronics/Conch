@@ -1,8 +1,11 @@
 import express from "express";
 import { storyController } from "../controllers/storyController";
+import { authController } from "../controllers";
 
 const router = express.Router();
-//read, update, delete
+
+router.use(authController.protect);
+
 router
 	.route("/")
 	.get(storyController.getAllStories)

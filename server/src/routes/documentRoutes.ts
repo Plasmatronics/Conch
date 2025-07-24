@@ -1,17 +1,20 @@
 import express from "express";
 import { documentController } from "../controllers/documentController";
+import { authController } from "../controllers";
 
 const router = express.Router();
-//read, update, delete
-router
-	.route("/")
-	.get(documentController.getAllDocuments)
-	.post(documentController.createDocument);
 
 router
 	.route("/:id")
 	.get(documentController.getDocument)
-	.patch(documentController.updateDocument)
-	.delete(documentController.deleteDocument);
+	.patch(authController.protect, documentController.updateDocument)
+	.delete(authController.protect, documentController.deleteDocument);
+
+router.use(authController.protect);
+
+router
+	.route("/")
+	.get(documentController.getAllDocuments)
+	.post(documentController.createDocument);
 
 export { router as documentRouter };
