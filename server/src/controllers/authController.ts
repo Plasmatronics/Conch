@@ -53,7 +53,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 		const user: UserDoc | (Omit<UserDoc, "password"> & { password?: string }) =
 			await User.findOne({ email: email }).select("+password email");
 
-		if (!user || !bcrypt.compare(user.password!, password)) {
+		if (!user || !(await bcrypt.compare(user.password!, password))) {
 			throw new AppError(401, "Invalid login information provided.");
 		}
 
