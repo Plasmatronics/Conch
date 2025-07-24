@@ -1,5 +1,6 @@
 export { globalErrorHandler } from "./errorController";
 
+export { authController } from "./authController";
 export { documentController } from "./documentController";
 export { likeController } from "./likeController";
 export { mediaController } from "./mediaController";

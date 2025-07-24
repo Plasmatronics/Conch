@@ -12,6 +12,7 @@ import { AppError } from "./src/utils";
 import { globalErrorHandler } from "./src/controllers";
 import { fileURLToPath } from "url";
 import path from "path";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
@@ -23,6 +24,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.static(`${__dirname}/public`));
 
 //initializing routes

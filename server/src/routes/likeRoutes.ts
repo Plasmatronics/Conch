@@ -1,8 +1,11 @@
 import express from "express";
 import { likeController } from "../controllers/likeController";
+import { authController } from "../controllers";
 
 const router = express.Router();
-//read, update, delete
+
+router.use(authController.protect);
+
 router
 	.route("/")
 	.get(likeController.getAllLikes)
