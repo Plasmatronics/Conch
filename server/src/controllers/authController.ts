@@ -11,7 +11,7 @@ const signToken = async (id: mongoose.Types.ObjectId) => {
 			{ id },
 			process.env.JWT_SECRET || "",
 			{
-				expiresIn: Number(process.env.JWT_EXPIRES_IN) || 3600,
+				expiresIn: Number(process.env.JWT_EXPIRES_IN) || "1hr",
 			},
 			(err, token) => {
 				if (err || !token) {
@@ -63,7 +63,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
 		res.cookie("jwt", jwt, {
 			httpOnly: true,
-			secure: true,
+			secure: process.env.NODE_ENV === "production",
 			expires: new Date(Date.now() + 60 * 60 * 1000),
 		});
 
@@ -108,7 +108,7 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
 		const jwt = await signToken(user._id as mongoose.Types.ObjectId);
 		res.cookie("jwt", jwt, {
 			httpOnly: true,
-			secure: true,
+			secure: process.env.NODE_ENV === "production",
 			expires: new Date(Date.now() + 60 * 60 * 1000),
 		});
 
@@ -125,8 +125,8 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		res.cookie("jwt", "logged-out-cookie", {
 			httpOnly: true,
-			secure: true,
-			expires: new Date(Date.now() + 60 * 60 * 1000),
+			secure: process.env.NODE_ENV === "production",
+			maxAge: 0,
 		});
 		res.status(200).json({
 			status: "success",
