@@ -59,10 +59,7 @@ export interface IFamilyTreeMember extends Document {
 	createdAt: Date;
 	relationToRootMember: string;
 	favThings?: IMemberFavThings;
-	stories?: mongoose.Types.ObjectId[];
-	documents?: mongoose.Types.ObjectId[];
 	claimedId?: mongoose.Types.ObjectId;
-	images?: mongoose.Types.ObjectId[];
 	keyPhoto?: mongoose.Types.ObjectId;
 }
 
@@ -112,13 +109,7 @@ const familyTreeMemberSchema = new mongoose.Schema<FamilyTreeMemberDoc>(
 		favThings: {
 			type: memberFavoriteThingsSchema,
 		},
-		stories: { type: [mongoose.Schema.ObjectId], ref: "Story" },
-		documents: { type: [mongoose.Schema.ObjectId], ref: "Document" },
 		claimedId: { type: mongoose.Schema.ObjectId, ref: "User" },
-		images: {
-			type: [mongoose.Schema.ObjectId],
-			ref: "Media",
-		},
 		keyPhoto: {
 			type: mongoose.Schema.ObjectId,
 			ref: "Media",

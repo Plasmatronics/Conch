@@ -22,13 +22,9 @@
 			"movie": "Die Hard",
 			"color": "Red"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
-
 	{
 		"name": "Monica Geller",
 		"nicknames": ["Mon", "Chef M"],
@@ -51,13 +47,9 @@
 			"restaurant": "Central Perk",
 			"song": "I'll Be There for You"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
-
 	{
 		"name": "Chandler Bing",
 		"nicknames": ["Chan", "Bing"],
@@ -80,13 +72,9 @@
 			"decade": "1990s",
 			"movie": "The Matrix"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
-
 	{
 		"name": "Rachel Green",
 		"nicknames": ["Rach"],
@@ -109,13 +97,9 @@
 			"color": "Green",
 			"person": "Ross"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
-
 	{
 		"name": "Ross Michael Geller",
 		"nicknames": ["Ross", "Dino Guy"],
@@ -137,13 +121,9 @@
 		"favThings": {
 			"place": "Museum of Natural History"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
-
 	{
 		"name": "Phoebe Buffay",
 		"nicknames": ["Pheebs"],
@@ -166,13 +146,9 @@
 			"song": "Smelly Cat",
 			"person": "Her twin Ursula"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
-
 	{
 		"name": "Janice Hosenstein",
 		"nicknames": ["Jan"],
@@ -195,13 +171,9 @@
 			"movie": "You've Got Mail",
 			"decade": "1980s"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
-
 	{
 		"name": "Gunther Centralperk",
 		"nicknames": ["G-Man"],
@@ -224,13 +196,9 @@
 			"place": "Central Perk",
 			"color": "Orange"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
-
 	{
 		"name": "Carol Willick",
 		"nicknames": [],
@@ -253,13 +221,9 @@
 			"movie": "Sleepless in Seattle",
 			"food": "Vegan lasagna"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
-
 	{
 		"name": "Mike Paul Hannigan",
 		"nicknames": ["Myke"],
@@ -282,10 +246,7 @@
 			"song": "Piano Man",
 			"place": "Jazz club"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
 	{
@@ -310,13 +271,9 @@
 			"place": "Hyde Park",
 			"color": "Blue"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
-
 	{
 		"name": "Frank Buffay Jr.",
 		"nicknames": ["Frankie"],
@@ -339,13 +296,9 @@
 			"food": "Lasagna",
 			"movie": "Ghostbusters"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
-
 	{
 		"name": "Nora Tyler Bing",
 		"nicknames": ["Mrs. Bing"],
@@ -368,13 +321,9 @@
 			"decade": "1970s",
 			"song": "Stayin' Alive"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
-
 	{
 		"name": "Jack Martin Geller",
 		"nicknames": ["Dad", "Jack"],
@@ -397,13 +346,9 @@
 			"movie": "The Godfather",
 			"food": "Bagels"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
-
 	{
 		"name": "Judy Marie Geller",
 		"nicknames": ["Jude"],
@@ -426,10 +371,7 @@
 			"color": "Beige",
 			"restaurant": "The Plaza Hotel"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
 	{
@@ -454,10 +396,7 @@
 			"song": "Unforgettable",
 			"decade": "1960s"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
 	{
@@ -482,10 +421,7 @@
 			"movie": "Toy Story",
 			"color": "Blue"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
 	{
@@ -510,10 +446,7 @@
 			"place": "Broadway",
 			"person": "Carol"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
 	{
@@ -538,10 +471,7 @@
 			"decade": "1980s",
 			"food": "Hot dogs"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
 	{
@@ -566,10 +496,7 @@
 			"song": "Shake It Off",
 			"movie": "Frozen"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
 	{
@@ -594,10 +521,7 @@
 			"color": "Red",
 			"song": "Uptown Funk"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
 	{
@@ -622,10 +546,7 @@
 			"food": "Steak",
 			"restaurant": "Gotham Grill"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
 	{
@@ -650,10 +571,7 @@
 			"movie": "Legally Blonde",
 			"color": "Pink"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
 	{
@@ -678,10 +596,7 @@
 			"restaurant": "Soho House",
 			"song": "Toxic"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	},
 	{
@@ -706,10 +621,7 @@
 			"movie": "Casablanca",
 			"song": "Somewhere Over the Rainbow"
 		},
-		"stories": [],
-		"documents": [],
 		"claimedId": null,
-		"images": [],
 		"keyPhoto": null
 	}
 ]
