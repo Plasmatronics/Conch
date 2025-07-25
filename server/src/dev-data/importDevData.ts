@@ -3,6 +3,12 @@ import { FamilyTreeMember } from "../models";
 import { fileURLToPath } from "url";
 import path from "path";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const configPath = path.resolve(__dirname, "../../../config.env");
+dotenv.config({ path: configPath });
 
 const dbURI = process.env.DATABASE || "";
 const dbPassword = process.env.DATABASE_PASSWORD || "";
@@ -14,8 +20,6 @@ const db = dbURI
 
 const importDevData = async () => {
 	try {
-		const __filename = fileURLToPath(import.meta.url);
-		const __dirname = path.dirname(__filename);
 		const devDataJSON = fs.readFileSync(`${__dirname}/devData.json`, "utf-8");
 		const devDataObj = JSON.parse(devDataJSON);
 
