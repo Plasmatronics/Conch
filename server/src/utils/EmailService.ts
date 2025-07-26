@@ -36,7 +36,12 @@ class EmailService {
 				html: "<p>Welcome!</p>",
 			});
 		} catch (err) {
-			throw new AppError(500, "Could not send email. Please try again.");
+			throw new AppError(
+				500,
+				err instanceof Error
+					? err.message
+					: "Could not send email. Please try again.",
+			);
 		}
 	}
 }
