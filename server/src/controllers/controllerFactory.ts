@@ -13,13 +13,12 @@ const createOne =
 			const doc: T | T[] | null = await Model.create(req.body);
 			let userObj = null;
 
+			if (!doc) throw new AppError(400, "could not create document");
+
 			if (doc instanceof User) {
 				userObj = doc.toObject();
 				delete userObj.password;
 			}
-
-			if (!userObj && !doc)
-				throw new AppError(400, "could not create document");
 
 			res.status(201).json({
 				status: "success",

@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { User, UserDoc } from "../models";
-import { AppError, catchError } from "../utils";
+import { AppError, catchError, Email } from "../utils";
 import mongoose from "mongoose";
 
 const signToken = async (id: mongoose.Types.ObjectId) => {
@@ -104,6 +104,8 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
 
 		const user = await User.create({ name, email, password, passwordConfirm });
 		if (!user) throw new AppError(400, "Could not signup. Please try again.");
+
+		await Email.getEmail().sendGreetingEmail(user.email);
 
 		const jwt = await signToken(user._id as mongoose.Types.ObjectId);
 		res.cookie("jwt", jwt, {
