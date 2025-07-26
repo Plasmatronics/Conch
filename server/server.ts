@@ -1,8 +1,14 @@
-import mongoose from "mongoose";
+import { fileURLToPath } from "url";
+import path from "path";
 import dotenv from "dotenv";
-import app from "./index";
 
-dotenv.config({ path: "./../config.env" });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const configPath = path.resolve(__dirname, "./../config.env");
+dotenv.config({ path: configPath });
+
+import mongoose from "mongoose";
+import app from "./index";
 
 const dbURI = process.env.DATABASE || "";
 const dbPassword = process.env.DATABASE_PASSWORD || "";

@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { User, UserDoc } from "../models";
-import { AppError, catchError } from "../utils";
+import { IUser, User, UserDoc } from "../models";
+import { AppError, catchError, Email } from "../utils";
 import mongoose from "mongoose";
 
 const signToken = async (id: mongoose.Types.ObjectId) => {
@@ -46,19 +46,65 @@ const decodeJWT = async (jwtString: string) => {
 	});
 };
 
+const sendSignupEmail = async (email: IUser["email"]) => {
+	try {
+		await Email.getEmail().sendGreetingEmail(email);
+	} catch (err) {
+		rollbackUser(email);
+		throw err;
+	}
+};
+
+const rollbackUser = async (email: IUser["email"]) => {
+	try {
+		await User.deleteOne({ email });
+	} catch (err) {
+		throw new AppError(
+			500,
+			err instanceof Error
+				? err.message
+				: "Could not rollback user. Please try signup again.",
+		);
+	}
+};
+
+const signup = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const { name, email, password, passwordConfirm } = req.body;
+
+		const user = await User.create({ name, email, password, passwordConfirm });
+		if (!user) throw new AppError(400, "Could not signup. Please try again.");
+
+		await sendSignupEmail(user.email);
+
+		const jwt = await signToken(user._id as mongoose.Types.ObjectId);
+		res.cookie("jwt", jwt, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			expires: new Date(Date.now() + 60 * 60 * 1000),
+		});
+
+		res.status(201).json({
+			status: "success",
+			data: user,
+		});
+	} catch (err) {
+		catchError(err, next);
+	}
+};
+
 const login = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const { email, password } = req.body;
 
 		const user: UserDoc | (Omit<UserDoc, "password"> & { password?: string }) =
-			await User.findOne({ email: email }).select("+password email");
+			await User.findOne({ email }).select("+password email");
 
-		if (!user || !(await bcrypt.compare(user.password!, password))) {
+		if (!user || !(await bcrypt.compare(password, user.password!))) {
 			throw new AppError(401, "Invalid login information provided.");
 		}
 
 		const jwt = await signToken(user._id as mongoose.Types.ObjectId);
-		if (!jwt) throw new AppError(500, "could not create jwt, please try again");
 		delete user.password;
 
 		res.cookie("jwt", jwt, {
@@ -85,11 +131,11 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
 		const decodedId: string = (decodedPayload as { id: string }).id;
 
 		if (!decodedId)
-			throw new AppError(401, "could not verify jwt, please login again");
+			throw new AppError(401, "Could not verify jwt, please login again");
 
 		const user = await User.findById(decodedId);
 		if (!user)
-			throw new AppError(401, "could not verify account, please login again.");
+			throw new AppError(401, "Could not verify account, please login again.");
 		req.user = user;
 
 		next();
@@ -98,35 +144,11 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
 	}
 };
 
-const signup = async (req: Request, res: Response, next: NextFunction) => {
-	try {
-		const { name, email, password, passwordConfirm } = req.body;
-
-		const user = await User.create({ name, email, password, passwordConfirm });
-		if (!user) throw new AppError(400, "Could not signup. Please try again.");
-
-		const jwt = await signToken(user._id as mongoose.Types.ObjectId);
-		res.cookie("jwt", jwt, {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === "production",
-			expires: new Date(Date.now() + 60 * 60 * 1000),
-		});
-
-		res.status(201).json({
-			status: "success",
-			data: user,
-		});
-	} catch (err) {
-		catchError(err, next);
-	}
-};
-
 const logout = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		res.cookie("jwt", "logged-out-cookie", {
+		res.clearCookie("jwt", {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === "production",
-			maxAge: 0,
 		});
 		res.status(200).json({
 			status: "success",

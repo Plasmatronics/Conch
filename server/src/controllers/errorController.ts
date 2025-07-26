@@ -3,41 +3,26 @@ import { AppError } from "../utils";
 
 const sendErrorDev = (err: Error | AppError, req: Request, res: Response) => {
 	if (req.originalUrl.startsWith("/api")) {
-		if (err instanceof AppError) {
-			return res.status(err.statusCode).json({
-				status: err.status,
-				message: err.message,
-			});
-		}
-
-		//if not operational don't leak details
-		console.error("ERROR 💥", err);
-		return res.status(500).json({
-			status: "error",
+		return res.status(err instanceof AppError ? err.statusCode : 500).json({
+			status: err instanceof AppError ? err.status : "error",
 			message: err.message,
 			stack: err.stack,
 			error: err,
 		});
 	}
+
+	res.status(500).send("Something went wrong. Please try again later.");
 };
 
 const sendErrorProd = (err: Error | AppError, req: Request, res: Response) => {
 	if (req.originalUrl.startsWith("/api")) {
-		if (err instanceof AppError && err.isOperational) {
-			return res.status(err.statusCode).json({
-				status: err.status,
-				message: err.message,
-				error: err,
-				stack: err.stack,
-			});
-		}
-
-		console.error("ERROR 💥", err);
-		return res.status(500).json({
-			status: "error",
-			message: "Something went wrong!",
+		return res.status(err instanceof AppError ? err.statusCode : 500).json({
+			status: err instanceof AppError ? err.status : "error",
+			message: err.message,
 		});
 	}
+
+	res.status(500).send("Something went wrong. Please try again later.");
 };
 
 export const globalErrorHandler = (
