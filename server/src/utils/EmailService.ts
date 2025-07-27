@@ -44,6 +44,27 @@ class EmailService {
 			);
 		}
 	}
+
+	public async sendPasswordResetEmail(
+		recipient: IUser["email"],
+		resetUrl: string,
+	) {
+		try {
+			return await this.transporter.sendMail({
+				from: process.env.TRANSPORT_EMAIL,
+				to: recipient,
+				subject: "Password Reset",
+				html: `<p>Visit this url to reset your password: <a href="${resetUrl}">Reset Password</a></p>`,
+			});
+		} catch (err) {
+			throw new AppError(
+				500,
+				err instanceof Error
+					? err.message
+					: "Could not send password reset email. Please try again.",
+			);
+		}
+	}
 }
 
 export const Email = EmailService;

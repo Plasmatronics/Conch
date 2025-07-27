@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 import { IUser, User, UserDoc } from "../models";
 import { AppError, catchError, Email } from "../utils";
 import mongoose from "mongoose";
+import crypto from "crypto";
 
 const signToken = async (id: mongoose.Types.ObjectId) => {
 	return await new Promise((resolve, reject) => {
@@ -100,7 +100,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 		const user: UserDoc | (Omit<UserDoc, "password"> & { password?: string }) =
 			await User.findOne({ email }).select("+password email");
 
-		if (!user || !(await bcrypt.compare(password, user.password!))) {
+		if (!user || !(await user.isPasswordCorrect(password))) {
 			throw new AppError(401, "Invalid login information provided.");
 		}
 
@@ -158,9 +158,75 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
 	}
 };
 
+const forgotPassword = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const { email } = req.body;
+		const user = await User.findOne({ email });
+
+		if (user) {
+			const resetToken = user.createResetPasswordToken();
+			await user.save({ validateBeforeSave: false });
+
+			const resetUrl = `${req.protocol}://${req.get("host")}/api/v1/users/reset-password/${resetToken}`;
+
+			await Email.getEmail().sendPasswordResetEmail(email, resetUrl);
+		}
+
+		res.status(200).json({
+			status: "success",
+			message:
+				"If an acccount is associated with this email, an email will be sent to your inbox with a link to reset your password.",
+		});
+	} catch (err) {
+		catchError(err, next);
+	}
+};
+
+const resetPassword = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const { token } = req.params;
+		const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+		const { password, passwordConfirm } = req.body;
+
+		const user = await User.findOne({
+			passwordResetToken: hashedToken,
+			passwordResetExpiresAt: { $gt: Date.now() },
+		});
+
+		if (!user)
+			throw new AppError(
+				400,
+				"Could not reset password, please request another email.",
+			);
+
+		user.password = password;
+		user._passwordConfirm = passwordConfirm;
+		user.passwordResetToken = undefined;
+		user.passwordResetExpiresAt = undefined;
+		await user.save();
+
+		res
+			.status(200)
+			.json({ status: "success", message: "Password successfully reset." });
+	} catch (err) {
+		catchError(err, next);
+	}
+};
+
 export const authController = {
 	login,
 	protect,
 	signup,
 	logout,
+	forgotPassword,
+	resetPassword,
 };
