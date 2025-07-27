@@ -28,12 +28,12 @@ app.use(cookieParser());
 app.use(express.static(`${__dirname}/public`));
 
 //initializing routes
-app.use("/api/users", userRouter);
-app.use("/api/familyTreeMembers", familyTreeMemberRouter);
-app.use("/api/likes", likeRouter);
-app.use("/api/media", mediaRouter);
-app.use("/api/documents", documentRouter);
-app.use("/api/stories", storyRouter);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/familyTreeMembers", familyTreeMemberRouter);
+app.use("/api/v1/likes", likeRouter);
+app.use("/api/v1/media", mediaRouter);
+app.use("/api/v1/documents", documentRouter);
+app.use("/api/v1/stories", storyRouter);
 
 //if app reaches this route it must be a 404 error
 app.use((req, _, next) => {
