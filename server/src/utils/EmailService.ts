@@ -54,7 +54,7 @@ class EmailService {
 				from: process.env.TRANSPORT_EMAIL,
 				to: recipient,
 				subject: "Password Reset",
-				html: `<p>visit this url to reset your password: <a>${resetUrl}</a></p>`,
+				html: `<p>Visit this url to reset your password: <a href="${resetUrl}">Reset Password</a></p>`,
 			});
 		} catch (err) {
 			throw new AppError(

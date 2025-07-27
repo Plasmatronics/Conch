@@ -106,13 +106,13 @@ userSchema.methods.isPasswordCorrect = async function (
 			500,
 			err instanceof Error
 				? err.message
-				: "Could't verify entered password. Please try again.",
+				: "Couldn't verify entered password. Please try again.",
 		);
 	}
 };
 
 userSchema.methods.createResetPasswordToken = function () {
-	const BYTE_COUNT = 3; // 1 byte per 2 hex chars; 3 bytes = 6 desired char token
+	const BYTE_COUNT = 16; // 1 byte per 2 hex chars; 16 bytes = 32-char desired token
 	const PASSWORD_EXPIRE_TIME = 15 * 60 * 1000; // 15 min
 
 	const token = crypto.randomBytes(BYTE_COUNT).toString("hex");

@@ -166,19 +166,21 @@ const forgotPassword = async (
 	try {
 		const { email } = req.body;
 		const user = await User.findOne({ email });
-		if (!user)
-			throw new AppError(400, "Could not find an account matching this email");
 
-		const resetToken = user.createResetPasswordToken();
-		await user.save({ validateBeforeSave: false });
+		if (user) {
+			const resetToken = user.createResetPasswordToken();
+			await user.save({ validateBeforeSave: false });
 
-		const resetUrl = `${req.protocol}://${req.get("host")}/api/v1/users/reset-password/${resetToken}`;
+			const resetUrl = `${req.protocol}://${req.get("host")}/api/v1/users/reset-password/${resetToken}`;
 
-		await Email.getEmail().sendPasswordResetEmail(email, resetUrl);
+			await Email.getEmail().sendPasswordResetEmail(email, resetUrl);
+		}
 
-		res
-			.status(200)
-			.json({ status: "success", message: "Password reset link sent." });
+		res.status(200).json({
+			status: "success",
+			message:
+				"If an acccount is associated with this email, an email will be sent to your inbox with a link to reset your password.",
+		});
 	} catch (err) {
 		catchError(err, next);
 	}
