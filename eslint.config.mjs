@@ -12,6 +12,7 @@ export default tseslint.config({
 	],
 	rules: {
 		"no-console": "warn",
+		"no-await-in-loop": "warn",
 		"@typescript-eslint/no-unused-vars": "warn",
 		"@typescript-eslint/no-explicit-any": "warn",
 	},
