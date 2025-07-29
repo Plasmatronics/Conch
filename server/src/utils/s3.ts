@@ -31,11 +31,11 @@ export class S3Service {
 	}
 
 	private static getByteInfo(ContentRange: string) {
-		const [startRangeStr, totalLengthStr] = ContentRange.replace(
+		const [completedRangeStr, totalLengthStr] = ContentRange.replace(
 			"bytes ",
 			"",
 		).split("/");
-		const [_, endRangeStr] = startRangeStr.split("-");
+		const [startRangeStr, endRangeStr] = completedRangeStr.split("-");
 
 		const totalLength = Number.parseInt(totalLengthStr);
 		const startRange = Number.parseInt(startRangeStr);
