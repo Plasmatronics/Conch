@@ -30,6 +30,19 @@ export class S3Service {
 		return await S3Service.getS3Client().send(command);
 	}
 
+	private static getByteInfo(ContentRange: string) {
+		const [startRangeStr, totalLengthStr] = ContentRange.replace(
+			"bytes ",
+			"",
+		).split("/");
+		const [_, endRangeStr] = startRangeStr.split("-");
+
+		const totalLength = Number.parseInt(totalLengthStr);
+		const startRange = Number.parseInt(startRangeStr);
+		const endRange = Number.parseInt(endRangeStr);
+		return { startRange, endRange, totalLength };
+	}
+
 	public static getS3Client() {
 		if (!this.instance) {
 			this.instance = new S3Client({
@@ -48,7 +61,7 @@ export class S3Service {
 				Body: await readFile(filePath),
 			});
 
-			await this.getS3Client().send(command);
+			return await this.getS3Client().send(command);
 		} catch (err) {
 			let errMessage;
 			if (err instanceof S3ServiceException && err.name === "EntityTooLarge") {
@@ -80,7 +93,7 @@ or the multipart upload API (5TB max).`;
 				},
 			});
 
-			await upload.done();
+			return await upload.done();
 		} catch (err) {
 			let errMessage;
 			if (err instanceof Error && err.name === "AbortError") {
@@ -118,16 +131,24 @@ or the multipart upload API (5TB max).`;
 
 			let rangeStart = 0;
 			let rangeEnd = oneMb - 1;
-			const totalLength = Infinity;
+			const { ContentRange: startingContentRange } = await this.getObjectRange(
+				fileName,
+				rangeStart,
+				rangeEnd,
+			);
+			if (!startingContentRange) {
+				throw new AppError(
+					500,
+					`Couldn't retrieve ${fileName} from ${process.env.S3_BUCKET_NAME} bucket for download`,
+				);
+			}
+			const { totalLength } = this.getByteInfo(startingContentRange);
 
 			while (rangeStart <= totalLength) {
-				const { ContentRange, Body } = await this.getObjectRange(
-					fileName,
-					rangeStart,
-					rangeEnd,
-				);
+				const { ContentRange: curContentRange, Body } =
+					await this.getObjectRange(fileName, rangeStart, rangeEnd);
 
-				if (!ContentRange || !Body) {
+				if (!curContentRange || !Body) {
 					throw new AppError(
 						500,
 						`Couldn't download ${fileName} from ${process.env.S3_BUCKET_NAME} bucket`,
@@ -136,19 +157,14 @@ or the multipart upload API (5TB max).`;
 
 				writeStream.write(await Body.transformToByteArray());
 
-				const [completedRange, totalLengthStr] = ContentRange.replace(
-					"bytes ",
-					"",
-				).split("/");
-				const [_, endRangeStr] = completedRange.split("-");
+				const { startRange: roughRangeStart } =
+					this.getByteInfo(curContentRange);
 
-				const totalLength = Number.parseInt(totalLengthStr) - 1;
-				const roughRangeStart = Number.parseInt(endRangeStr) + 1;
-				rangeStart = Math.min(roughRangeStart, totalLength);
+				rangeStart = Math.min(roughRangeStart + 1, totalLength);
 				const roughRangeEnd = rangeStart + oneMb - 1;
 				rangeEnd = Math.min(roughRangeEnd, totalLength);
 			}
-			writeStream.end();
+			return writeStream.end();
 		} catch (err) {
 			if (err instanceof AppError) {
 				throw err;
@@ -181,11 +197,10 @@ or the multipart upload API (5TB max).`;
 
 			const objectString = objects
 				.map((objectPage, pageNum) => {
-					return `Page ${pageNum++}:\n${objectPage.map((object) => object)}`;
+					return `Page ${pageNum + 1}:\n${objectPage.map((object) => object)}`;
 				})
 				.join(`\n`);
 
-			console.log(objectString);
 			return objectString;
 		} catch (err) {
 			let errMessage;
@@ -207,7 +222,7 @@ or the multipart upload API (5TB max).`;
 				Bucket: process.env.S3_BUCKET_NAME,
 				Key: fileName,
 			});
-			await this.getS3Client().send(command);
+			return await this.getS3Client().send(command);
 		} catch (err) {
 			let errMessage;
 			if (err instanceof S3ServiceException && err.name === "NoSuchBucket") {
