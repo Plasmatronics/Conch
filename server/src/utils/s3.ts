@@ -144,7 +144,7 @@ or the multipart upload API (5TB max).`;
 			}
 			const { totalLength } = this.getByteInfo(startingContentRange);
 
-			while (rangeStart <= totalLength) {
+			while (rangeStart < totalLength) {
 				const { ContentRange: curContentRange, Body } =
 					await this.getObjectRange(fileName, rangeStart, rangeEnd);
 
