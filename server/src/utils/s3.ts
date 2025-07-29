@@ -157,10 +157,10 @@ or the multipart upload API (5TB max).`;
 
 				writeStream.write(await Body.transformToByteArray());
 
-				const { startRange: roughRangeStart } =
+				const { startRange: roughRangeStart, endRange } =
 					this.getByteInfo(curContentRange);
 
-				rangeStart = Math.min(roughRangeStart + 1, totalLength);
+				rangeStart = Math.min(endRange + 1, totalLength);
 				const roughRangeEnd = rangeStart + oneMb - 1;
 				rangeEnd = Math.min(roughRangeEnd, totalLength);
 			}
