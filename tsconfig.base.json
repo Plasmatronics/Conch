@@ -1,0 +1,22 @@
+{
+	"files": [],
+  "references": [
+    { "path": "./shared" },
+    { "path": "./server" },
+    { "path": "./client" }
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@types/*": ["shared/src/types/*"]
+    },
+    "strict": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "exclude": ["node_modules", "dist"]
+}

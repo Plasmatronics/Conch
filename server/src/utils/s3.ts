@@ -12,11 +12,16 @@ import { readFile } from "node:fs/promises";
 import { AppError } from "./AppError";
 import { createReadStream, createWriteStream } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { v4 as uuidv4 } from "uuid";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import {
+	UploadRequest,
+	DownloadRequest,
+} from "../../../shared/src/types/file.types";
+export class S3Service extends S3Client {
+	private static instance: S3Service;
 
-export class S3Service {
-	private static instance: S3Client;
-
-	private static async getObjectRange(
+	private async getObjectRange(
 		fileName: string,
 		startBytes: number,
 		endBytes: number,
@@ -30,7 +35,7 @@ export class S3Service {
 		return await S3Service.getS3Client().send(command);
 	}
 
-	private static getByteInfo(ContentRange: string) {
+	private getByteInfo(ContentRange: string) {
 		const [completedRangeStr, totalLengthStr] = ContentRange.replace(
 			"bytes ",
 			"",
@@ -44,16 +49,77 @@ export class S3Service {
 	}
 
 	public static getS3Client() {
-		if (!this.instance) {
-			this.instance = new S3Client({
+		if (!S3Service.instance) {
+			S3Service.instance = new S3Service({
 				region: process.env.S3_REGION,
+				credentials: {
+					secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
+					accessKeyId: process.env.S3_ACCESS_KEY || "",
+				},
 			});
 		}
 
-		return this.instance;
+		return S3Service.instance;
 	}
 
-	public static async uploadFileToBucket(fileName: string, filePath: string) {
+	public async generateSecureUploadUrl({ fileType }: UploadRequest) {
+		try {
+			const fileKey = uuidv4();
+
+			const command = new PutObjectCommand({
+				Bucket: process.env.S3_BUCKET_NAME,
+				Key: fileKey,
+				ContentType: fileType,
+			});
+
+			//one min expire time
+			const uploadUrl = await getSignedUrl(S3Service.getS3Client(), command, {
+				expiresIn: 60,
+			});
+			if (!uploadUrl) throw new AppError(500, "Could not generate secure url");
+
+			return uploadUrl;
+		} catch (err) {
+			if (err instanceof AppError) throw err;
+
+			throw new AppError(
+				500,
+				err instanceof Error
+					? err.message
+					: "Could not generate secure url. Please try again.",
+			);
+		}
+	}
+
+	public async generateSecureDownloadUrl({ fileKey }: DownloadRequest) {
+		try {
+			console.log(fileKey);
+			const command = new GetObjectCommand({
+				Key: fileKey,
+				Bucket: process.env.S3_BUCKET_NAME,
+			});
+
+			//one min expire time
+			const downloadUrl = await getSignedUrl(S3Service.getS3Client(), command, {
+				expiresIn: 60,
+			});
+			if (!downloadUrl)
+				throw new AppError(500, "Could not generate secure url");
+
+			return downloadUrl;
+		} catch (err) {
+			if (err instanceof AppError) throw err;
+
+			throw new AppError(
+				500,
+				err instanceof Error
+					? err.message
+					: "Could not generate secure url. Please try again.",
+			);
+		}
+	}
+
+	private async uploadSmallFileToBucket(fileName: string, filePath: string) {
 		try {
 			const command = new PutObjectCommand({
 				Bucket: process.env.S3_BUCKET_NAME,
@@ -61,7 +127,7 @@ export class S3Service {
 				Body: await readFile(filePath),
 			});
 
-			return await this.getS3Client().send(command);
+			return await S3Service.getS3Client().send(command);
 		} catch (err) {
 			let errMessage;
 			if (err instanceof S3ServiceException && err.name === "EntityTooLarge") {
@@ -78,14 +144,11 @@ or the multipart upload API (5TB max).`;
 		}
 	}
 
-	public static async uploadLargeFileToBucket(
-		fileName: string,
-		filePath: string,
-	) {
+	private async uploadLargeFileToBucket(fileName: string, filePath: string) {
 		try {
 			const fileStream = createReadStream(filePath);
 			const upload = new Upload({
-				client: this.getS3Client(),
+				client: S3Service.getS3Client(),
 				params: {
 					Bucket: process.env.S3_BUCKET_NAME,
 					Key: fileName,
@@ -106,10 +169,17 @@ or the multipart upload API (5TB max).`;
 		}
 	}
 
-	public static async downloadLargeFileFromBucket(
-		fileName: string,
-		fileDestination: string,
-	) {
+	public async upload(fileName: string, filePath: string, fileSize: number) {
+		const MULTIPART_THRESHOLD = 500 * 1024 * 1024; // 500Mb
+
+		if (fileSize > MULTIPART_THRESHOLD) {
+			return await this.uploadLargeFileToBucket(fileName, filePath);
+		} else {
+			return await this.uploadSmallFileToBucket(fileName, filePath);
+		}
+	}
+
+	public async download(fileName: string, fileDestination: string) {
 		try {
 			const oneMb = 1024 * 1024;
 
@@ -157,8 +227,7 @@ or the multipart upload API (5TB max).`;
 
 				writeStream.write(await Body.transformToByteArray());
 
-				const { startRange: roughRangeStart, endRange } =
-					this.getByteInfo(curContentRange);
+				const { endRange } = this.getByteInfo(curContentRange);
 
 				rangeStart = Math.min(endRange + 1, totalLength);
 				const roughRangeEnd = rangeStart + oneMb - 1;
@@ -181,12 +250,12 @@ or the multipart upload API (5TB max).`;
 		}
 	}
 
-	public static async readFilesFromBucket(itemsPerPage?: number) {
+	public async readFilesFromBucket(itemsPerPage?: number) {
 		try {
 			const objects = [];
 
 			const paginator = paginateListObjectsV2(
-				{ client: this.getS3Client(), pageSize: itemsPerPage || 100 },
+				{ client: S3Service.getS3Client(), pageSize: itemsPerPage || 100 },
 				{ Bucket: process.env.S3_BUCKET_NAME },
 			);
 
@@ -216,13 +285,13 @@ or the multipart upload API (5TB max).`;
 		}
 	}
 
-	public static async deleteFileFromBucket(fileName: string) {
+	public async deleteFileFromBucket(fileName: string) {
 		try {
 			const command = new DeleteObjectCommand({
 				Bucket: process.env.S3_BUCKET_NAME,
 				Key: fileName,
 			});
-			return await this.getS3Client().send(command);
+			return await S3Service.getS3Client().send(command);
 		} catch (err) {
 			let errMessage;
 			if (err instanceof S3ServiceException && err.name === "NoSuchBucket") {
@@ -237,7 +306,7 @@ or the multipart upload API (5TB max).`;
 		}
 	}
 
-	public static async deleteManyFilesFromBucket(fileNames: string[]) {
+	public async deleteManyFilesFromBucket(fileNames: string[]) {
 		return await Promise.all(
 			fileNames.map((file) => this.deleteFileFromBucket(file)),
 		);
