@@ -52,11 +52,12 @@ const locationSchema = new mongoose.Schema<ILocation>(
 export interface IFamilyTreeMember extends Document {
 	name: string;
 	nicknames?: string[];
-	birthLocation: ILocation;
-	dateOfBirth: Date;
-	dateOfDeath: Date;
-	deathLocation: ILocation;
+	birthLocation?: ILocation;
+	dateOfBirth?: Date;
+	dateOfDeath?: Date;
+	deathLocation?: ILocation;
 	createdAt: Date;
+	deletedAt?: Date;
 	relationToRootMember: string;
 	favThings?: IMemberFavThings;
 	claimedId?: mongoose.Types.ObjectId;
@@ -113,6 +114,10 @@ const familyTreeMemberSchema = new mongoose.Schema<FamilyTreeMemberDoc>(
 		keyPhoto: {
 			type: mongoose.Schema.ObjectId,
 			ref: "Media",
+		},
+		deletedAt: {
+			type: Date,
+			select: false,
 		},
 	},
 	{

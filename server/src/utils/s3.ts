@@ -78,7 +78,7 @@ export class S3Service extends S3Client {
 			});
 			if (!uploadUrl) throw new AppError(500, "Could not generate secure url");
 
-			return uploadUrl;
+			return { uploadUrl, fileKey };
 		} catch (err) {
 			if (err instanceof AppError) throw err;
 
@@ -93,7 +93,6 @@ export class S3Service extends S3Client {
 
 	public async generateSecureDownloadUrl({ fileKey }: DownloadRequest) {
 		try {
-			console.log(fileKey);
 			const command = new GetObjectCommand({
 				Key: fileKey,
 				Bucket: process.env.S3_BUCKET_NAME,

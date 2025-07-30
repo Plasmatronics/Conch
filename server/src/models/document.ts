@@ -1,20 +1,21 @@
 import mongoose, { Document as MongooseDocument } from "mongoose";
 
 export interface IDocument {
-	fileUrl: string;
+	fileKey: string;
 	type: string;
 	author: mongoose.Types.ObjectId;
 	involves: mongoose.Types.ObjectId[];
-	createdAt?: Date;
+	createdAt: Date;
+	deletedAt?: Date;
 }
 
 export type DocumentDoc = IDocument & MongooseDocument;
 
 const documentSchema = new mongoose.Schema<DocumentDoc>(
 	{
-		fileUrl: {
+		fileKey: {
 			type: String,
-			required: [true, "A document must have a fileUrl"],
+			required: [true, "A document must have a fileKey"],
 			unique: true,
 		},
 		type: {
@@ -34,6 +35,10 @@ const documentSchema = new mongoose.Schema<DocumentDoc>(
 		createdAt: {
 			type: Date,
 			default: Date.now(),
+			select: false,
+		},
+		deletedAt: {
+			type: Date,
 			select: false,
 		},
 	},

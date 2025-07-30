@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError, catchError, S3Service } from "../utils";
+import { S3 } from "@aws-sdk/client-s3";
 
 const generateSecureDownloadUrl = async (
 	req: Request,
@@ -41,13 +42,46 @@ const generateSecureUploadUrl = async (
 				"Please enter a valid file type to generate secure upload url",
 			);
 
-		const uploadUrl = await S3Service.getS3Client().generateSecureUploadUrl({
-			fileType,
-		});
+		const { uploadUrl, fileKey } =
+			await S3Service.getS3Client().generateSecureUploadUrl({
+				fileType,
+			});
 
 		res.status(200).json({
 			status: "success",
 			uploadUrl,
+			fileKey,
+		});
+	} catch (err) {
+		catchError(err, next);
+	}
+};
+
+const deleteFromBucket = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const { fileKeys } = req.params;
+		const fileKeysArr = fileKeys.split(",");
+		let s3Res;
+
+		if (!fileKeys)
+			throw new AppError(400, "Please specificy fileKeys to delete");
+
+		if (fileKeysArr[1]) {
+			s3Res =
+				await S3Service.getS3Client().deleteManyFilesFromBucket(fileKeysArr);
+		} else {
+			s3Res = await S3Service.getS3Client().deleteFileFromBucket(
+				fileKeysArr[0],
+			);
+		}
+
+		res.status(200).json({
+			status: "success",
+			s3Res,
 		});
 	} catch (err) {
 		catchError(err, next);
@@ -57,4 +91,5 @@ const generateSecureUploadUrl = async (
 export const s3Controller = {
 	generateSecureUploadUrl,
 	generateSecureDownloadUrl,
+	deleteFromBucket,
 };
