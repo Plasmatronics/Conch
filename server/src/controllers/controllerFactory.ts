@@ -219,7 +219,10 @@ const restoreSoftDeleted =
 			);
 
 			if (docs.modifiedCount === 0) {
-				throw new AppError(400, "Could not restore all deleted documents.");
+				return res.status(200).json({
+					status: "success",
+					message: "No documents were found to restore.",
+				});
 			}
 
 			res.status(200).json({
