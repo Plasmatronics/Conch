@@ -171,9 +171,7 @@ const cleanupDeleted =
 				}
 
 				const docFileKeys = docs
-					.map((doc) => {
-						return doc.fileKey;
-					})
+					.map((doc) => doc.fileKey)
 					.filter(Boolean);
 
 				const deleteFromS3Promise =
