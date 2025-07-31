@@ -189,7 +189,7 @@ const cleanupDeleted =
 					deletedAt: { $lt: oneDayAgo },
 				});
 				if (deletedDocs.deletedCount === 0) {
-					return res.status(200).json({ message: "No documents found to delete." });
+					return res.status(200).json({ status: "success", message: "No documents found to delete." });
 				}
 			}
 
