@@ -251,7 +251,7 @@ const restoreOneSoftDeleted =
 				throw new AppError(400, "Invalid ID format");
 			}
 
-			const doc = await Model.findByIdAndUpdate(id, { $unset: { deletedAt: 1 } });
+			const doc = await Model.findByIdAndUpdate(id, { $unset: { deletedAt: 1 } }, { new: true });
 
 			if (!doc) {
 				throw new AppError(404, "Could not restore specified document.");
