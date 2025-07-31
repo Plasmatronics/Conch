@@ -232,7 +232,7 @@ const restoreSoftDeleted =
 	};
 
 /**
- * Marks document to be deleted in 24hrs
+ * Restores a single soft-deleted document by unsetting its `deletedAt` field.
  */
 const restoreOneSoftDeleted =
 	<T extends Document>(Model: Model<T>) =>
