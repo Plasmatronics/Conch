@@ -215,7 +215,7 @@ const restoreSoftDeleted =
 
 			const docs = await Model.updateMany(
 				{ deletedAt: { $exists: true, $ne: null } },
-				{ deletedAt: undefined },
+				{ $unset: { deletedAt: 1 } },
 			);
 
 			if (!docs) {
