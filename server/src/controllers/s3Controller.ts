@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError, catchError, S3Service } from "../utils";
-import { S3 } from "@aws-sdk/client-s3";
 
 const generateSecureDownloadUrl = async (
 	req: Request,
