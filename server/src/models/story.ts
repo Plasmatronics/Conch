@@ -6,6 +6,7 @@ export interface IStory {
 	author: mongoose.Types.ObjectId;
 	involves: mongoose.Types.ObjectId[];
 	createdAt: Date;
+	deletedAt?: Date;
 	storyDate?: Date;
 }
 
@@ -38,6 +39,10 @@ const storySchema = new mongoose.Schema<StoryDoc>(
 		createdAt: {
 			type: Date,
 			default: Date.now(),
+			select: false,
+		},
+		deletedAt: {
+			type: Date,
 			select: false,
 		},
 		storyDate: {

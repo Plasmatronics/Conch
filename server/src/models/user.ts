@@ -13,6 +13,7 @@ export interface IUser {
 	passwordResetExpiresAt?: Date;
 	familyTreeMember: mongoose.Types.ObjectId;
 	createdAt: Date;
+	deletedAt?: Date;
 	_passwordConfirm?: string;
 
 	isPasswordCorrect: (password: string) => Promise<boolean>;
@@ -50,6 +51,10 @@ const userSchema = new mongoose.Schema<UserDoc>(
 		createdAt: {
 			type: Date,
 			default: Date.now(),
+			select: false,
+		},
+		deletedAt: {
+			type: Date,
 			select: false,
 		},
 		passwordResetToken: String,

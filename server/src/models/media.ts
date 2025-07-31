@@ -1,21 +1,22 @@
 import mongoose, { Document } from "mongoose";
 
 export interface IMedia {
-	mediaUrl: string;
+	mediaKey: string;
 	description?: string;
 	type: "photo" | "video";
 	author: mongoose.Types.ObjectId;
 	involves: mongoose.Types.ObjectId[];
 	createdAt: Date;
+	deletedAt?: Date;
 }
 
 export type MediaDoc = IMedia & Document;
 
 const mediaSchema = new mongoose.Schema<MediaDoc>(
 	{
-		mediaUrl: {
+		mediaKey: {
 			type: String,
-			required: [true, "Media must have a mediaUrl"],
+			required: [true, "Media must have a mediaKey"],
 			unique: true,
 		},
 		description: {
@@ -42,6 +43,10 @@ const mediaSchema = new mongoose.Schema<MediaDoc>(
 		createdAt: {
 			type: Date,
 			default: Date.now(),
+			select: false,
+		},
+		deletedAt: {
+			type: Date,
 			select: false,
 		},
 	},

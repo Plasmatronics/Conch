@@ -1,5 +1,6 @@
 export { globalErrorHandler } from "./errorController";
 
+export { s3Controller } from "./s3Controller";
 export { authController } from "./authController";
 export { documentController } from "./documentController";
 export { likeController } from "./likeController";

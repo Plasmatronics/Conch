@@ -1,7 +1,7 @@
 import mongoose, { Document } from "mongoose";
 
 export interface ILike {
-	fileUrl: string;
+	fileKey: string;
 	target: mongoose.Types.ObjectId | string;
 	targetType: "Media" | "Document";
 	author: mongoose.Types.ObjectId | string;
@@ -12,9 +12,9 @@ export type LikeDoc = ILike & Document;
 
 const likeSchema = new mongoose.Schema<LikeDoc>(
 	{
-		fileUrl: {
+		fileKey: {
 			type: String,
-			required: [true, "A like must have a fileUrl"],
+			required: [true, "A like must have a fileKey"],
 			unique: true,
 		},
 		target: {

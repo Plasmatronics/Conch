@@ -7,6 +7,7 @@ import {
 	mediaRouter,
 	storyRouter,
 	userRouter,
+	fileRouter
 } from "./src/routes";
 import { AppError } from "./src/utils";
 import { globalErrorHandler } from "./src/controllers";
@@ -34,6 +35,7 @@ app.use("/api/v1/likes", likeRouter);
 app.use("/api/v1/media", mediaRouter);
 app.use("/api/v1/documents", documentRouter);
 app.use("/api/v1/stories", storyRouter);
+app.use("/api/v1/files", fileRouter);
 
 //if app reaches this route it must be a 404 error
 app.use((req, _, next) => {
