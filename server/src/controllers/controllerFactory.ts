@@ -218,7 +218,7 @@ const restoreSoftDeleted =
 				{ $unset: { deletedAt: 1 } },
 			);
 
-			if (!docs) {
+			if (docs.modifiedCount === 0) {
 				throw new AppError(400, "Could not restore all deleted documents.");
 			}
 
