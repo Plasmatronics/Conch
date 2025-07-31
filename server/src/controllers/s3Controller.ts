@@ -68,7 +68,7 @@ const deleteFromBucket = async (
 		let s3Res;
 
 		if (!fileKeys)
-			throw new AppError(400, "Please specificy fileKeys to delete");
+			throw new AppError(400, "Please specify fileKeys to delete");
 
 		if (fileKeysArr[1]) {
 			s3Res =
