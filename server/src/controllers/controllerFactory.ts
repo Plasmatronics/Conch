@@ -188,7 +188,7 @@ const cleanupDeleted =
 				const deletedDocs = await Model.deleteMany({
 					deletedAt: { $lt: oneDayAgo },
 				});
-				if (!deletedDocs) {
+				if (deletedDocs.deletedCount === 0) {
 					throw new AppError(404, "Could not delete documents");
 				}
 			}
