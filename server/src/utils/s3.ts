@@ -312,11 +312,20 @@ or the multipart upload API (5TB max).`;
 		const failedDeletions = deletionPromises.filter(
 			(deletion) => deletion.status === "rejected",
 		);
+		const successfulDeletions = deletionPromises.filter(
+			(deletion) => deletion.status === "fulfilled",
+		);
+
 		if (failedDeletions.length > 0)
 			failedDeletions.forEach((failure, i) => {
 				if (failure.status === "rejected") {
 					console.error(`Failed Deletion ${i}: ${failure.reason}\n`);
 				}
 			});
+
+		return {
+			failedDeletions,
+			successfulDeletions,
+		};
 	}
 }
