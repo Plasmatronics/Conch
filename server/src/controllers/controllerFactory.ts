@@ -167,7 +167,7 @@ const cleanupDeleted =
 				});
 
 				if (docs.length === 0) {
-					throw new AppError(404, "Could not find any documents to delete!");
+					return res.status(200).json({ message: "No documents found to delete." });
 				}
 
 				const docFileKeys = docs
