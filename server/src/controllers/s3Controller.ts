@@ -56,39 +56,7 @@ const generateSecureUploadUrl = async (
 	}
 };
 
-const deleteFromBucket = async (
-	req: Request,
-	res: Response,
-	next: NextFunction,
-) => {
-	try {
-		const { fileKeys } = req.params;
-		const fileKeysArr = fileKeys.split(",");
-		let s3Res;
-
-		if (!fileKeys)
-			throw new AppError(400, "Please specify fileKeys to delete");
-
-		if (fileKeysArr[1]) {
-			s3Res =
-				await S3Service.getS3Client().deleteManyFilesFromBucket(fileKeysArr);
-		} else {
-			s3Res = await S3Service.getS3Client().deleteFileFromBucket(
-				fileKeysArr[0],
-			);
-		}
-
-		res.status(200).json({
-			status: "success",
-			s3Res,
-		});
-	} catch (err) {
-		catchError(err, next);
-	}
-};
-
 export const s3Controller = {
 	generateSecureUploadUrl,
 	generateSecureDownloadUrl,
-	deleteFromBucket,
 };

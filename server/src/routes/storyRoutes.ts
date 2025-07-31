@@ -15,6 +15,15 @@ router
 	.route("/:id")
 	.get(storyController.getStory)
 	.patch(storyController.updateStory)
-	.delete(storyController.deleteStory);
+	.delete(storyController.softDeleteStory);
+
+router
+	.route("/trash")
+	.patch(storyController.restoreAllStories)
+	.delete(storyController.cleanupAllDeletedStories);
+
+router
+	.route("/trash/:id")
+	.patch(storyController.restoreStory);
 
 export { router as storyRouter };

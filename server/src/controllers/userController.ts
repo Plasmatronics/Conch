@@ -7,7 +7,13 @@ const getUser = handlerFactory.readOne(User);
 
 const updateUser = handlerFactory.updateOne(User);
 
-const deleteUser = handlerFactory.deleteOne(User);
+const softDeleteUser = handlerFactory.softDeleteOne(User);
+
+const cleanupAllDeletedUsers = handlerFactory.cleanupDeleted(User);
+
+const restoreUser = handlerFactory.restoreOneSoftDeleted(User);
+
+const restoreAllUsers = handlerFactory.restoreSoftDeleted(User);
 
 const getAllUsers = handlerFactory.getAll(User);
 
@@ -15,6 +21,9 @@ export const userController = {
 	createUser,
 	getUser,
 	updateUser,
-	deleteUser,
+	softDeleteUser,
+	cleanupAllDeletedUsers,
+	restoreUser,
+	restoreAllUsers,
 	getAllUsers,
 };

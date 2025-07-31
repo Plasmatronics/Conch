@@ -13,10 +13,19 @@ router
 	)
 	.delete(
 		authController.protect,
-		familyTreeMemberController.deleteFamilyTreeMember,
+		familyTreeMemberController.softDeleteFamilyTreeMember,
 	);
 
 router.use(authController.protect);
+
+router
+	.route("/trash")
+	.patch(familyTreeMemberController.restoreAllFamilyTreeMembers)
+	.delete(familyTreeMemberController.cleanupAllDeletedFamilyTreeMembers);
+
+router
+	.route("/trash/:id")
+	.patch(familyTreeMemberController.restoreFamilyTreeMember);
 
 router
 	.route("/")
