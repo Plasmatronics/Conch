@@ -7,7 +7,7 @@ const getLike = handlerFactory.readOne(Like);
 
 const updateLike = handlerFactory.updateOne(Like);
 
-const deleteLike = handlerFactory.softDeleteOne(Like);
+const deleteLike = handlerFactory.deleteOne(Like);
 
 const getAllLikes = handlerFactory.getAll(Like);
 

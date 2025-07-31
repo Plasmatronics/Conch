@@ -163,7 +163,7 @@ const cleanupDeleted =
 			const oneDayAgo = Date.now() - oneDay;
 			if (Model.modelName === "Media" || Model.modelName === "Document") {
 				const docs: MediaDoc[] | DocumentDoc[] = await Model.find({
-					deletedAt: { $gt: oneDayAgo },
+					deletedAt: { $lt: oneDayAgo },
 				});
 
 				if (!docs) {
@@ -180,13 +180,13 @@ const cleanupDeleted =
 					S3Service.getS3Client().deleteManyFilesFromBucket(docFileKeys);
 
 				const deletedDocsPromise = Model.deleteMany({
-					deletedAt: { $gt: oneDayAgo },
+					deletedAt: { $lt: oneDayAgo },
 				});
 
 				await Promise.all([deleteFromS3Promise, deletedDocsPromise]);
 			} else {
 				const deletedDocs = await Model.deleteMany({
-					deletedAt: { $gt: oneDayAgo },
+					deletedAt: { $lt: oneDayAgo },
 				});
 				if (!deletedDocs) {
 					throw new AppError(404, "Could not delete documents");
@@ -254,7 +254,7 @@ const restoreOneSoftDeleted =
 			const doc = await Model.findByIdAndUpdate(id, { deletedAt: undefined });
 
 			if (!doc) {
-				throw new AppError(404, "Could restore specified documents.");
+				throw new AppError(404, "Could not restore specified document.");
 			}
 
 			res.status(200).json({
