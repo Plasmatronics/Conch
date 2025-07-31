@@ -189,7 +189,7 @@ const cleanupDeleted =
 					deletedAt: { $lt: oneDayAgo },
 				});
 				if (deletedDocs.deletedCount === 0) {
-					throw new AppError(404, "Could not delete documents");
+					return res.status(200).json({ message: "No documents found to delete." });
 				}
 			}
 
