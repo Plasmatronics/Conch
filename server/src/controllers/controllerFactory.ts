@@ -167,7 +167,7 @@ const cleanupDeleted =
 				});
 
 				if (docs.length === 0) {
-					return res.status(200).json({ message: "No documents found to delete." });
+					return res.status(204).send();
 				}
 
 				const docFileKeys = docs
