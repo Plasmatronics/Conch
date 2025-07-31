@@ -200,7 +200,7 @@ const cleanupDeleted =
 	};
 
 /**
- * Marks document to be deleted in 24hrs
+ * Restores soft-deleted documents by removing the `deletedAt` field
  */
 const restoreSoftDeleted =
 	<T extends Document>(Model: Model<T>) =>
