@@ -166,7 +166,7 @@ const cleanupDeleted =
 					deletedAt: { $lt: oneDayAgo },
 				});
 
-				if (!docs) {
+				if (docs.length === 0) {
 					throw new AppError(404, "Could not find any documents to delete!");
 				}
 
