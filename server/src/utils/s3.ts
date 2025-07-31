@@ -98,7 +98,7 @@ export class S3Service extends S3Client {
 				Bucket: process.env.S3_BUCKET_NAME,
 			});
 
-			//one min expire time
+			// one minute expire time
 			const downloadUrl = await getSignedUrl(S3Service.getS3Client(), command, {
 				expiresIn: 60,
 			});
