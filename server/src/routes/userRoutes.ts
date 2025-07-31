@@ -11,6 +11,13 @@ router.route("/reset-password/:token").post(authController.resetPassword);
 
 router.use(authController.protect);
 
+router
+	.route("/trash")
+	.patch(userController.restoreAllUsers)
+	.delete(userController.cleanupAllDeletedUsers);
+
+router.route("/trash/:id").patch(userController.restoreUser);
+
 router.route("/logout").get(authController.logout);
 
 router.route("/").get(userController.getAllUsers);
@@ -18,6 +25,6 @@ router
 	.route("/:id")
 	.get(userController.getUser)
 	.patch(userController.updateUser)
-	.delete(userController.deleteUser);
+	.delete(userController.softDeleteUser);
 
 export { router as userRouter };

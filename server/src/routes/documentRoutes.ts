@@ -8,9 +8,16 @@ router
 	.route("/:id")
 	.get(documentController.getDocument)
 	.patch(authController.protect, documentController.updateDocument)
-	.delete(authController.protect, documentController.deleteDocument);
+	.delete(authController.protect, documentController.softDeleteDocument);
 
 router.use(authController.protect);
+
+router
+	.route("/trash")
+	.patch(documentController.restoreAllDocuments)
+	.delete(documentController.cleanupAllDeletedDocuments);
+
+router.route("/trash/:id").patch(documentController.restoreDocument);
 
 router
 	.route("/")

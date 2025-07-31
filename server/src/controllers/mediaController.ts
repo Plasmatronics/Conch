@@ -7,7 +7,13 @@ const getMedia = handlerFactory.readOne(Media);
 
 const updateMedia = handlerFactory.updateOne(Media);
 
-const deleteMedia = handlerFactory.deleteOne(Media);
+const softDeleteMedia = handlerFactory.softDeleteOne(Media);
+
+const cleanupAllDeletedMedia = handlerFactory.cleanupDeleted(Media);
+
+const restoreMedia = handlerFactory.restoreOneSoftDeleted(Media);
+
+const restoreAllMedia = handlerFactory.restoreSoftDeleted(Media);
 
 const getAllMedia = handlerFactory.getAll(Media);
 
@@ -15,6 +21,9 @@ export const mediaController = {
 	createMedia,
 	getMedia,
 	updateMedia,
-	deleteMedia,
+	softDeleteMedia,
+	cleanupAllDeletedMedia,
+	restoreMedia,
+	restoreAllMedia,
 	getAllMedia,
 };

@@ -1,7 +1,7 @@
 import mongoose, { Document } from "mongoose";
 
 export interface IMedia {
-	mediaKey: string;
+	fileKey: string;
 	description?: string;
 	type: "photo" | "video";
 	author: mongoose.Types.ObjectId;
@@ -14,9 +14,9 @@ export type MediaDoc = IMedia & Document;
 
 const mediaSchema = new mongoose.Schema<MediaDoc>(
 	{
-		mediaKey: {
+		fileKey: {
 			type: String,
-			required: [true, "Media must have a mediaKey"],
+			required: [true, "Media must have a fileKey"],
 			unique: true,
 		},
 		description: {

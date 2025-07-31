@@ -306,8 +306,24 @@ or the multipart upload API (5TB max).`;
 	}
 
 	public async deleteManyFilesFromBucket(fileNames: string[]) {
-		return await Promise.all(
+		const deletionPromises = await Promise.allSettled(
 			fileNames.map((file) => this.deleteFileFromBucket(file)),
 		);
+		const failedDeletions = deletionPromises.filter(
+			(deletion) => deletion.status === "rejected",
+		);
+		const successfulDeletions = deletionPromises.filter(
+			(deletion) => deletion.status === "fulfilled",
+		);
+
+		if (failedDeletions.length > 0)
+			failedDeletions.forEach((failure, i) => {
+				console.error(`Failed Deletion ${i}: ${failure.reason}\n`);
+			});
+
+		return {
+			failedDeletions,
+			successfulDeletions,
+		};
 	}
 }

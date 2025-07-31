@@ -7,9 +7,16 @@ router
 	.route("/:id")
 	.get(mediaController.getMedia)
 	.patch(authController.protect, mediaController.updateMedia)
-	.delete(authController.protect, mediaController.deleteMedia);
+	.delete(authController.protect, mediaController.softDeleteMedia);
 
 router.use(authController.protect);
+
+router
+	.route("/trash")
+	.patch(mediaController.restoreAllMedia)
+	.delete(mediaController.cleanupAllDeletedMedia);
+
+router.route("/trash/:id").patch(mediaController.restoreMedia);
 
 router
 	.route("/")
