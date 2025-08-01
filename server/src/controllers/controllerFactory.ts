@@ -164,7 +164,7 @@ const cleanupDeleted =
 			if (Model.modelName === "Like") {
 				throw new AppError(
 					400,
-					"Likes have no soft deletion process. Hard delete this resource if you wish to delete this resource.",
+					"Likes have no soft deletion process. Hard delete this resource if you wish to delete.",
 				);
 			}
 
