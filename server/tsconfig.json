@@ -1,14 +1,14 @@
 {
 	"extends": "../tsconfig.base.json",
-  "compilerOptions": {
-	"composite": true,
-    "outDir": "./dist",
-    "rootDir": ".",
-	    "paths": {
-      "@types/*": ["../shared/src/types/*"]
-    }
-  },
-  "include": ["**/*.ts", "server.js"],
-  "exclude": ["node_modules", "dist"],
-   "references": [{ "path": "../shared" }]
+	"compilerOptions": {
+		"composite": true,
+		"outDir": "./dist",
+		"rootDir": ".",
+		"paths": {
+			"@types/*": ["../shared/src/types/*"]
+		}
+	},
+	"include": ["**/*.ts", "server.js"],
+	"exclude": ["node_modules", "dist"],
+	"references": [{ "path": "../shared" }]
 }

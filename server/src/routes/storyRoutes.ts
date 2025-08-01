@@ -22,8 +22,6 @@ router
 	.patch(storyController.restoreAllStories)
 	.delete(storyController.cleanupAllDeletedStories);
 
-router
-	.route("/trash/:id")
-	.patch(storyController.restoreStory);
+router.route("/trash/:id").patch(storyController.restoreStory);
 
 export { router as storyRouter };
