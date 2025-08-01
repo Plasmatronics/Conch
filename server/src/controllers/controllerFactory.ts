@@ -141,8 +141,8 @@ const softDeleteOne =
 			});
 
 			if (!doc) {
-				return res.status(200).json({
-					status: "success",
+				return res.status(404).json({
+					status: "error",
 					message: "No document found to delete.",
 				});
 			}
@@ -176,8 +176,8 @@ const cleanupDeleted =
 				});
 
 				if (docs.length === 0) {
-					return res.status(200).json({
-						status: "success",
+					return res.status(404).json({
+						status: "error",
 						message: "No documents found to delete.",
 					});
 				}
@@ -197,8 +197,8 @@ const cleanupDeleted =
 					deletedAt: { $lt: oneDayAgo },
 				});
 				if (deletedDocs.deletedCount === 0) {
-					return res.status(200).json({
-						status: "success",
+					return res.status(404).json({
+						status: "error",
 						message: "No documents found to delete.",
 					});
 				}

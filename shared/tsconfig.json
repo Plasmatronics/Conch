@@ -3,12 +3,13 @@
 	 
   "compilerOptions": {
     "composite": true,
-    "rootDir": "src",
+    "rootDir": ".",
     "outDir": "dist",
-    "baseUrl": "src",                     // for cleaner imports if you want
+    "baseUrl": "src",
     "declaration": true,
     "declarationMap": true,
     "emitDeclarationOnly": true
   },
-  "include": ["src"]
+  "include": ["src"],
+   "references": [{ "path": "../server" }]
 }
