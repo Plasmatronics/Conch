@@ -104,7 +104,10 @@ const deleteOne =
 			const doc = await Model.findByIdAndDelete(id);
 
 			if (!doc) {
-				throw new AppError(404, "Could not delete this document");
+				return res.status(404).json({
+					status: "error",
+					message: "No document found to delete.",
+				});
 			}
 
 			res.status(204).send();
@@ -128,8 +131,8 @@ const softDeleteOne =
 
 			if (Model.modelName === "Like") {
 				throw new AppError(
-					500,
-					"Likes have no soft deletion process. Hard delete another resource",
+					400,
+					"Likes have no soft deletion process. Hard delete this resource if you wish to delete this resource.",
 				);
 			}
 
@@ -138,7 +141,10 @@ const softDeleteOne =
 			});
 
 			if (!doc) {
-				throw new AppError(404, "Could not delete this document");
+				return res.status(200).json({
+					status: "success",
+					message: "No document found to delete.",
+				});
 			}
 
 			res.status(204).send();
@@ -156,7 +162,10 @@ const cleanupDeleted =
 		try {
 			//Soft delete everything besides Likes
 			if (Model.modelName === "Like") {
-				throw new AppError(400, "Likes have no soft deletion process.");
+				throw new AppError(
+					400,
+					"Likes have no soft deletion process. Hard delete this resource if you wish to delete this resource.",
+				);
 			}
 
 			const oneDay = 1000 * 60 * 60 * 24;
@@ -167,12 +176,13 @@ const cleanupDeleted =
 				});
 
 				if (docs.length === 0) {
-					return res.status(204).send();
+					return res.status(200).json({
+						status: "success",
+						message: "No documents found to delete.",
+					});
 				}
 
-				const docFileKeys = docs
-					.map((doc) => doc.fileKey)
-					.filter(Boolean);
+				const docFileKeys = docs.map((doc) => doc.fileKey).filter(Boolean);
 
 				const deleteFromS3Promise =
 					S3Service.getS3Client().deleteManyFilesFromBucket(docFileKeys);
@@ -187,7 +197,10 @@ const cleanupDeleted =
 					deletedAt: { $lt: oneDayAgo },
 				});
 				if (deletedDocs.deletedCount === 0) {
-					return res.status(200).json({ status: "success", message: "No documents found to delete." });
+					return res.status(200).json({
+						status: "success",
+						message: "No documents found to delete.",
+					});
 				}
 			}
 
@@ -217,9 +230,9 @@ const restoreSoftDeleted =
 			);
 
 			if (docs.modifiedCount === 0) {
-				return res.status(200).json({
-					status: "success",
-					message: "No documents were found to restore.",
+				return res.status(404).json({
+					status: "error",
+					message: "No documents were restored.",
 				});
 			}
 
@@ -252,10 +265,17 @@ const restoreOneSoftDeleted =
 				throw new AppError(400, "Invalid ID format");
 			}
 
-			const doc = await Model.findByIdAndUpdate(id, { $unset: { deletedAt: 1 } }, { new: true });
+			const doc = await Model.findByIdAndUpdate(
+				id,
+				{ $unset: { deletedAt: 1 } },
+				{ new: true },
+			);
 
 			if (!doc) {
-				throw new AppError(404, "Could not restore specified document.");
+				return res.status(404).json({
+					status: "error",
+					message: "Document not found to restore.",
+				});
 			}
 
 			res.status(200).json({
