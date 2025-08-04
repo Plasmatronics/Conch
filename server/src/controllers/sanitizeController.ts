@@ -5,7 +5,7 @@ const sanitizeInput = (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const methodsWithBody = ["POST", "PATCH", "DELETE", "PUT"];
 
-		//If there's no body, skip performantly skip sanitization
+		//If there's no body, performantly skip sanitization
 		if (methodsWithBody.includes(req.method)) {
 			req.body = sanitize(req.body);
 
