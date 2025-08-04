@@ -10,22 +10,65 @@ import {
 	fileRouter,
 } from "./src/routes";
 import { AppError } from "./src/utils";
-import { globalErrorHandler } from "./src/controllers";
+import { globalErrorHandler, sanitizeController } from "./src/controllers";
 import { fileURLToPath } from "url";
 import rateLimit from "express-rate-limit";
 import path from "path";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
-import xss from "xss-clean";
-import mongoSanitize from "express-mongo-sanitize";
 import hpp from "hpp";
 import cors from "cors";
 import compression from "compression";
 
 const app = express();
 
+//Add CSPs
+let origin;
+if (process.env.NODE_ENV === "production") {
+	origin = process.env.HOST + ":" + process.env.PORT;
+} else {
+	origin = process.env.CLIENT_URL;
+}
+
+const allowedOrigins: string[] = [
+	"'self'",
+	origin!,
+	`https://${process.env.S3_BUCKET_NAME}.s3.us-east-1.amazonaws.com`,
+].filter(Boolean);
+
+const connectSrcs: string[] = [
+	"'self'",
+	`https://${process.env.S3_BUCKET_NAME}.s3.us-east-1.amazonaws.com`,
+].filter(Boolean);
+
+const imgSrcs: string[] = [
+	"'self'",
+	`https://${process.env.S3_BUCKET_NAME}.s3.us-east-1.amazonaws.com`,
+].filter(Boolean);
+
+const frameSrcs: string[] = [
+	"'self'",
+	origin!,
+	`https://${process.env.S3_BUCKET_NAME}.s3.us-east-1.amazonaws.com`,
+].filter(Boolean);
+
+const scriptSrcs: string[] = ["'self'", origin!];
+
+app.use(helmet());
+const directives = helmet.contentSecurityPolicy.getDefaultDirectives();
+directives["default-src"] = allowedOrigins;
+directives["connect-src"] = connectSrcs;
+directives["img-src"] = imgSrcs;
+directives["frame-src"] = frameSrcs;
+directives["script-src"] = scriptSrcs;
+app.use(
+	helmet.contentSecurityPolicy({
+		directives,
+	}),
+);
+
 //Only allow CORS for our client
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+app.use(cors({ origin, credentials: true }));
 
 //Compresses text
 app.use(compression());
@@ -37,9 +80,6 @@ const limiter = rateLimit({
 	message: "Too many requests from this IP, please try again in an hour!",
 });
 app.use("/api", limiter);
-
-//Adds security headers
-app.use(helmet());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -56,16 +96,15 @@ app.use(
 	}),
 );
 
-//Prevents injection attacks and XSS attacks
-app.use(mongoSanitize());
-app.use(xss());
-
 //Parameter pollution
 app.use(hpp());
 
 //Parsing cookies and serving static images
 app.use(cookieParser());
 app.use(express.static(`${__dirname}/public`));
+
+//Sanitize input for routes
+app.use(sanitizeController.sanitizeInput);
 
 //initializing routes
 app.use("/api/v1/users", userRouter);
