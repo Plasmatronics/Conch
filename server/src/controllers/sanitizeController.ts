@@ -7,7 +7,6 @@ const sanitizeInput = (req: Request, res: Response, next: NextFunction) => {
 
 		//If there's no body, skip performantly skip sanitization
 		if (methodsWithBody.includes(req.method)) {
-			console.log("SANITIZATION:", req.body, sanitize(req.body));
 			req.body = sanitize(req.body);
 
 			if (req.body === null) {
