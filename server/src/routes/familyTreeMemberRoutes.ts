@@ -5,6 +5,24 @@ import { authController } from "../controllers";
 const router = express.Router();
 
 router
+	.route("/trash")
+	.patch(
+		authController.protect,
+		familyTreeMemberController.restoreAllFamilyTreeMembers,
+	)
+	.delete(
+		authController.protect,
+		familyTreeMemberController.cleanupAllDeletedFamilyTreeMembers,
+	);
+
+router
+	.route("/trash/:id")
+	.patch(
+		authController.protect,
+		familyTreeMemberController.restoreFamilyTreeMember,
+	);
+
+router
 	.route("/:id")
 	.get(familyTreeMemberController.getFamilyTreeMember)
 	.patch(
@@ -16,20 +34,12 @@ router
 		familyTreeMemberController.softDeleteFamilyTreeMember,
 	);
 
-router.use(authController.protect);
-
-router
-	.route("/trash")
-	.patch(familyTreeMemberController.restoreAllFamilyTreeMembers)
-	.delete(familyTreeMemberController.cleanupAllDeletedFamilyTreeMembers);
-
-router
-	.route("/trash/:id")
-	.patch(familyTreeMemberController.restoreFamilyTreeMember);
-
 router
 	.route("/")
 	.get(familyTreeMemberController.getAllFamilyTreeMembers)
-	.post(familyTreeMemberController.createFamilyTreeMember);
+	.post(
+		authController.protect,
+		familyTreeMemberController.createFamilyTreeMember,
+	);
 
 export { router as familyTreeMemberRouter };
