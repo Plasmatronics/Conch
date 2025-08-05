@@ -15,9 +15,7 @@ const signToken = async (id: mongoose.Types.ObjectId) => {
 			},
 			(err, token) => {
 				if (err || !token) {
-					return reject(
-						new AppError(500, "Could not sign token. Please retry action!"),
-					);
+					return reject(new AppError(500, "Could not sign token"));
 				}
 				resolve(token);
 			},
@@ -30,14 +28,10 @@ const decodeJWT = async (jwtString: string) => {
 		jwt.verify(jwtString, process.env.JWT_SECRET || "", (err, decoded) => {
 			if (err) {
 				if (err.name === "TokenExpiredError") {
-					return reject(
-						new AppError(401, "Token expired. Please login again!"),
-					);
+					return reject(new AppError(401, "Token expired."));
 				}
 				if (err.name === "JsonWebTokenError") {
-					return reject(
-						new AppError(400, "Invalid token. Please login again!"),
-					);
+					return reject(new AppError(400, "Invalid token."));
 				}
 				return reject(new AppError(500, "Token verification failed."));
 			}
@@ -125,7 +119,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 const protect = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		if (!req.cookies.jwt)
-			throw new AppError(400, "Not authorized. Please login.");
+			throw new AppError(401, "Not authorized. Please login.");
 
 		const decodedPayload = await decodeJWT(String(req.cookies.jwt));
 		const decodedId: string = (decodedPayload as { id: string }).id;
@@ -203,10 +197,7 @@ const resetPassword = async (
 		});
 
 		if (!user)
-			throw new AppError(
-				400,
-				"Could not reset password, please request another email.",
-			);
+			throw new AppError(400, "Could not reset password for targeted account.");
 
 		user.password = password;
 		user._passwordConfirm = passwordConfirm;

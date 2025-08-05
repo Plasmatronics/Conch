@@ -5,13 +5,13 @@ const sanitizeInput = (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const methodsWithBody = ["POST", "PATCH", "DELETE", "PUT"];
 
-		//If there's no body, performantly skip sanitization
+		//If there's no body, performantly skip body sanitization
 		if (methodsWithBody.includes(req.method)) {
 			req.body = sanitize(req.body);
 
 			if (req.body === null) {
 				throw new AppError(
-					500,
+					400,
 					"Couldn't properly sanitize request. Please try again.",
 				);
 			}
@@ -27,6 +27,7 @@ const sanitizeInput = (req: Request, res: Response, next: NextFunction) => {
 			);
 		}
 
+		// In express@5, req.params and req.query are getters only — can't reassign, but can mutate them
 		Object.assign(req.params, sanitizedParams);
 		Object.assign(req.query, sanitizedQuery);
 		next();

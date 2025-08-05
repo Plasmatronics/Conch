@@ -76,7 +76,7 @@ const updateOne =
 			});
 
 			if (!doc) {
-				throw new AppError(404, "Could not update this document");
+				throw new AppError(404, "Could not find document to update");
 			}
 
 			res.status(200).json({
