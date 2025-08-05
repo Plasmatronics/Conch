@@ -8,8 +8,10 @@ interface QueryString {
 	fields?: string;
 	[key: string]: unknown;
 }
-
-/** Exposes paginate, sort, filter, limitFields, and limitQuantity methods on the accepted query using the accepted queryString. */
+/**
+ * QueryBuilder supports chaining exposed methods, including pagination, sorting, filtering,
+ * field-limiting, and quantity-limiting.
+ */
 export class QueryBuilder<T extends Document> {
 	public query: Query<T[], T>;
 	public queryString: QueryString;

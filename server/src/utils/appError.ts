@@ -1,3 +1,8 @@
+/**
+ * AppError is a custom error class used for operational errors.
+ * This would include not finding a resource, or an internal server error.
+ */
+
 export class AppError extends Error {
 	public statusCode: number;
 	public status: "fail" | "error";

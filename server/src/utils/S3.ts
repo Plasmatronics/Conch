@@ -18,6 +18,12 @@ import {
 	UploadRequest,
 	DownloadRequest,
 } from "../../../shared/src/types/file.types";
+
+/**
+ * S3Service is a singleton that provides methods for uploading, downloading, listing,
+ * and deleting files in an S3 bucket, as well as generating secure urls for necessary operations.
+ */
+
 export class S3Service extends S3Client {
 	private static instance: S3Service;
 
@@ -84,9 +90,7 @@ export class S3Service extends S3Client {
 
 			throw new AppError(
 				500,
-				err instanceof Error
-					? err.message
-					: "Could not generate secure url. Please try again.",
+				err instanceof Error ? err.message : "Could not generate secure url.",
 			);
 		}
 	}
@@ -111,9 +115,7 @@ export class S3Service extends S3Client {
 
 			throw new AppError(
 				500,
-				err instanceof Error
-					? err.message
-					: "Could not generate secure url. Please try again.",
+				err instanceof Error ? err.message : "Could not generate secure url.",
 			);
 		}
 	}
@@ -159,7 +161,7 @@ or the multipart upload API (5TB max).`;
 		} catch (err) {
 			let errMessage;
 			if (err instanceof Error && err.name === "AbortError") {
-				errMessage = `Multipart upload was aborted. ${err.message}`;
+				errMessage = `File upload was aborted. ${err.message}`;
 			} else {
 				errMessage = `Could not upload ${fileName} to ${process.env.S3_BUCKET_NAME} bucket.`;
 			}
@@ -193,7 +195,7 @@ or the multipart upload API (5TB max).`;
 						500,
 						err instanceof Error
 							? err.message
-							: `Couldn't download ${fileName} from ${process.env.S3_BUCKET_NAME} bucket`,
+							: `Could not download ${fileName} from ${process.env.S3_BUCKET_NAME} bucket`,
 					);
 				},
 			);
@@ -208,7 +210,7 @@ or the multipart upload API (5TB max).`;
 			if (!startingContentRange) {
 				throw new AppError(
 					500,
-					`Couldn't retrieve ${fileName} from ${process.env.S3_BUCKET_NAME} bucket for download`,
+					`Could not retrieve ${fileName} from ${process.env.S3_BUCKET_NAME} bucket for download`,
 				);
 			}
 			const { totalLength } = this.getByteInfo(startingContentRange);
@@ -220,7 +222,7 @@ or the multipart upload API (5TB max).`;
 				if (!curContentRange || !Body) {
 					throw new AppError(
 						500,
-						`Couldn't download ${fileName} from ${process.env.S3_BUCKET_NAME} bucket`,
+						`Could not download ${fileName} from ${process.env.S3_BUCKET_NAME} bucket`,
 					);
 				}
 
@@ -240,7 +242,7 @@ or the multipart upload API (5TB max).`;
 
 			let errMessage;
 			if (err instanceof Error && err.name === "AbortError") {
-				errMessage = `Multipart download was aborted. ${err.message}`;
+				errMessage = `File download was aborted. ${err.message}`;
 			} else {
 				errMessage = `Could not download ${fileName} from ${process.env.S3_BUCKET_NAME} bucket.`;
 			}
@@ -318,7 +320,7 @@ or the multipart upload API (5TB max).`;
 
 		if (failedDeletions.length > 0)
 			failedDeletions.forEach((failure, i) => {
-				console.error(`Failed Deletion ${i}: ${failure.reason}\n`);
+				console.error(`File #${i} Failed Deletion: ${failure.reason}\n`);
 			});
 
 		return {

@@ -2,6 +2,11 @@ import nodemailer, { Transporter } from "nodemailer";
 import { IUser } from "../models";
 import { AppError } from "./AppError";
 
+/**
+ * EmailService is a singleton that provides methods for sending emails to users,
+ * such as greetings and password reset instructions using Nodemailer.
+ */
+
 class EmailService {
 	private transporter: Transporter;
 	private static instance: EmailService;
