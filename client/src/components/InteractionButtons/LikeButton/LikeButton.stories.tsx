@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from "@storybook/react-vite";
 import { LikeButton } from "./LikeButton";
 import { LikeButtonProps } from "./LikeButton.types";
 import { useState } from "react";
-import { Box } from "@chakra-ui/react";
 
 export default {
 	title: "InteractionButtons/LikeButton",

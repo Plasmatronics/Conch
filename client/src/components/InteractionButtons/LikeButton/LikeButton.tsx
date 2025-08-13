@@ -1,4 +1,4 @@
-import { IconButton, IconButtonProps } from "@chakra-ui/react";
+import { Box, IconButton, IconButtonProps } from "@chakra-ui/react";
 import { LikeButtonProps } from "./LikeButton.types";
 import { FaHeart } from "react-icons/fa";
 import { motion } from "framer-motion";
@@ -25,7 +25,7 @@ export const LikeButton = ({
 	ref,
 	onClick,
 	onToggle,
-	...customLikeButtonStyles
+	...likeButtonProps
 }: LikeButtonProps) => {
 	const MotionFaHeart = motion(FaHeart);
 
@@ -44,15 +44,22 @@ export const LikeButton = ({
 		<IconButton
 			aria-label={isLiked ? "Unlike Button" : "Like Button"}
 			aria-pressed={isLiked}
-			onClick={handleClick}
+			className="group"
 			{...(isLiked ? LIKED_STYLES : UNLIKED_STYLES)}
-			{...customLikeButtonStyles}
+			{...likeButtonProps}
+			onClick={handleClick}
 			ref={ref}
 		>
-			<MotionFaHeart
-				animate={isLiked ? { scale: [1, 1.3, 1] } : { scale: 1 }}
-				transition={{ duration: 0.3 }}
-			/>
+			<Box
+				transition="transform 0.15s ease"
+				_groupHover={{ transform: "translateY(-3px)" }}
+				_groupActive={{ transform: "translateY(1px) scale(0.95)" }}
+			>
+				<MotionFaHeart
+					animate={isLiked ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+					transition={{ duration: 0.5 }}
+				/>
+			</Box>
 		</IconButton>
 	);
 };
