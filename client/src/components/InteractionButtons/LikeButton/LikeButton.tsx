@@ -1,7 +1,8 @@
-import { Box, IconButton, IconButtonProps } from "@chakra-ui/react";
+import { IconButton, IconButtonProps } from "@chakra-ui/react";
 import { LikeButtonProps } from "./LikeButton.types";
 import { FaHeart } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { MagneticClickWrapper } from "../../AnimationWrapper";
 
 const LIKED_STYLES: IconButtonProps = {
 	bg: "red.200",
@@ -25,7 +26,7 @@ export const LikeButton = ({
 	ref,
 	onClick,
 	onToggle,
-	...likeButtonProps
+	...iconButtonProps
 }: LikeButtonProps) => {
 	const MotionFaHeart = motion(FaHeart);
 
@@ -46,20 +47,16 @@ export const LikeButton = ({
 			aria-pressed={isLiked}
 			className="group"
 			{...(isLiked ? LIKED_STYLES : UNLIKED_STYLES)}
-			{...likeButtonProps}
+			{...iconButtonProps}
 			onClick={handleClick}
 			ref={ref}
 		>
-			<Box
-				transition="transform 0.15s ease"
-				_groupHover={{ transform: "translateY(-3px)" }}
-				_groupActive={{ transform: "translateY(1px) scale(0.95)" }}
-			>
+			<MagneticClickWrapper>
 				<MotionFaHeart
 					animate={isLiked ? { scale: [1, 1.3, 1] } : { scale: 1 }}
 					transition={{ duration: 0.5 }}
 				/>
-			</Box>
+			</MagneticClickWrapper>
 		</IconButton>
 	);
 };

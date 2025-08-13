@@ -1,2 +1,2 @@
 export { CommentButton } from "./CommentButton";
-export { CommentButtonProps } from "./CommentButton.types";
+export type { CommentButtonProps } from "./CommentButton.types";
