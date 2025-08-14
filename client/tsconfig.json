@@ -3,16 +3,8 @@
 	"compilerOptions": {
 		"composite": true,
 		"jsx": "react-jsx",
-		"baseUrl": ".",
-		"paths": {
-			"src/*": ["src/*"],
-			"@conch/shared": ["../shared/src"],
-			"@conch/design-system": ["../packages/design-system/src/theme.ts"]
-		}
+		"baseUrl": "./src"
 	},
 	"include": ["src"],
-	"references": [
-		{ "path": "../shared" },
-		{ "path": "../packages/design-system" }
-	]
+	"references": [{ "path": "../shared" }]
 }

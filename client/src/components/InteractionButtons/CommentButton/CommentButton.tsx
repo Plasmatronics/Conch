@@ -10,9 +10,9 @@ export const CommentButton = ({
 	return (
 		<IconButton
 			aria-label="Comment"
-			className="group"
 			bg="gray.200"
 			color="blue.900"
+			className="group"
 			_hover={{
 				bg: "gray.100",
 			}}

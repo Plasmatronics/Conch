@@ -1,10 +1,9 @@
 import type { StoryFn } from "@storybook/react-vite";
-import { Box, ChakraProvider } from "@chakra-ui/react";
-import { system } from "@conch/design-system";
+import { Box, ChakraProvider, defaultSystem } from "@chakra-ui/react";
 
 const withChakra = (Story: StoryFn) => {
 	return (
-		<ChakraProvider value={system}>
+		<ChakraProvider value={defaultSystem}>
 			<Box p="2rem" mx="auto" height="100%" width="100%">
 				<Story />
 			</Box>

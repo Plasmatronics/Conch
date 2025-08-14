@@ -3,11 +3,13 @@
 	"references": [
 		{ "path": "./shared" },
 		{ "path": "./server" },
-		{ "path": "./client" },
-		{ "path": "./packages/design-system" }
+		{ "path": "./client" }
 	],
 	"compilerOptions": {
 		"baseUrl": ".",
+		"paths": {
+			"@types/*": ["shared/src/types/*"]
+		},
 		"strict": true,
 		"target": "ESNext",
 		"module": "ESNext",
