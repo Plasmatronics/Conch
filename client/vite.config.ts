@@ -10,10 +10,21 @@ const dirname =
 	typeof __dirname !== "undefined"
 		? __dirname
 		: path.dirname(fileURLToPath(import.meta.url));
+const r = (p: string) => path.resolve(dirname, p);
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
 	plugins: [react()],
+	resolve: {
+		alias: {
+			// (optional) keep your local absolute imports
+			src: r("./src"),
+
+			// point to package *sources*
+			"@conch/design-system": r("../design-system/src"),
+			"@conch/shared": r("../shared/src"),
+		},
+	},
 	test: {
 		projects: [
 			{
