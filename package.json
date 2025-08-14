@@ -1,5 +1,5 @@
 {
-	"name": "family-tree-app",
+	"name": "conch",
 	"author": "Nicholas Bruno",
 	"version": "1.0.0",
 	"private": true,
@@ -7,7 +7,6 @@
 	"workspaces": [
 		"client",
 		"server",
-		"shared",
 		"packages/*"
 	],
 	"scripts": {
@@ -19,7 +18,7 @@
 		"lint:fix": "eslint . --fix",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
-		"install:all": "npm install && cd client && npm install && cd ../server && npm install"
+		"install:all": "npm install && cd client && npm install && cd ../server && npm install && cd ../packages/design-system && npm install && cd ../shared && npm install"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.31.0",

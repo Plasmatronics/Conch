@@ -11,5 +11,5 @@
 	},
 	"include": ["**/*.ts", "server.js"],
 	"exclude": ["node_modules", "dist"],
-	"references": [{ "path": "../shared" }]
+	"references": [{ "path": "../packages/shared" }]
 }

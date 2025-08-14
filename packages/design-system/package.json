@@ -1,7 +1,6 @@
 {
 	"name": "@conch/design-system",
-	"version": "0.1.0",
-	"private": true,
+	"version": "1.0.0",
 	"main": "src/index.ts",
 	"types": "src/index.ts",
 	"peerDependencies": {
@@ -10,13 +9,13 @@
 		"@chakra-ui/react": "^3.24.2"
 	},
 	"devDependencies": {
-		"react": "workspace:^",
-		"react-dom": "workspace:^",
-		"@chakra-ui/react": "workspace:^",
-		"@emotion/react": "workspace:^",
-		"@emotion/styled": "workspace:^",
-		"framer-motion": "workspace:^",
-		"typescript": "workspace:^",
-		"eslint": "workspace:^"
+		"react": "^19.1.1",
+		"react-dom": "^19.1.1",
+		"@chakra-ui/react": "^3.24.2",
+		"@emotion/react": "^11.11.1",
+		"@emotion/styled": "^11.11.0",
+		"framer-motion": "^12.23.12",
+		"typescript": "~5.8.3",
+		"eslint": "^9.31.0"
 	}
 }

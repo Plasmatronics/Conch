@@ -5,7 +5,7 @@ import {
 	FamilyTreeMemberDoc,
 	StoryDoc,
 	DocumentDoc,
-} from "../../../server/src/models";
+} from "../../../../server/src/models";
 
 export type AnyModelDoc =
 	| UserDoc

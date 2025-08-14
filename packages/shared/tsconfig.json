@@ -1,5 +1,5 @@
 {
-	"extends": "../tsconfig.base.json",
+	"extends": "../../tsconfig.base.json",
 
 	"compilerOptions": {
 		"composite": true,
@@ -10,6 +10,5 @@
 		"declarationMap": true,
 		"emitDeclarationOnly": true
 	},
-	"include": ["src"],
-	"references": [{ "path": "../server" }]
+	"include": ["src"]
 }

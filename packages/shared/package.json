@@ -1,7 +1,6 @@
 {
-	"name": "shared",
+	"name": "@conch/shared",
 	"version": "1.0.0",
-	"private": true,
 	"type": "module",
 	"sideEffects": false,
 	"main": "index.js",
@@ -12,8 +11,8 @@
 	"license": "ISC",
 	"description": "",
 	"devDependencies": {
-		"typescript": "workspace:^",
-		"eslint": "workspace:^",
-		"prettier": "workspace:^"
+		"eslint": "^9.31.0",
+		"prettier": "^3.6.2",
+		"typescript": "~5.8.3"
 	}
 }
