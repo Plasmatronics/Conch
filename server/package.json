@@ -2,6 +2,7 @@
 	"name": "server",
 	"version": "1.0.0",
 	"main": "index.ts",
+	"private": true,
 	"type": "module",
 	"scripts": {
 		"start": "tsx server.ts",
@@ -31,9 +32,6 @@
 		"sanitize-html": "^2.17.0",
 		"validator": "^13.15.15"
 	},
-	"author": "Nicholas Bruno",
-	"license": "ISC",
-	"description": "",
 	"devDependencies": {
 		"@types/bcrypt": "^6.0.0",
 		"@types/compression": "^1.8.1",
@@ -43,11 +41,17 @@
 		"@types/hpp": "^0.2.6",
 		"@types/jsonwebtoken": "^9.0.10",
 		"@types/morgan": "^1.9.10",
-		"@types/node": "^24.0.14",
+		"@types/node": "workspace:^",
 		"@types/nodemailer": "^6.4.17",
 		"@types/sanitize-html": "^2.16.0",
 		"@types/validator": "^13.15.2",
 		"morgan": "^1.10.1",
-		"tsx": "^4.20.3"
-	}
+		"tsx": "workspace:^",
+		"typescript": "workspace:^",
+		"eslint": "workspace:^",
+		"prettier": "workspace:^"
+	},
+	"author": "Nicholas Bruno",
+	"license": "ISC",
+	"description": ""
 }

@@ -2,7 +2,14 @@
 	"name": "family-tree-app",
 	"author": "Nicholas Bruno",
 	"version": "1.0.0",
+	"private": true,
 	"type": "module",
+	"workspaces": [
+		"client",
+		"server",
+		"shared",
+		"packages/*"
+	],
 	"scripts": {
 		"dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
 		"dev:server": "cd server && npm run dev",
@@ -22,6 +29,22 @@
 		"globals": "^16.3.0",
 		"prettier": "^3.6.2",
 		"typescript": "~5.8.3",
-		"typescript-eslint": "^8.37.0"
+		"typescript-eslint": "^8.37.0",
+		"@types/node": "^20.0.0",
+		"react": "^19.1.1",
+		"react-dom": "^19.1.1",
+		"@chakra-ui/react": "^3.24.2",
+		"@emotion/react": "^11.11.1",
+		"@emotion/styled": "^11.11.0",
+		"framer-motion": "^12.23.12",
+		"tsx": "^4.20.3",
+		"vitest": "^3.2.4"
+	},
+	"pnpm": {
+		"overrides": {
+			"react": "^19.1.1",
+			"react-dom": "^19.1.1",
+			"@chakra-ui/react": "^3.24.2"
+		}
 	}
 }

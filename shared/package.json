@@ -1,11 +1,19 @@
 {
 	"name": "shared",
 	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"sideEffects": false,
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "Nicholas Bruno",
 	"license": "ISC",
-	"description": ""
+	"description": "",
+	"devDependencies": {
+		"typescript": "workspace:^",
+		"eslint": "workspace:^",
+		"prettier": "workspace:^"
+	}
 }
