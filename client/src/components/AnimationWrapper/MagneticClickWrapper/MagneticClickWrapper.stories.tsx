@@ -2,7 +2,7 @@ import type { Meta, StoryFn } from "@storybook/react-vite";
 
 import { MagneticClickWrapper } from "./MagneticClickWrapper";
 import { MagneticClickWrapperProps } from "./MagneticClickWrapper.types";
-import { FaComment, FaHeart } from "react-icons/fa";
+import { FaComment, FaHeart, FaShare } from "react-icons/fa";
 import { IconButton } from "@chakra-ui/react";
 
 export default {
@@ -26,4 +26,9 @@ LikeButton.args = {
 export const CommentButton = Template.bind({});
 CommentButton.args = {
 	children: <FaComment />,
+};
+
+export const ShareButton = Template.bind({});
+ShareButton.args = {
+	children: <FaShare />,
 };
