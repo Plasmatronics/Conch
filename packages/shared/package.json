@@ -1,0 +1,19 @@
+{
+	"name": "@conch/shared",
+	"version": "1.0.0",
+	"type": "module",
+	"private": true,
+	"sideEffects": false,
+	"main": "src/index.ts",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "Nicholas Bruno",
+	"license": "ISC",
+	"description": "Package with shared types for /client and /server",
+	"devDependencies": {
+		"eslint": "^9.31.0",
+		"prettier": "^3.6.2",
+		"typescript": "~5.8.3"
+	}
+}

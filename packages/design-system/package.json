@@ -1,0 +1,22 @@
+{
+	"name": "@conch/design-system",
+	"description": "custom conch chakra theming package for /client",
+	"version": "1.0.0",
+	"private": true,
+	"main": "src/theme.ts",
+	"peerDependencies": {
+		"react": "^19.1.1",
+		"react-dom": "^19.1.1",
+		"@chakra-ui/react": "^3.24.2"
+	},
+	"devDependencies": {
+		"react": "^19.1.1",
+		"react-dom": "^19.1.1",
+		"@chakra-ui/react": "^3.24.2",
+		"@emotion/react": "^11.11.1",
+		"@emotion/styled": "^11.11.0",
+		"framer-motion": "^12.23.12",
+		"typescript": "~5.8.3",
+		"eslint": "^9.31.0"
+	}
+}

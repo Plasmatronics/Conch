@@ -1,1 +1,0 @@
-export { FeedPost } from "./FeedPost";

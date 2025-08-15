@@ -14,10 +14,7 @@ import { createReadStream, createWriteStream } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { v4 as uuidv4 } from "uuid";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import {
-	UploadRequest,
-	DownloadRequest,
-} from "../../../shared/src/types/file.types";
+import { UploadRequest, DownloadRequest } from "@conch/shared";
 
 /**
  * S3Service is a singleton that provides methods for uploading, downloading, listing,
