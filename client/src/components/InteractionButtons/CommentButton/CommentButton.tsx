@@ -1,6 +1,6 @@
 import { IconButton } from "@chakra-ui/react";
 import { CommentButtonProps } from "./CommentButton.types";
-import { FaComment } from "react-icons/fa";
+import { TbMessageCircle } from "react-icons/tb";
 import { MagneticClickWrapper } from "../../AnimationWrapper";
 
 export const CommentButton = ({
@@ -16,7 +16,7 @@ export const CommentButton = ({
 			ref={ref}
 		>
 			<MagneticClickWrapper asChild>
-				<FaComment />
+				<TbMessageCircle />
 			</MagneticClickWrapper>
 		</IconButton>
 	);

@@ -4,6 +4,10 @@
 		"composite": true,
 		"jsx": "react-jsx",
 		"baseUrl": "./src",
+		"moduleResolution": "Bundler",
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"skipLibCheck": true,
 		"paths": {
 			"@conch/design-system": ["../packages/design-system/src"],
 			"@conch/shared": ["../packages/shared/src"]

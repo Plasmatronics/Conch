@@ -1,15 +1,13 @@
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
 import { LikeButtonProps } from "./LikeButton.types";
-import { FaHeart } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { MagneticClickWrapper } from "../../AnimationWrapper";
+import { TbHeart, TbHeartFilled } from "react-icons/tb";
 
 const LIKED_STYLES: IconButtonProps = {
-	bg: "red.200",
-	color: "red.400",
-	_hover: {
-		bg: "red.100",
-	},
+	bg: "red.100",
+	color: "red.500",
+	_hover: { bg: "red.50" },
 };
 
 const UNLIKED_STYLES: IconButtonProps = {
@@ -24,7 +22,8 @@ export const LikeButton = ({
 	onToggle,
 	...iconButtonProps
 }: LikeButtonProps) => {
-	const MotionFaHeart = motion(FaHeart);
+	const HeartIcon = isLiked ? TbHeartFilled : TbHeart;
+	const MotionHeart = motion(HeartIcon);
 
 	function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
 		onClick?.(e);
@@ -48,9 +47,12 @@ export const LikeButton = ({
 			ref={ref}
 		>
 			<MagneticClickWrapper>
-				<MotionFaHeart
-					animate={isLiked ? { scale: [1, 1.3, 1] } : { scale: 1 }}
-					transition={{ duration: 0.5 }}
+				<MotionHeart
+					// slight “beat” on like; no animation on unlike
+					animate={isLiked ? { scale: [1, 1.22, 1] } : { scale: 1 }}
+					transition={{ duration: 0.35, ease: "easeOut" }}
+					// let the icon inherit the button color
+					style={{ width: "1.1em", height: "1.1em" }}
 				/>
 			</MagneticClickWrapper>
 		</IconButton>

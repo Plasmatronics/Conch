@@ -1,7 +1,7 @@
 import { IconButton } from "@chakra-ui/react";
 import { ShareButtonProps } from "./ShareButton.types";
-import { FaShare } from "react-icons/fa";
 import { MagneticClickWrapper } from "../../AnimationWrapper";
+import { TbShare3 } from "react-icons/tb";
 
 export const ShareButton = ({ ref, ...iconButtonProps }: ShareButtonProps) => {
 	return (
@@ -13,7 +13,7 @@ export const ShareButton = ({ ref, ...iconButtonProps }: ShareButtonProps) => {
 			ref={ref}
 		>
 			<MagneticClickWrapper asChild>
-				<FaShare />
+				<TbShare3 />
 			</MagneticClickWrapper>
 		</IconButton>
 	);
