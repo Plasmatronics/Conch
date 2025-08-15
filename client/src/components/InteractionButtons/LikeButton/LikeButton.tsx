@@ -38,11 +38,11 @@ export const LikeButton = ({
 
 	return (
 		<IconButton
+			{...(isLiked ? LIKED_STYLES : UNLIKED_STYLES)}
+			{...iconButtonProps}
 			aria-label={isLiked ? "Unlike Button" : "Like Button"}
 			aria-pressed={isLiked}
 			className="group"
-			{...(isLiked ? LIKED_STYLES : UNLIKED_STYLES)}
-			{...iconButtonProps}
 			onClick={handleClick}
 			ref={ref}
 		>

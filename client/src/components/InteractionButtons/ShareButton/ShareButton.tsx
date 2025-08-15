@@ -6,10 +6,10 @@ import { TbShare3 } from "react-icons/tb";
 export const ShareButton = ({ ref, ...iconButtonProps }: ShareButtonProps) => {
 	return (
 		<IconButton
-			aria-label="Comment"
-			className="group"
 			layerStyle="interactionButton"
 			{...iconButtonProps}
+			aria-label="Comment"
+			className="group"
 			ref={ref}
 		>
 			<MagneticClickWrapper asChild>

@@ -6,7 +6,7 @@ import { FaComment, FaHeart, FaShare } from "react-icons/fa";
 import { IconButton } from "@chakra-ui/react";
 
 export default {
-	title: "InteractionButtons/MagneticClickWrapper",
+	title: "AnimationWrapper/MagneticClickWrapper",
 	component: MagneticClickWrapper,
 } satisfies Meta<typeof MagneticClickWrapper>;
 

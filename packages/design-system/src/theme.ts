@@ -1,9 +1,10 @@
 import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react";
-import { layerStyles } from "./theme/patterns";
+import { layerStyles, textStyles } from "./theme/patterns";
 
 const config = defineConfig({
 	theme: {
 		layerStyles,
+		textStyles,
 	},
 });
 

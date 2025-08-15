@@ -16,13 +16,18 @@ export const LikeCommentShare = ({
 	return (
 		<Flex width="100%" gap="0.5rem" {...flexProps}>
 			<LikeButton
+				flex="1"
 				isLiked={isLiked}
 				setIsLiked={setIsLiked}
 				{...uniformIconButtonProps}
 				{...likeButtonProps}
 			/>
-			<ShareButton {...uniformIconButtonProps} {...shareButtonProps} />
-			<CommentButton {...uniformIconButtonProps} {...commentButtonProps} />
+			<CommentButton
+				flex="1"
+				{...uniformIconButtonProps}
+				{...commentButtonProps}
+			/>
+			<ShareButton flex="1" {...uniformIconButtonProps} {...shareButtonProps} />
 		</Flex>
 	);
 };

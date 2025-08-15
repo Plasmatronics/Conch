@@ -9,10 +9,10 @@ export const CommentButton = ({
 }: CommentButtonProps) => {
 	return (
 		<IconButton
-			aria-label="Comment"
-			className="group"
 			layerStyle="interactionButton"
 			{...iconButtonProps}
+			aria-label="Comment"
+			className="group"
 			ref={ref}
 		>
 			<MagneticClickWrapper asChild>
