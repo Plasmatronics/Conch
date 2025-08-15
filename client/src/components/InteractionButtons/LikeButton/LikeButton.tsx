@@ -13,11 +13,7 @@ const LIKED_STYLES: IconButtonProps = {
 };
 
 const UNLIKED_STYLES: IconButtonProps = {
-	bg: "gray.200",
-	color: "blue.900",
-	_hover: {
-		bg: "gray.100",
-	},
+	layerStyle: "interactionButton",
 };
 
 export const LikeButton = ({

@@ -10,12 +10,8 @@ export const CommentButton = ({
 	return (
 		<IconButton
 			aria-label="Comment"
-			bg="gray.200"
-			color="blue.900"
 			className="group"
-			_hover={{
-				bg: "gray.100",
-			}}
+			layerStyle="interactionButton"
 			{...iconButtonProps}
 			ref={ref}
 		>
