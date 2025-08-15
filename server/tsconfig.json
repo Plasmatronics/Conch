@@ -4,10 +4,7 @@
 		"composite": true,
 		"skipLibCheck": true,
 		"outDir": "./dist",
-		"rootDir": ".",
-		"paths": {
-			"@types/*": ["../shared/src/types/*"]
-		}
+		"rootDir": "."
 	},
 	"include": ["**/*.ts", "server.js"],
 	"exclude": ["node_modules", "dist"],
