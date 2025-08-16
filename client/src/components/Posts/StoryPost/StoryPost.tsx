@@ -16,7 +16,7 @@ export const StoryPost = ({
 }: StoryPostProps) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 
-	const truncatedString = content.slice(0, MAX_CHARS_PER_STORY + 1);
+	const truncatedString = content.slice(0, MAX_CHARS_PER_STORY);
 	const truncatedContent = (
 		<Text>
 			{truncatedString}...{" "}
@@ -32,7 +32,7 @@ export const StoryPost = ({
 	const nonTruncatedContent = <Text>{content}</Text>;
 
 	let renderedContent;
-	if (content !== truncatedString) {
+	if (content.length > MAX_CHARS_PER_STORY) {
 		renderedContent = isExpanded ? nonTruncatedContent : truncatedContent;
 	} else {
 		renderedContent = nonTruncatedContent;
