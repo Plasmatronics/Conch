@@ -1,0 +1,65 @@
+import React, { useState } from "react";
+import { BasePost } from "../BasePost";
+import { StoryPostProps } from "./StoryPost.types";
+import { Box, IconButton, Text } from "@chakra-ui/react";
+import { MagneticClickWrapper } from "../../AnimationWrapper";
+import { TbMapPin } from "react-icons/tb";
+
+const MAX_CHARS_BEFORE_TRUNCATION = 1500;
+
+export const StoryPost = ({
+	isLiked,
+	setIsLiked,
+	content,
+	onLocationClick,
+	...basePostProps
+}: StoryPostProps) => {
+	const [isExpanded, setIsExpanded] = useState(false);
+
+	const truncatedString = content.slice(0, MAX_CHARS_BEFORE_TRUNCATION);
+	const truncatedContent = (
+		<Text>
+			{truncatedString}...{" "}
+			<Box
+				as="span"
+				fontWeight="semibold"
+				_hover={{ textDecoration: "underline" }}
+			>
+				See More
+			</Box>
+		</Text>
+	);
+	const nonTruncatedContent = <Text>{content}</Text>;
+
+	let renderedContent;
+	if (content.length > MAX_CHARS_BEFORE_TRUNCATION) {
+		renderedContent = isExpanded ? nonTruncatedContent : truncatedContent;
+	} else {
+		renderedContent = nonTruncatedContent;
+	}
+
+	const handlePostExpansion = () => {
+		setIsExpanded(true);
+	};
+
+	return (
+		<BasePost
+			{...basePostProps}
+			isLiked={isLiked}
+			setIsLiked={setIsLiked}
+			headerRight={
+				<IconButton
+					onClick={onLocationClick}
+					layerStyle="interactionButton"
+					className="group"
+				>
+					<MagneticClickWrapper asChild>
+						<TbMapPin />
+					</MagneticClickWrapper>
+				</IconButton>
+			}
+		>
+			<Box onClick={handlePostExpansion}>{renderedContent}</Box>
+		</BasePost>
+	);
+};
