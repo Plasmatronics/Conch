@@ -6,26 +6,23 @@ import { AspectRatio, Box, IconButton, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { TbLocationQuestion } from "react-icons/tb";
 import { MagneticClickWrapper } from "../../AnimationWrapper";
+import { postDefaults } from "../sharedStoryProps";
 
 export default {
 	title: "Posts/BasePost",
 	component: BasePost,
 } satisfies Meta<typeof BasePost>;
 
-const postDefaults: Partial<BasePostProps> = {
-	avatar: "https://images.unsplash.com/photo-1511806754518-53bada35f930",
-	user: "Nicholas Bruno",
-	relationship: "Brother",
-	title:
-		"Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas adipisci eveniet distinctio minus et culpa ipsum necessitatibus",
-	year: new Date(Date.now()),
-};
-
 const Template: StoryFn<BasePostProps> = (args) => {
 	const [isLiked, setIsLiked] = useState(false);
 	return (
 		<Box mx="5rem">
-			<BasePost {...args} isLiked={isLiked} setIsLiked={setIsLiked} />
+			<BasePost
+				{...postDefaults}
+				{...args}
+				isLiked={isLiked}
+				setIsLiked={setIsLiked}
+			/>
 		</Box>
 	);
 };
@@ -42,7 +39,6 @@ StoryPost.args = {
 			exercitationem aut ea?
 		</Text>
 	),
-	...postDefaults,
 };
 
 export const MediaPost = Template.bind({});
@@ -56,7 +52,6 @@ MediaPost.args = {
 			/>
 		</AspectRatio>
 	),
-	...postDefaults,
 };
 
 export const WithGeoIcon = Template.bind({});
