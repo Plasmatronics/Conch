@@ -5,7 +5,7 @@ import { Box, IconButton, Text } from "@chakra-ui/react";
 import { MagneticClickWrapper } from "../../AnimationWrapper";
 import { TbMapPin } from "react-icons/tb";
 
-const MAX_CHARS_PER_STORY = 1500;
+const MAX_CHARS_BEFORE_TRUNCATION = 1500;
 
 export const StoryPost = ({
 	isLiked,
@@ -16,7 +16,7 @@ export const StoryPost = ({
 }: StoryPostProps) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 
-	const truncatedString = content.slice(0, MAX_CHARS_PER_STORY);
+	const truncatedString = content.slice(0, MAX_CHARS_BEFORE_TRUNCATION);
 	const truncatedContent = (
 		<Text>
 			{truncatedString}...{" "}
@@ -32,15 +32,13 @@ export const StoryPost = ({
 	const nonTruncatedContent = <Text>{content}</Text>;
 
 	let renderedContent;
-	if (content.length > MAX_CHARS_PER_STORY) {
+	if (content.length > MAX_CHARS_BEFORE_TRUNCATION) {
 		renderedContent = isExpanded ? nonTruncatedContent : truncatedContent;
 	} else {
 		renderedContent = nonTruncatedContent;
 	}
 
 	const handlePostExpansion = () => {
-		setIsExpanded((prev) => {
-			return prev ? prev : true;
 		setIsExpanded(true);
 	};
 
