@@ -41,7 +41,7 @@ export const StoryPost = ({
 	const handlePostExpansion = () => {
 		setIsExpanded((prev) => {
 			return prev ? prev : true;
-		});
+		setIsExpanded(true);
 	};
 
 	return (
