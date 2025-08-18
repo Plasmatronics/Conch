@@ -20,12 +20,15 @@ export const VideoPlayer = ({
 	mediaPlayerProps,
 	icons,
 	ref,
+	aspectRatio,
 	defaultVideoLayoutProps,
 	...boxProps
 }: VideoPlayerProps) => {
 	return (
 		<Box
 			colorPalette={colorPalette || "blue"}
+			width="100%"
+			height="100%"
 			css={{
 				"--video-brand": "colors.colorPalette.600",
 
@@ -39,12 +42,16 @@ export const VideoPlayer = ({
 				...cssOverrides,
 			}}
 			{...boxProps}
-			asChild
 		>
 			<MediaPlayer
 				title={title}
 				src={src}
 				poster={poster}
+				aspectRatio={aspectRatio || "16/9"}
+				style={{
+					width: "100%",
+					height: "100%",
+				}}
 				{...mediaPlayerProps}
 				ref={ref}
 			>
