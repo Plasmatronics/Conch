@@ -1,3 +1,4 @@
+import { BoxProps } from "@chakra-ui/react";
 import type {
 	MediaPlayerProps,
 	TrackProps,
@@ -10,9 +11,8 @@ import type { DefaultVideoLayoutProps } from "@vidstack/react/player/layouts/def
  *
  * See https://vidstack.io/docs/player/?styling=default-theme for more information on underlying component customization
  */
-export interface VideoPlayerProps
-	extends Omit<DefaultVideoLayoutProps, "icons" | "ref"> {
-	title: MediaPlayerProps["title"];
+export interface VideoPlayerProps extends Omit<BoxProps, "colorPalette"> {
+	title?: MediaPlayerProps["title"];
 	/** Video source URL, provide an array if you want different quality options */
 	src: MediaPlayerProps["src"];
 	poster?: string;
@@ -25,8 +25,13 @@ export interface VideoPlayerProps
 	 * @see https://vidstack.io/docs/player/components/layouts/default-layout/?styling=default-theme#video-layout for variables
 	 * */
 	cssOverrides?: { [key: string]: string };
-	mediaPlayerProps?: Omit<MediaPlayerProps, "children">;
+	mediaPlayerProps?: Omit<
+		MediaPlayerProps,
+		"children" | "aspectRatio" | "title" | "src"
+	>;
 	/** Optional override for DefaultLayout control icons */
 	icons?: DefaultVideoLayoutProps["icons"];
+	aspectRatio?: MediaPlayerProps["aspectRatio"];
+	defaultVideoLayoutProps?: Omit<DefaultVideoLayoutProps, "icons" | "ref">;
 	ref?: MediaPlayerProps["ref"];
 }

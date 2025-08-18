@@ -20,6 +20,17 @@ export const OrangePallette = () => {
 	return <VideoPlayer {...defaultStyles} colorPalette="orange" />;
 };
 
+export const CustomSize = () => {
+	return (
+		<VideoPlayer
+			{...defaultStyles}
+			colorPalette="orange"
+			width="20rem"
+			height="20rem"
+		/>
+	);
+};
+
 export const MultipleResolutions = () => {
 	return (
 		<VideoPlayer
