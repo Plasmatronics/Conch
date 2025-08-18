@@ -20,7 +20,8 @@ export const VideoPlayer = ({
 	mediaPlayerProps,
 	icons,
 	ref,
-	...defaultVideoLayoutProps
+	defaultVideoLayoutProps,
+	...boxProps
 }: VideoPlayerProps) => {
 	return (
 		<Box
@@ -37,6 +38,7 @@ export const VideoPlayer = ({
 
 				...cssOverrides,
 			}}
+			{...boxProps}
 			asChild
 		>
 			<MediaPlayer
