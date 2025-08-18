@@ -54,7 +54,9 @@ export const VideoPlayer = ({
 						aria-hidden="true"
 					/>
 					{tracks &&
-						tracks.map((track) => <Track key={track.src} {...track} />)}
+						tracks.map((track, index) => (
+							<Track key={track.src || `Track-${index}`} {...track} />
+						))}
 				</MediaProvider>
 				<DefaultVideoLayout
 					thumbnails={thumbnails}
