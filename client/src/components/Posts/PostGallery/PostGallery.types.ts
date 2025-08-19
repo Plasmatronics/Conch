@@ -1,4 +1,5 @@
 import { GridItemProps, GridProps, ImageProps } from "@chakra-ui/react";
+import { VideoPlayerProps } from "components/Media";
 
 export type MediaType = "Image" | "Video";
 
@@ -13,19 +14,26 @@ export interface MediaDimensions {
 	height: number;
 }
 
-export interface BaseMediaItem extends Omit<ImageProps, "src"> {
+export interface BaseMediaItem {
 	type: MediaType;
 	src: string;
 	gridItemProps?: SafeGridItemProps;
 	uniformGridItemProps?: SafeGridItemProps;
 }
+export type ImageMediaItem = { type: "Image" } & BaseMediaItem &
+	Omit<ImageProps, "src">;
 
-export interface MediaNode extends BaseMediaItem {
+export type VideoMediaItem = { type: "Video" } & BaseMediaItem &
+	Omit<VideoPlayerProps, "src">;
+
+export type MediaItem = ImageMediaItem | VideoMediaItem;
+
+export type MediaNode = MediaItem & {
 	index?: number;
 	dimensions: MediaDimensions;
-}
+};
 
 export interface PostGalleryProps extends GridProps {
-	media: BaseMediaItem[];
+	media: MediaItem[];
 	uniformGridItemProps?: SafeGridItemProps;
 }

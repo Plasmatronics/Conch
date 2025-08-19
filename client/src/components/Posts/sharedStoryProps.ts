@@ -1,5 +1,5 @@
 import { BasePostProps } from "./BasePost";
-import { BaseMediaItem } from "./PostGallery/PostGallery.types";
+import { MediaItem } from "./PostGallery/PostGallery.types";
 
 export const postDefaults: Partial<BasePostProps> = {
 	avatar: "https://images.unsplash.com/photo-1511806754518-53bada35f930",
@@ -10,33 +10,36 @@ export const postDefaults: Partial<BasePostProps> = {
 	year: new Date(Date.now()),
 };
 
-export const vertVideo: BaseMediaItem = {
+export const vertVideo: MediaItem = {
 	src: "https://www.youtube.com/watch?v=q-Y0bnx6Ndw&list=RDq-Y0bnx6Ndw&start_radio=1",
 	type: "Video",
 };
 
-export const horizVideo: BaseMediaItem = {
+export const horizVideo: MediaItem = {
 	src: "https://www.youtube.com/watch?v=q-Y0bnx6Ndw&list=RDq-Y0bnx6Ndw&start_radio=1",
 	type: "Video",
 };
 
-export const vertImage: BaseMediaItem = {
+export const vertImage: MediaItem = {
 	src: "https://i.pinimg.com/736x/2d/95/e5/2d95e5886fc4c65a6778b5fee94a7d59.jpg",
 	type: "Image",
+	alt: "feather",
 };
 
-export const threeHorizontalImages: Omit<BaseMediaItem, "height" | "width">[] =
-	[
-		{
-			src: "https://images.pexels.com/photos/1054655/pexels-photo-1054655.jpeg?cs=srgb&dl=pexels-hsapir-1054655.jpg&fm=jpg",
-			type: "Image",
-		},
-		{
-			src: "https://images.ctfassets.net/hrltx12pl8hq/28ECAQiPJZ78hxatLTa7Ts/2f695d869736ae3b0de3e56ceaca3958/free-nature-images.jpg?fit=fill&w=1200&h=630",
-			type: "Image",
-		},
-		{
-			src: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
-			type: "Image",
-		},
-	];
+export const threeHorizontalImages: MediaItem[] = [
+	{
+		src: "https://images.pexels.com/photos/1054655/pexels-photo-1054655.jpeg?cs=srgb&dl=pexels-hsapir-1054655.jpg&fm=jpg",
+		type: "Image",
+		alt: "elephant",
+	},
+	{
+		src: "https://images.ctfassets.net/hrltx12pl8hq/28ECAQiPJZ78hxatLTa7Ts/2f695d869736ae3b0de3e56ceaca3958/free-nature-images.jpg?fit=fill&w=1200&h=630",
+		type: "Image",
+		alt: "tree",
+	},
+	{
+		src: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
+		type: "Image",
+		alt: "photography",
+	},
+];

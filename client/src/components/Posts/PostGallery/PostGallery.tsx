@@ -10,19 +10,33 @@ import { VideoPlayer } from "../../Media";
 
 const MAX_MEDIA = 5;
 
-const renderNode = ({ type, src }: MediaNode) => {
-	const sharedStyles = {
-		width: "100%",
-		height: "100%",
-		src,
-	};
-	return type === "Image" ? (
-		<Image {...sharedStyles} />
-	) : (
-		<VideoPlayer {...sharedStyles} />
-	);
+const renderNode = (node: MediaNode) => {
+	if (node.type === "Image") {
+		//destructure to sanitize
+		const {
+			type,
+			src,
+			gridItemProps,
+			uniformGridItemProps,
+			dimensions,
+			index,
+			...img
+		} = node;
+		return <Image src={src} width="100%" height="100%" {...img} />;
+	} else {
+		const {
+			//destructure to sanitize
+			type,
+			src,
+			gridItemProps,
+			uniformGridItemProps,
+			dimensions,
+			index,
+			...vid
+		} = node;
+		return <VideoPlayer src={src} width="100%" height="100%" {...vid} />;
+	}
 };
-
 export const PostGallery = ({
 	media,
 	uniformGridItemProps,
@@ -46,20 +60,13 @@ export const PostGallery = ({
 		);
 	}, [media]);
 
-	const handleGridClick = (e: React.MouseEvent) => {
-		const cellClicked = (e.target as HTMLElement).closest("[data-grid-area]");
-
-		const indexClicked = cellClicked
-			?.getAttribute("data-grid-area")
-			?.split("media")[1];
-	};
-
 	return (
 		<Grid
 			gap="0.25rem"
+			width="100%"
+			height="100%"
 			{...gridProps}
 			{...gridLayoutStyles}
-			onClick={handleGridClick}
 		>
 			{verticalMediaPrioArr.map((file, idx) => {
 				if (isGalleryClamped && idx === MAX_MEDIA - 1) {

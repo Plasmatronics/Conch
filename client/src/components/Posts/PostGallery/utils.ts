@@ -14,7 +14,7 @@ export const readMediaDimensions = async (
 		return fallback;
 	}
 
-	return new Promise((res, rej) => {
+	return new Promise((res, _) => {
 		if (file.type === "Image") {
 			const img = new window.Image();
 			img.onload = () =>
