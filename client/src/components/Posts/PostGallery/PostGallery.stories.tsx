@@ -16,11 +16,7 @@ export default {
 } satisfies Meta<typeof PostGallery>;
 
 const Template: StoryFn<PostGalleryProps> = (args) => {
-	return (
-		<Box mx="5rem">
-			<PostGallery {...args} />
-		</Box>
-	);
+	return <PostGallery {...args} />;
 };
 
 export const FiveMediaTwoVert = Template.bind({});

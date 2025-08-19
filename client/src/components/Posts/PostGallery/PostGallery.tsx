@@ -1,14 +1,9 @@
 import { Image, Grid, Box, Text } from "@chakra-ui/react";
 import { MediaNode, PostGalleryProps } from "./PostGallery.types";
 import React from "react";
-import {
-	getGridLayoutStyles,
-	getVertMediaPrioArr,
-	readMediaDimensions,
-} from "./utils";
+import { MAX_MEDIA } from "./utils";
 import { VideoPlayer } from "../../Media";
-
-const MAX_MEDIA = 5;
+import { useGalleryMedia } from "../useGalleryMedia";
 
 const renderNode = (node: MediaNode) => {
 	if (node.type === "Image") {
@@ -42,23 +37,8 @@ export const PostGallery = ({
 	uniformGridItemProps,
 	...gridProps
 }: PostGalleryProps) => {
-	const [mediaNodeWithDimensions, setMediaNodeWithDimensions] = React.useState<
-		Array<MediaNode>
-	>([]);
-
-	const firstFiveMedia = media.slice(0, MAX_MEDIA);
-	const isGalleryClamped = media.length > firstFiveMedia.length;
-
-	const gridLayoutStyles = getGridLayoutStyles(mediaNodeWithDimensions);
-	const verticalMediaPrioArr = getVertMediaPrioArr(mediaNodeWithDimensions);
-
-	React.useEffect(() => {
-		Promise.all(firstFiveMedia.map((file) => readMediaDimensions(file))).then(
-			(mediaWithDimensions) => {
-				setMediaNodeWithDimensions(mediaWithDimensions);
-			},
-		);
-	}, [media]);
+	const { gridLayoutStyles, verticalMediaPrioArr, isGalleryClamped } =
+		useGalleryMedia(media);
 
 	return (
 		<Grid
@@ -78,7 +58,7 @@ export const PostGallery = ({
 							height="100%"
 							gridArea={`media${idx + 1}`}
 							data-grid-area={`media${idx + 1}`}
-							key={`media${idx + 1}`}
+							key={file.src}
 							position="relative"
 						>
 							{renderNode({ ...file })}
@@ -114,7 +94,7 @@ export const PostGallery = ({
 							height="100%"
 							gridArea={`media${idx + 1}`}
 							data-grid-area={`media${idx + 1}`}
-							key={`media${idx + 1}`}
+							key={file.src}
 							asChild
 						>
 							{renderNode({ ...file })}
