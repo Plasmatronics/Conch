@@ -112,7 +112,7 @@ export const getGridLayoutStyles = (mediaDimensions: IMediaDimensions[]) => {
 								"media1 media3"
 								"media1 media4"`,
 					...baseCols,
-					templateRows: "repeat(3, 1fr)",
+					templateRows: "repeat(3, minmax(0,1fr))",
 				};
 			} else {
 				return {
@@ -133,12 +133,12 @@ export const getGridLayoutStyles = (mediaDimensions: IMediaDimensions[]) => {
 								"media2 media5"
 								"media2 media5"`,
 					...baseCols,
-					templateRows: "repeat(6, 1fr)",
+					templateRows: "repeat(6, minmax(0,1fr))",
 				};
 			} else {
 				return {
 					...baseRows,
-					templateColumns: "repeat(6, 1fr)",
+					templateColumns: "repeat(6, minmax(0,1fr))",
 					templateAreas: `"media1 media1 media1 media2 media2 media2"
 								"media3 media3 media4 media4 media5 media5"`,
 				};
