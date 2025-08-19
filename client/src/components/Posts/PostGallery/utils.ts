@@ -70,8 +70,8 @@ export const getVerticalMedia = (mediaDimensions: IMediaDimensions[]) => {
 export const getGridLayoutStyles = (mediaDimensions: IMediaDimensions[]) => {
 	const verticalImages = getVerticalMedia(mediaDimensions);
 
-	const baseCols = { templateColumns: "1fr 1fr" };
-	const baseRows = { templateRows: "1fr 1fr" };
+	const baseCols = { templateColumns: "minmax(0,1fr) minmax(0,1fr)" };
+	const baseRows = { templateRows: "minmax(0,1fr) minmax(0,1fr)" };
 
 	switch (mediaDimensions.length) {
 		case 1:

@@ -34,7 +34,7 @@ const renderNode = ({
 	return type === "Image" ? (
 		<Image {...sharedStyles} />
 	) : (
-		<VideoPlayer aspectRatio="auto" {...sharedStyles} />
+		<VideoPlayer {...sharedStyles} />
 	);
 };
 
