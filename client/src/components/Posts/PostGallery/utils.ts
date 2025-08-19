@@ -1,25 +1,32 @@
-import { IMediaDimensions, MediaTypes } from "./PostGallery.types";
+import { BaseMediaItem, MediaDimensions, MediaNode } from "./PostGallery.types";
 
 /**
  * @param media src string
  * @returns Promise returning w and h for aspect ratio, defaults to square dimensions on error
  */
 export const readMediaDimensions = async (
-	type: MediaTypes,
-	src: string,
-): Promise<IMediaDimensions> => {
-	return new Promise((res, rej) => {
-		if (type === "Image") {
+	file: BaseMediaItem,
+): Promise<MediaNode> => {
+	const fallback: MediaNode = { ...file, dimensions: { width: 1, height: 1 } };
+
+	// SSR guard
+	if (typeof window === "undefined" || typeof document === "undefined") {
+		return fallback;
+	}
+
+	return new Promise((res, _) => {
+		if (file.type === "Image") {
 			const img = new window.Image();
 			img.onload = () =>
 				res({
-					width: img.naturalWidth,
-					height: img.naturalHeight,
-					src,
-					type,
+					dimensions: { width: img.naturalWidth, height: img.naturalHeight },
+					...file,
 				});
-			img.onerror = () => res({ width: 1, height: 1, src: img.src, type });
-			img.src = src;
+			img.onerror = () =>
+				res({
+					...fallback,
+				});
+			img.src = file.src;
 		} else {
 			const vid = document.createElement("video");
 			vid.preload = "metadata";
@@ -27,10 +34,8 @@ export const readMediaDimensions = async (
 				"loadedmetadata",
 				() => {
 					return res({
-						width: vid.videoWidth,
-						height: vid.videoHeight,
-						src,
-						type,
+						dimensions: { width: vid.videoWidth, height: vid.videoHeight },
+						...file,
 					});
 				},
 				{ once: true },
@@ -38,27 +43,31 @@ export const readMediaDimensions = async (
 			vid.addEventListener(
 				"error",
 				() => {
-					return res({ width: 1, height: 1, src, type });
+					return res({
+						...fallback,
+					});
 				},
 				{ once: true },
 			);
-			vid.src = src;
+			vid.src = file.src;
 		}
 	});
 };
 
-export const isVertical = ({
-	width,
-	height,
-}: Omit<IMediaDimensions, "src" | "type">) => {
+export const isVertical = ({ width, height }: MediaDimensions) => {
 	const aspectRatio = width / height;
 	return aspectRatio < 1;
 };
 
-export const getVerticalMedia = (mediaDimensions: IMediaDimensions[]) => {
-	return mediaDimensions.reduce((acc: IMediaDimensions[], media) => {
-		if (isVertical({ width: media.width, height: media.height }))
-			acc.push(media);
+export const getVerticalMedia = (media: MediaNode[]) => {
+	return media.reduce((acc: MediaNode[], file) => {
+		if (
+			isVertical({
+				width: file.dimensions.width,
+				height: file.dimensions.height,
+			})
+		)
+			acc.push(file);
 		return acc;
 	}, []);
 };
@@ -67,13 +76,13 @@ export const getVerticalMedia = (mediaDimensions: IMediaDimensions[]) => {
  * @param an array of objects containing img.width, img.height, img.src
  * @returns variable layout props obj for Chakra Grid component, depending on img aspect ratios
  */
-export const getGridLayoutStyles = (mediaDimensions: IMediaDimensions[]) => {
-	const verticalImages = getVerticalMedia(mediaDimensions);
+export const getGridLayoutStyles = (media: MediaNode[]) => {
+	const verticalImages = getVerticalMedia(media);
 
-	const baseCols = { templateColumns: "1fr 1fr" };
-	const baseRows = { templateRows: "1fr 1fr" };
+	const baseCols = { templateColumns: "minmax(0,1fr) minmax(0,1fr)" };
+	const baseRows = { templateRows: "minmax(0,1fr) minmax(0,1fr)" };
 
-	switch (mediaDimensions.length) {
+	switch (media.length) {
 		case 1:
 			return {};
 		case 2:
@@ -112,7 +121,7 @@ export const getGridLayoutStyles = (mediaDimensions: IMediaDimensions[]) => {
 								"media1 media3"
 								"media1 media4"`,
 					...baseCols,
-					templateRows: "repeat(3, 1fr)",
+					templateRows: "repeat(3, minmax(0,1fr))",
 				};
 			} else {
 				return {
@@ -133,12 +142,12 @@ export const getGridLayoutStyles = (mediaDimensions: IMediaDimensions[]) => {
 								"media2 media5"
 								"media2 media5"`,
 					...baseCols,
-					templateRows: "repeat(6, 1fr)",
+					templateRows: "repeat(6, minmax(0,1fr))",
 				};
 			} else {
 				return {
 					...baseRows,
-					templateColumns: "repeat(6, 1fr)",
+					templateColumns: "repeat(6, minmax(0,1fr))",
 					templateAreas: `"media1 media1 media1 media2 media2 media2"
 								"media3 media3 media4 media4 media5 media5"`,
 				};
@@ -151,8 +160,8 @@ export const getGridLayoutStyles = (mediaDimensions: IMediaDimensions[]) => {
  * @param an array of objects containing media.width, media.height, media.src
  * @returns an array of objects containing media.width, media.height, media.src, but with vert media coming before horz media
  */
-export const getVertMediaPrioArr = (mediaDimensions: IMediaDimensions[]) => {
-	const verticals = getVerticalMedia(mediaDimensions);
-	const horizontals = mediaDimensions.filter((img) => !isVertical(img));
+export const getVertMediaPrioArr = (media: MediaNode[]) => {
+	const verticals = getVerticalMedia(media);
+	const horizontals = media.filter((file) => !isVertical(file.dimensions));
 	return [...verticals, ...horizontals];
 };

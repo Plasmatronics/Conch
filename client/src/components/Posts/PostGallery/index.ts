@@ -1,2 +1,2 @@
 export { PostGallery } from "./PostGallery";
-export type { PostGalleryProps } from "./PostGallery.types";
+export * from "./PostGallery.types";

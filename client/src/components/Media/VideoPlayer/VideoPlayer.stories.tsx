@@ -1,5 +1,6 @@
 import type { Meta } from "@storybook/react-vite";
 import { VideoPlayer } from "./VideoPlayer";
+import { Box } from "@chakra-ui/react";
 
 export default {
 	title: "Media/VideoPlayer",
@@ -28,6 +29,19 @@ export const CustomSize = () => {
 			width="20rem"
 			height="20rem"
 		/>
+	);
+};
+
+export const FillsParent = () => {
+	return (
+		<Box bg="red" width="13rem" height="20rem">
+			<VideoPlayer
+				{...defaultStyles}
+				colorPalette="orange"
+				width="100%"
+				height="100%"
+			/>
+		</Box>
 	);
 };
 
