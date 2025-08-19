@@ -23,8 +23,8 @@ const Template: StoryFn<PostGalleryProps> = (args) => {
 	);
 };
 
-export const FiveImagesTwoVert = Template.bind({});
-FiveImagesTwoVert.args = {
+export const FiveMediaTwoVert = Template.bind({});
+FiveMediaTwoVert.args = {
 	media: [
 		vertImage,
 		...threeHorizontalImages,
@@ -33,42 +33,42 @@ FiveImagesTwoVert.args = {
 	],
 };
 
-export const FiveImagesOneVert = Template.bind({});
-FiveImagesOneVert.args = {
+export const FiveMediaOneVert = Template.bind({});
+FiveMediaOneVert.args = {
 	media: [vertImage, ...threeHorizontalImages, ...threeHorizontalImages],
 };
 
-export const FiveImagesAllHorz = Template.bind({});
-FiveImagesAllHorz.args = {
+export const FiveMediaAllHorz = Template.bind({});
+FiveMediaAllHorz.args = {
 	media: [...threeHorizontalImages, ...threeHorizontalImages],
 };
 
-export const FourImagesOneVert = Template.bind({});
-FourImagesOneVert.args = {
+export const FourMediaOneVert = Template.bind({});
+FourMediaOneVert.args = {
 	media: [...threeHorizontalImages, vertImage],
 };
 
-export const FourImagesAllHorz = Template.bind({});
-FourImagesAllHorz.args = {
+export const FourMediaAllHorz = Template.bind({});
+FourMediaAllHorz.args = {
 	media: [...threeHorizontalImages, threeHorizontalImages[0]],
 };
 
-export const ThreeOneVert = Template.bind({});
-ThreeOneVert.args = {
+export const ThreeMediaOneVert = Template.bind({});
+ThreeMediaOneVert.args = {
 	media: [horizVideo, vertImage, threeHorizontalImages[0]],
 };
 
-export const ThreeAllHorz = Template.bind({});
-ThreeAllHorz.args = {
+export const ThreeMediaAllHorz = Template.bind({});
+ThreeMediaAllHorz.args = {
 	media: [...threeHorizontalImages],
 };
 
-export const TwoOneVert = Template.bind({});
-TwoOneVert.args = {
+export const TwoMediaOneVert = Template.bind({});
+TwoMediaOneVert.args = {
 	media: [threeHorizontalImages[0], vertImage],
 };
 
-export const TwoAllHorz = Template.bind({});
-TwoAllHorz.args = {
+export const TwoMediaAllHorz = Template.bind({});
+TwoMediaAllHorz.args = {
 	media: [horizVideo, threeHorizontalImages[1]],
 };

@@ -1,9 +1,5 @@
 import { Image, Grid, Box, Text } from "@chakra-ui/react";
-import {
-	IMediaDimensions,
-	MediaTypes,
-	PostGalleryProps,
-} from "./PostGallery.types";
+import { MediaNode, PostGalleryProps } from "./PostGallery.types";
 import React from "react";
 import {
 	getGridLayoutStyles,
@@ -14,21 +10,10 @@ import { VideoPlayer } from "../../Media";
 
 const MAX_MEDIA = 5;
 
-const renderNode = ({
-	type,
-	src,
-	index,
-}: {
-	type: MediaTypes;
-	src: string;
-	index: number;
-}) => {
+const renderNode = ({ type, src }: MediaNode) => {
 	const sharedStyles = {
 		width: "100%",
 		height: "100%",
-		gridArea: `media${index + 1}`,
-		key: `media${index + 1}`,
-		mb: "0.25rem",
 		src,
 	};
 	return type === "Image" ? (
@@ -38,36 +23,58 @@ const renderNode = ({
 	);
 };
 
-export const PostGallery = ({ media }: PostGalleryProps) => {
-	const [mediaDimensions, setMediaDimensions] = React.useState<
-		Array<IMediaDimensions>
+export const PostGallery = ({
+	media,
+	uniformGridItemProps,
+	...gridProps
+}: PostGalleryProps) => {
+	const [mediaNodeWithDimensions, setMediaNodeWithDimensions] = React.useState<
+		Array<MediaNode>
 	>([]);
+
 	const firstFiveMedia = media.slice(0, MAX_MEDIA);
 	const isGalleryClamped = media.length > firstFiveMedia.length;
-	const gridLayoutStyles = getGridLayoutStyles(mediaDimensions);
-	const verticalMediaPrioArr = getVertMediaPrioArr(mediaDimensions);
+
+	const gridLayoutStyles = getGridLayoutStyles(mediaNodeWithDimensions);
+	const verticalMediaPrioArr = getVertMediaPrioArr(mediaNodeWithDimensions);
 
 	React.useEffect(() => {
-		Promise.all(
-			firstFiveMedia.map((file) => readMediaDimensions(file.type, file.src)),
-		).then((dimensions) => {
-			setMediaDimensions(dimensions);
-		});
+		Promise.all(firstFiveMedia.map((file) => readMediaDimensions(file))).then(
+			(mediaWithDimensions) => {
+				setMediaNodeWithDimensions(mediaWithDimensions);
+			},
+		);
 	}, [media]);
 
+	const handleGridClick = (e: React.MouseEvent) => {
+		const cellClicked = (e.target as HTMLElement).closest("[data-grid-area]");
+
+		const indexClicked = cellClicked
+			?.getAttribute("data-grid-area")
+			?.split("media")[1];
+	};
+
 	return (
-		<Grid gap="0.25rem" {...gridLayoutStyles}>
-			{verticalMediaPrioArr.map((file, index) => {
-				if (isGalleryClamped && index === MAX_MEDIA - 1) {
+		<Grid
+			gap="0.25rem"
+			{...gridProps}
+			{...gridLayoutStyles}
+			onClick={handleGridClick}
+		>
+			{verticalMediaPrioArr.map((file, idx) => {
+				if (isGalleryClamped && idx === MAX_MEDIA - 1) {
 					return (
 						<Box
+							{...uniformGridItemProps}
+							{...file.gridItemProps}
 							width="100%"
 							height="100%"
-							gridArea={`media${index + 1}`}
-							key={`media${index + 1}`}
+							gridArea={`media${idx + 1}`}
+							data-grid-area={`media${idx + 1}`}
+							key={`media${idx + 1}`}
 							position="relative"
 						>
-							{renderNode({ type: file.type, src: file.src, index: index })}
+							{renderNode({ ...file })}
 							<Box
 								width="100%"
 								height="100%"
@@ -92,7 +99,20 @@ export const PostGallery = ({ media }: PostGalleryProps) => {
 						</Box>
 					);
 				} else {
-					return renderNode({ type: file.type, src: file.src, index: index });
+					return (
+						<Box
+							{...uniformGridItemProps}
+							{...file.gridItemProps}
+							width="100%"
+							height="100%"
+							gridArea={`media${idx + 1}`}
+							data-grid-area={`media${idx + 1}`}
+							key={`media${idx + 1}`}
+							asChild
+						>
+							{renderNode({ ...file })}
+						</Box>
+					);
 				}
 			})}
 		</Grid>
