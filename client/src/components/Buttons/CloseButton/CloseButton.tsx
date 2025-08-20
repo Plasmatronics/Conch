@@ -10,7 +10,11 @@ export const CloseButton = ({
 }: CloseButtonProps) => {
 	return (
 		<IconButton
-			layerStyle="interactionButton"
+			bg="transparent"
+			color="gray.300"
+			_hover={{
+				color: "gray.100",
+			}}
 			{...iconButtonProps}
 			aria-label="Comment"
 			className="group"

@@ -45,6 +45,7 @@ export const PostGallery = ({
 			gap="0.25rem"
 			width="100%"
 			height="100%"
+			data-component-type="PostGallery"
 			{...gridProps}
 			{...gridLayoutStyles}
 		>
@@ -78,7 +79,7 @@ export const PostGallery = ({
 								position="absolute"
 								left="50%"
 								top="50%"
-								zIndex="popover"
+								zIndex="overlay"
 								fontSize="3xl"
 								color="white"
 								transform="translate(-50%, -50%)"

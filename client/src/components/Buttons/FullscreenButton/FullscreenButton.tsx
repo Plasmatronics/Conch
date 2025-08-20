@@ -49,7 +49,12 @@ export const FullscreenButton = ({
 
 	return (
 		<IconButton
-			layerStyle="interactionButton"
+			color="gray.300"
+			_hover={{
+				color: "gray.100",
+			}}
+			bg="transparent"
+			size="2xs"
 			{...iconButtonProps}
 			aria-label={isExpanded ? "Shrink Content" : "Expand Content"}
 			className="group"
