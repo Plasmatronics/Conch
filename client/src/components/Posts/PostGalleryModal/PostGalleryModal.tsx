@@ -113,7 +113,7 @@ export const PostGalleryModal = ({
 										setIsExpanded={setIsExpanded}
 										position="absolute"
 										top={1}
-										right={isExpanded ? 8 : 2}
+										right={2}
 										zIndex={1403}
 									/>
 									<CloseButton
