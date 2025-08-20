@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Flex, IconButton } from "@chakra-ui/react";
 import { CarouselProps } from "./Carousel.types";
 import { motion } from "framer-motion";
@@ -22,18 +22,27 @@ export const Carousel = ({
 }: CarouselProps) => {
 	//0===left, 1=right
 	const [motionDirection, setMotionDirection] = useState(0);
+	const [hasMounted, setHasMounted] = useState(false);
+
+	useEffect(() => {
+		setHasMounted(true);
+	}, []);
 
 	const childArray = React.Children.toArray(children);
 
 	const verticalMotionProps = {
-		initial: { opacity: 0, y: motionDirection === 0 ? -100 : 100 },
-		animate: { opacity: 1, y: motionDirection === 0 ? 0 : 0 },
+		initial: hasMounted
+			? { opacity: 0, y: motionDirection === 0 ? -100 : 100 }
+			: { opacity: 1, y: 0 },
+		animate: { opacity: 1, y: 0 },
 		transition: { duration: 0.5 },
 	};
 
 	const horizontalMotionProps = {
-		initial: { opacity: 0, x: motionDirection === 0 ? -100 : 100 },
-		animate: { opacity: 1, x: motionDirection === 0 ? 0 : 0 },
+		initial: hasMounted
+			? { opacity: 0, x: motionDirection === 0 ? -100 : 100 }
+			: { opacity: 1, x: 0 },
+		animate: { opacity: 1, x: 0 },
 		transition: { duration: 0.5 },
 	};
 
@@ -71,10 +80,10 @@ export const Carousel = ({
 					aria-label="Previous Item"
 					borderRadius="full"
 					boxShadow="md"
-					bgColor="inherit"
+					bgColor="white"
 					color="black"
 					onClick={handlePrevious}
-					opacity={currentIndex === 0 ? "0" : "50%"}
+					opacity={currentIndex === 0 ? "0" : "75%"}
 					_hover={{ opacity: "100%" }}
 					pointerEvents={currentIndex === 0 ? "none" : "auto"}
 					{...buttonProps}
@@ -99,9 +108,9 @@ export const Carousel = ({
 					aria-label="Next Item"
 					borderRadius="full"
 					boxShadow="md"
-					bgColor="inherit"
+					bgColor="white"
 					color="black"
-					opacity={currentIndex === childArray.length - 1 ? "0" : "50%"}
+					opacity={currentIndex === childArray.length - 1 ? "0" : "75%"}
 					_hover={{ opacity: "100%" }}
 					pointerEvents={
 						currentIndex === childArray.length - 1 ? "none" : "auto"

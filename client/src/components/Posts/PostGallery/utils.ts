@@ -1,5 +1,7 @@
 import { BaseMediaItem, MediaDimensions, MediaNode } from "./PostGallery.types";
 
+export const MAX_MEDIA = 5;
+
 /**
  * @param media src string
  * @returns Promise returning w and h for aspect ratio, defaults to square dimensions on error

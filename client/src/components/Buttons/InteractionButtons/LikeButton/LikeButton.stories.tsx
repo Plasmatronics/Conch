@@ -5,7 +5,7 @@ import { LikeButtonProps } from "./LikeButton.types";
 import { useState } from "react";
 
 export default {
-	title: "InteractionButtons/LikeButton",
+	title: "Buttons/InteractionButtons/LikeButton",
 	component: LikeButton,
 } satisfies Meta<typeof LikeButton>;
 

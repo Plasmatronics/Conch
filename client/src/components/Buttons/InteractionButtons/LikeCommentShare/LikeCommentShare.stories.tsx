@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Box } from "@chakra-ui/react";
 
 export default {
-	title: "InteractionButtons/LikeCommentShare",
+	title: "Buttons/InteractionButtons/LikeCommentShare",
 	component: LikeCommentShare,
 } satisfies Meta<typeof LikeCommentShare>;
 

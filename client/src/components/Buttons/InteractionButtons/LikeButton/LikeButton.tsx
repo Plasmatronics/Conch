@@ -1,7 +1,7 @@
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
 import { LikeButtonProps } from "./LikeButton.types";
 import { motion } from "framer-motion";
-import { MagneticClickWrapper } from "../../AnimationWrapper";
+import { MagneticClickWrapper } from "../../../AnimationWrapper";
 import { TbHeart, TbHeartFilled } from "react-icons/tb";
 
 const LIKED_STYLES: IconButtonProps = {
@@ -19,6 +19,7 @@ export const LikeButton = ({
 	setIsLiked,
 	ref,
 	onClick,
+	strokeWidth,
 	onToggle,
 	...iconButtonProps
 }: LikeButtonProps) => {
@@ -51,8 +52,8 @@ export const LikeButton = ({
 					// slight “beat” on like; no animation on unlike
 					animate={isLiked ? { scale: [1, 1.22, 1] } : { scale: 1 }}
 					transition={{ duration: 0.35, ease: "easeOut" }}
-					// let the icon inherit the button color
 					style={{ width: "1.1em", height: "1.1em" }}
+					strokeWidth={strokeWidth || "2px"}
 				/>
 			</MagneticClickWrapper>
 		</IconButton>

@@ -1,9 +1,13 @@
 import { IconButton } from "@chakra-ui/react";
 import { ShareButtonProps } from "./ShareButton.types";
-import { MagneticClickWrapper } from "../../AnimationWrapper";
+import { MagneticClickWrapper } from "../../../AnimationWrapper";
 import { TbShare3 } from "react-icons/tb";
 
-export const ShareButton = ({ ref, ...iconButtonProps }: ShareButtonProps) => {
+export const ShareButton = ({
+	ref,
+	strokeWidth,
+	...iconButtonProps
+}: ShareButtonProps) => {
 	return (
 		<IconButton
 			layerStyle="interactionButton"
@@ -13,7 +17,7 @@ export const ShareButton = ({ ref, ...iconButtonProps }: ShareButtonProps) => {
 			ref={ref}
 		>
 			<MagneticClickWrapper asChild>
-				<TbShare3 />
+				<TbShare3 strokeWidth={strokeWidth || "2px"} />
 			</MagneticClickWrapper>
 		</IconButton>
 	);

@@ -1,5 +1,5 @@
 import { AvatarImageProps, CardRootProps } from "@chakra-ui/react";
-import { LikeCommentShareProps } from "components/InteractionButtons";
+import { LikeCommentShareProps } from "../../Buttons";
 import { ReactNode } from "react";
 
 export interface BasePostProps extends Omit<CardRootProps, "content"> {

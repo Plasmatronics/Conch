@@ -1,5 +1,5 @@
 import { Text, Card, HStack, Avatar, Stack, Separator } from "@chakra-ui/react";
-import { LikeCommentShare } from "../../InteractionButtons";
+import { LikeCommentShare } from "../../Buttons";
 import React from "react";
 import { BasePostProps } from "./BasePost.types";
 

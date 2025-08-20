@@ -1,10 +1,11 @@
 import { IconButton } from "@chakra-ui/react";
 import { CommentButtonProps } from "./CommentButton.types";
 import { TbMessageCircle } from "react-icons/tb";
-import { MagneticClickWrapper } from "../../AnimationWrapper";
+import { MagneticClickWrapper } from "../../../AnimationWrapper";
 
 export const CommentButton = ({
 	ref,
+	strokeWidth,
 	...iconButtonProps
 }: CommentButtonProps) => {
 	return (
@@ -16,7 +17,7 @@ export const CommentButton = ({
 			ref={ref}
 		>
 			<MagneticClickWrapper asChild>
-				<TbMessageCircle />
+				<TbMessageCircle strokeWidth={strokeWidth || "2px"} />
 			</MagneticClickWrapper>
 		</IconButton>
 	);
