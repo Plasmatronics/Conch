@@ -16,7 +16,7 @@ export const CloseButton = ({
 				color: "gray.100",
 			}}
 			{...iconButtonProps}
-			aria-label="Comment"
+			aria-label="Close"
 			className="group"
 			ref={ref}
 		>
