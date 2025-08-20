@@ -71,10 +71,10 @@ export const Carousel = ({
 					aria-label="Previous Item"
 					borderRadius="full"
 					boxShadow="md"
-					bgColor="inherit"
+					bgColor="white"
 					color="black"
 					onClick={handlePrevious}
-					opacity={currentIndex === 0 ? "0" : "50%"}
+					opacity={currentIndex === 0 ? "0" : "75%"}
 					_hover={{ opacity: "100%" }}
 					pointerEvents={currentIndex === 0 ? "none" : "auto"}
 					{...buttonProps}
@@ -99,9 +99,9 @@ export const Carousel = ({
 					aria-label="Next Item"
 					borderRadius="full"
 					boxShadow="md"
-					bgColor="inherit"
+					bgColor="white"
 					color="black"
-					opacity={currentIndex === childArray.length - 1 ? "0" : "50%"}
+					opacity={currentIndex === childArray.length - 1 ? "0" : "75%"}
 					_hover={{ opacity: "100%" }}
 					pointerEvents={
 						currentIndex === childArray.length - 1 ? "none" : "auto"

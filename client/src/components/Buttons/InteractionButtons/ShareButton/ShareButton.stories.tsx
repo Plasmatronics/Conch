@@ -4,7 +4,7 @@ import { ShareButton } from "./ShareButton";
 import { ShareButtonProps } from "./ShareButton.types";
 
 export default {
-	title: "InteractionButtons/ShareButton",
+	title: "Buttons/InteractionButtons/ShareButton",
 	component: ShareButton,
 } satisfies Meta<typeof ShareButton>;
 

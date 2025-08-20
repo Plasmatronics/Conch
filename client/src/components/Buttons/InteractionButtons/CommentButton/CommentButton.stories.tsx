@@ -4,7 +4,7 @@ import { CommentButton } from "./CommentButton";
 import { CommentButtonProps } from "./CommentButton.types";
 
 export default {
-	title: "InteractionButtons/CommentButton",
+	title: "Buttons/InteractionButtons/CommentButton",
 	component: CommentButton,
 } satisfies Meta<typeof CommentButton>;
 
