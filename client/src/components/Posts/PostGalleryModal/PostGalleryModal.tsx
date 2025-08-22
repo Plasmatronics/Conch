@@ -39,17 +39,21 @@ export const PostGalleryModal = ({
 	rightSection,
 	carouselProps,
 	postGalleryProps,
-	...dialogRootProps
+	...dialogContentProps
 }: PostGalleryModalProps) => {
 	const [isCarouselOpen, setIsCarouselOpen] = useState(false);
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [carouselIndex, setCarouselIndex] = useState(0);
 
 	const { verticalMediaPrioArr } = useGalleryMedia(media);
-	const restMedia = media.slice(0, MAX_MEDIA);
-	const allMedia = [...verticalMediaPrioArr, ...restMedia];
+
+	const allMedia: MediaItem[] =
+		media.length > MAX_MEDIA
+			? [...verticalMediaPrioArr, ...media.slice(MAX_MEDIA)]
+			: verticalMediaPrioArr;
 
 	function handleGalleryClick(e: React.MouseEvent) {
+		e.preventDefault();
 		const clickedTarget = e.currentTarget;
 		if (clickedTarget.getAttribute("data-component-type") !== "PostGallery")
 			return;
@@ -73,20 +77,22 @@ export const PostGalleryModal = ({
 
 	return (
 		<>
-			<PostGallery
-				{...postGalleryProps}
-				cursor="pointer"
-				media={media}
-				onClick={handleGalleryClick}
-			/>
-			<Dialog.Root
-				open={isCarouselOpen}
-				{...dialogRootProps}
-				size="full"
-				motionPreset="none"
-			>
+			{!isCarouselOpen && (
+				<PostGallery
+					{...postGalleryProps}
+					cursor="pointer"
+					media={media}
+					onClick={handleGalleryClick}
+				/>
+			)}
+			<Dialog.Root open={isCarouselOpen} size="full" motionPreset="none">
 				<Dialog.Positioner>
-					<Dialog.Content overflow="hidden" width="100%" height="100%">
+					<Dialog.Content
+						{...dialogContentProps}
+						overflow="hidden"
+						width="100%"
+						height="100%"
+					>
 						<Dialog.Body width="100%" height="100%" bg="black" p="0" m="0">
 							<Flex width="100%" height="100%">
 								<Box
@@ -96,9 +102,9 @@ export const PostGalleryModal = ({
 									height="100%"
 									position="relative"
 									transition="flex-basis 200ms ease"
+									overflow="hidden"
 								>
 									<Carousel
-										key={isExpanded ? "expanded" : "shrunk"}
 										height="100%"
 										width="100%"
 										currentIndex={carouselIndex}
@@ -114,20 +120,17 @@ export const PostGalleryModal = ({
 										position="absolute"
 										top={1}
 										right={2}
-										zIndex={1403}
 									/>
 									<CloseButton
 										onClick={handleCloseButtonClick}
 										position="absolute"
 										top={0}
 										left={0}
-										zIndex={1403}
 									/>
 								</Box>
 								{!isExpanded && rightSection && (
 									<Box
 										asChild
-										zIndex={1402}
 										height="100%"
 										flex="0 0 40%"
 										transition="flex-basis 200ms ease"

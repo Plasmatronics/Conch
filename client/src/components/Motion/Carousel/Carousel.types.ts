@@ -7,6 +7,7 @@ export interface CarouselProps extends FlexProps {
 	motionFlexProps?: FlexProps & MotionProps;
 	currentIndex?: number;
 	setCurrentIndex?: React.Dispatch<React.SetStateAction<number>>;
+	loop?: boolean;
 
 	direction?: "vertical" | "horizontal";
 }

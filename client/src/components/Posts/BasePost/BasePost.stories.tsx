@@ -1,12 +1,15 @@
 import type { Meta, StoryFn } from "@storybook/react-vite";
 
+import { BasePostSkeleton } from "./BasePostSkeleton";
 import { BasePost } from "./BasePost";
 import { BasePostProps } from "./BasePost.types";
-import { AspectRatio, Box, IconButton, Text } from "@chakra-ui/react";
 import { useState } from "react";
-import { TbLocationQuestion } from "react-icons/tb";
-import { MagneticClickWrapper } from "../../AnimationWrapper";
-import { postDefaults } from "../sharedStoryProps";
+import {
+	horizVideo,
+	postDefaults,
+	threeHorizontalImages,
+} from "../sharedStoryProps";
+import { Card, Grid, Skeleton } from "@chakra-ui/react";
 
 export default {
 	title: "Posts/BasePost",
@@ -16,52 +19,102 @@ export default {
 const Template: StoryFn<BasePostProps> = (args) => {
 	const [isLiked, setIsLiked] = useState(false);
 	return (
-		<Box mx="5rem">
-			<BasePost
-				{...postDefaults}
-				{...args}
-				isLiked={isLiked}
-				setIsLiked={setIsLiked}
-			/>
-		</Box>
+		<BasePost
+			{...postDefaults}
+			{...args}
+			isLiked={isLiked}
+			setIsLiked={setIsLiked}
+		/>
 	);
 };
 export const StoryPost = Template.bind({});
 StoryPost.args = {
-	children: (
-		<Text textStyle="sm">
+	text: `
 			Lorem ipsum dolor, sit amet consectetur adipisicing elit. Alias, nulla
 			ullam quod eligendi voluptatum aut eum assumenda obcaecati. Fugit numquam
 			magni enim doloremque aspernatur nostrum adipisci ipsam cumque, qui
 			tempore. Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi
 			laborum, nam exercitationem explicabo incidunt maiores. Error nostrum
 			possimus natus excepturi nihil laborum eum animi quas aliquid! Maiores
-			exercitationem aut ea?
-		</Text>
-	),
+			exercitationem aut ea?`,
 };
 
-export const MediaPost = Template.bind({});
-MediaPost.args = {
-	children: (
-		<AspectRatio>
-			<iframe
-				title="naruto"
-				src="https://www.youtube.com/embed/QhBnZ6NPOY0"
-				allowFullScreen
-			/>
-		</AspectRatio>
-	),
+export const LongPost = Template.bind({});
+LongPost.args = {
+	text: `
+			Lorem ipsum dolor, sit amet consectetur adipisicing elit. Alias, nulla
+			ullam quod eligendi voluptatum aut eum assumenda obcaecati. Fugit numquam
+			magni enim doloremque aspernatur nostrum adipisci ipsam cumque, qui
+			tempore. Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi
+			laborum, nam exercitationem explicabo incidunt maiores. Error nostrum
+			possimus natus excepturi nihil laborum eum animi quas aliquid! Maiores
+			exercitationem aut ea? Lorem ipsum dolor, sit amet consectetur adipisicing elit. Alias, nulla
+			ullam quod eligendi voluptatum aut eum assumenda obcaecati. Fugit numquam
+			magni enim doloremque aspernatur nostrum adipisci ipsam cumque, qui
+			tempore. Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi
+			laborum, nam exercitationem explicabo incidunt maiores. Error nostrum
+			possimus natus excepturi nihil laborum eum animi quas aliquid! Maiores
+			exercitationem aut ea? Lorem ipsum dolor, sit amet consectetur adipisicing elit. Alias, nulla
+			ullam quod eligendi voluptatum aut eum assumenda obcaecati. Fugit numquam
+			magni enim doloremque aspernatur nostrum adipisci ipsam cumque, qui
+			tempore. Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi
+			laborum, nam exercitationem explicabo incidunt maiores. Error nostrum
+			possimus natus excepturi nihil laborum eum animi quas aliquid! Maiores
+			exercitationem aut ea? Lorem ipsum dolor, sit amet consectetur adipisicing elit. Alias, nulla
+			ullam quod eligendi voluptatum aut eum assumenda obcaecati. Fugit numquam
+			magni enim doloremque aspernatur nostrum adipisci ipsam cumque, qui
+			tempore. Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi
+			laborum, nam exercitationem explicabo incidunt maiores. Error nostrum
+			possimus natus excepturi nihil laborum eum animi quas aliquid! Maiores
+			exercitationem aut ea?`,
 };
 
-export const WithGeoIcon = Template.bind({});
-WithGeoIcon.args = {
-	...StoryPost.args,
-	headerRight: (
-		<IconButton layerStyle="interactionButton" className="group">
-			<MagneticClickWrapper asChild>
-				<TbLocationQuestion />
-			</MagneticClickWrapper>
-		</IconButton>
-	),
+export const Video = Template.bind({});
+Video.args = {
+	media: [{ src: "https://www.youtube.com/embed/QhBnZ6NPOY0", type: "Video" }],
+};
+
+export const MultiMediaPost = Template.bind({});
+MultiMediaPost.args = {
+	media: [...threeHorizontalImages, horizVideo],
+};
+
+export const ManyMediaPost = Template.bind({});
+ManyMediaPost.args = {
+	media: [...threeHorizontalImages, horizVideo, ...threeHorizontalImages],
+};
+
+export const FullPost = Template.bind({});
+FullPost.args = {
+	media: [...threeHorizontalImages, horizVideo, ...threeHorizontalImages],
+	text: `
+			Lorem ipsum dolor, sit amet consectetur adipisicing elit. Alias, nulla
+			ullam quod eligendi voluptatum aut eum assumenda obcaecati. Fugit numquam
+			magni enim doloremque aspernatur nostrum adipisci ipsam cumque, qui
+			tempore. Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi
+			laborum, nam exercitationem explicabo incidunt maiores. Error nostrum
+			possimus natus excepturi nihil laborum eum animi quas aliquid! Maiores
+			exercitationem aut ea?`,
+};
+
+export const PostSkeleton = () => {
+	return (
+		<Card.Root width="100%">
+			<BasePostSkeleton loading={true}>
+				<Card.Body width="100%">
+					<Grid
+						width="100%"
+						height="20rem"
+						gap="0.25rem"
+						templateColumns="1fr 1fr"
+						templateRows="1fr 1fr"
+					>
+						{Array.from({ length: 4 }).map((_, index) => (
+							<Skeleton key={index} loading={true} />
+						))}
+					</Grid>
+				</Card.Body>
+			</BasePostSkeleton>
+		</Card.Root>
+	);
 };

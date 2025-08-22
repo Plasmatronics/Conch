@@ -18,6 +18,7 @@ export const Carousel = ({
 	setCurrentIndex = () => {},
 	children,
 	direction = "horizontal",
+	loop = true,
 	...props
 }: CarouselProps) => {
 	//0===left, 1=right
@@ -48,17 +49,29 @@ export const Carousel = ({
 
 	function handlePrevious() {
 		setMotionDirection(0);
-		setCurrentIndex((prevIndex) => {
-			return prevIndex === 0 ? 0 : prevIndex - 1;
+		setCurrentIndex((prev) => {
+			if (prev === 0) {
+				return loop ? childArray.length - 1 : 0;
+			} else {
+				return prev - 1;
+			}
 		});
 	}
 
 	function handleNext() {
 		setMotionDirection(1);
-		setCurrentIndex((nextIndex) =>
-			nextIndex === childArray.length - 1 ? nextIndex : nextIndex + 1,
-		);
+		setCurrentIndex((prev) => {
+			if (prev === childArray.length - 1) {
+				return loop ? 0 : prev;
+			} else {
+				return prev + 1;
+			}
+		});
 	}
+
+	const shouldShowButton = () => {
+		return childArray.length !== 1 && loop;
+	};
 
 	return (
 		<Flex
@@ -83,9 +96,11 @@ export const Carousel = ({
 					bgColor="white"
 					color="black"
 					onClick={handlePrevious}
-					opacity={currentIndex === 0 ? "0" : "75%"}
+					opacity={!shouldShowButton() && currentIndex === 0 ? "0" : "75%"}
 					_hover={{ opacity: "100%" }}
-					pointerEvents={currentIndex === 0 ? "none" : "auto"}
+					pointerEvents={
+						!shouldShowButton() && currentIndex === 0 ? "none" : "auto"
+					}
 					{...buttonProps}
 				>
 					{direction === "horizontal" ? <TbChevronLeft /> : <TbChevronUp />}
@@ -110,10 +125,16 @@ export const Carousel = ({
 					boxShadow="md"
 					bgColor="white"
 					color="black"
-					opacity={currentIndex === childArray.length - 1 ? "0" : "75%"}
+					opacity={
+						!shouldShowButton() && currentIndex === childArray.length - 1
+							? "0"
+							: "75%"
+					}
 					_hover={{ opacity: "100%" }}
 					pointerEvents={
-						currentIndex === childArray.length - 1 ? "none" : "auto"
+						!shouldShowButton() && currentIndex === childArray.length - 1
+							? "none"
+							: "auto"
 					}
 					onClick={handleNext}
 					{...buttonProps}

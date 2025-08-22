@@ -6,7 +6,14 @@ export type MediaType = "Image" | "Video";
 type SafeGridItemProps = Omit<
 	GridItemProps,
 	// dont want to interfere with VideoPlayer props
-	"gridArea" | "key" | "colorPalette" | "aspectRatio" | "src"
+	| "gridArea"
+	| "key"
+	| "colorPalette"
+	| "aspectRatio"
+	| "src"
+	| "onLoadStart"
+	| "onError"
+	| "onLoad"
 >;
 
 export interface MediaDimensions {
@@ -20,11 +27,17 @@ export interface BaseMediaItem {
 	gridItemProps?: SafeGridItemProps;
 	uniformGridItemProps?: SafeGridItemProps;
 }
-export type ImageMediaItem = { type: "Image" } & BaseMediaItem &
-	Omit<ImageProps, "src">;
+export interface ImageMediaItem
+	extends Omit<BaseMediaItem, "type">,
+		Omit<ImageProps, "src"> {
+	type?: "Image";
+}
 
-export type VideoMediaItem = { type: "Video" } & BaseMediaItem &
-	Omit<VideoPlayerProps, "src">;
+export interface VideoMediaItem
+	extends Omit<BaseMediaItem, "type">,
+		Omit<VideoPlayerProps, "src"> {
+	type: "Video";
+}
 
 export type MediaItem = ImageMediaItem | VideoMediaItem;
 
@@ -33,7 +46,10 @@ export type MediaNode = MediaItem & {
 	dimensions: MediaDimensions;
 };
 
-export interface PostGalleryProps extends GridProps {
+export interface PostGalleryProps
+	extends Omit<GridProps, "onLoadStart" | "onError" | "onLoad"> {
+	onLoadStart?: () => void;
+	onAllMediaLoaded?: () => void;
 	media: MediaItem[];
 	uniformGridItemProps?: SafeGridItemProps;
 }

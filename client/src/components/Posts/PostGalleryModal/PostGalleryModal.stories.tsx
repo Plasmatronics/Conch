@@ -3,6 +3,7 @@ import type { Meta, StoryFn } from "@storybook/react-vite";
 import { PostGalleryModal } from "./PostGalleryModal";
 import { PostGalleryModalProps } from "./PostGalleryModal.types";
 import {
+	horizVideo,
 	threeHorizontalImages,
 	vertImage,
 	vertVideo,
@@ -28,4 +29,14 @@ FiveMediaTwoVert.args = {
 		vertVideo,
 		...threeHorizontalImages,
 	],
+};
+
+export const OneVideo = Template.bind({});
+OneVideo.args = {
+	media: [horizVideo],
+};
+
+export const OneVideoTwoImages = Template.bind({});
+OneVideoTwoImages.args = {
+	media: [horizVideo, threeHorizontalImages[0], threeHorizontalImages[1]],
 };

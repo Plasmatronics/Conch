@@ -1,2 +1,3 @@
 export * from "./BasePost";
-export * from "./MediaPost";
+export * from "./PostGallery";
+export * from "./PostGalleryModal";
