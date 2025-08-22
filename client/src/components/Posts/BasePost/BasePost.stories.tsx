@@ -74,14 +74,19 @@ Video.args = {
 	media: [{ src: "https://www.youtube.com/embed/QhBnZ6NPOY0", type: "Video" }],
 };
 
+export const MultiMediaPost = Template.bind({});
+MultiMediaPost.args = {
+	media: [...threeHorizontalImages, horizVideo],
+};
+
 export const ManyMediaPost = Template.bind({});
 ManyMediaPost.args = {
-	media: [...threeHorizontalImages, horizVideo],
+	media: [...threeHorizontalImages, horizVideo, ...threeHorizontalImages],
 };
 
 export const FullPost = Template.bind({});
 FullPost.args = {
-	media: [...threeHorizontalImages, horizVideo],
+	media: [...threeHorizontalImages, horizVideo, ...threeHorizontalImages],
 	text: `
 			Lorem ipsum dolor, sit amet consectetur adipisicing elit. Alias, nulla
 			ullam quod eligendi voluptatum aut eum assumenda obcaecati. Fugit numquam
