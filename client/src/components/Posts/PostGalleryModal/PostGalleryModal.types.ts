@@ -1,9 +1,10 @@
-import { DialogRootProps } from "@chakra-ui/react";
+import { DialogContentProps } from "@chakra-ui/react";
 import { CarouselProps } from "../../Motion/Carousel";
 import React from "react";
 import { PostGalleryProps } from "../PostGallery/PostGallery.types";
 
-export interface PostGalleryModalProps extends DialogRootProps {
+export interface PostGalleryModalProps
+	extends Omit<DialogContentProps, "children"> {
 	media: PostGalleryProps["media"];
 	rightSection?: React.ReactNode;
 	carouselProps?: Omit<

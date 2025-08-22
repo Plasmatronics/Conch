@@ -86,7 +86,11 @@ export const getGridLayoutStyles = (media: MediaNode[]) => {
 
 	switch (media.length) {
 		case 1:
-			return {};
+			return {
+				templateColumns: "minmax(0,1fr)",
+				templateRows: "minmax(0,1fr)",
+				templateAreas: `"media1"`,
+			};
 		case 2:
 			return verticalImages.length > 0
 				? {

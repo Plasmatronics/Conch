@@ -2,7 +2,6 @@ import type { Meta, StoryFn } from "@storybook/react-vite";
 
 import { PostGallery } from "./PostGallery";
 import { PostGalleryProps } from "./PostGallery.types";
-import { Box } from "@chakra-ui/react";
 import {
 	threeHorizontalImages,
 	vertImage,
@@ -67,4 +66,9 @@ TwoMediaOneVert.args = {
 export const TwoMediaAllHorz = Template.bind({});
 TwoMediaAllHorz.args = {
 	media: [horizVideo, threeHorizontalImages[1]],
+};
+
+export const OneHoriz = Template.bind({});
+OneHoriz.args = {
+	media: [horizVideo],
 };
