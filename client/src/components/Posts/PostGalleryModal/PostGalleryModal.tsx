@@ -77,14 +77,14 @@ export const PostGalleryModal = ({
 
 	return (
 		<>
-			{!isCarouselOpen && (
-				<PostGallery
-					{...postGalleryProps}
-					cursor="pointer"
-					media={media}
-					onClick={handleGalleryClick}
-				/>
-			)}
+			<PostGallery
+				{...postGalleryProps}
+				cursor="pointer"
+				media={media}
+				onClick={handleGalleryClick}
+				hidden={isCarouselOpen}
+			/>
+
 			<Dialog.Root open={isCarouselOpen} size="full" motionPreset="none">
 				<Dialog.Positioner>
 					<Dialog.Content
