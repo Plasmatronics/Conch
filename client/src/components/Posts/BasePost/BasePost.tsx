@@ -12,7 +12,7 @@ import {
 import { LikeCommentShare } from "../../Buttons";
 import React, { useState } from "react";
 import { BasePostProps } from "./BasePost.types";
-import { MagneticClickWrapper } from "../../AnimationWrapper";
+import { MagneticClickWrapper } from "../../AnimationWrappers";
 import { TbMapPin } from "react-icons/tb";
 import { PostGalleryModal } from "../PostGalleryModal";
 import { BasePostSkeleton } from "./BasePostSkeleton";

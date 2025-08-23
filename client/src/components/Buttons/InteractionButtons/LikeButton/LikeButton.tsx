@@ -1,7 +1,7 @@
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
 import { LikeButtonProps } from "./LikeButton.types";
 import { motion } from "framer-motion";
-import { MagneticClickWrapper } from "../../../AnimationWrapper";
+import { MagneticClickWrapper } from "../../../AnimationWrappers";
 import { TbHeart, TbHeartFilled } from "react-icons/tb";
 
 const LIKED_STYLES: IconButtonProps = {

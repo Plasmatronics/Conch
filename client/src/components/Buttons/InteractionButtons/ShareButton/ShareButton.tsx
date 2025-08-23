@@ -1,6 +1,6 @@
 import { IconButton } from "@chakra-ui/react";
 import { ShareButtonProps } from "./ShareButton.types";
-import { MagneticClickWrapper } from "../../../AnimationWrapper";
+import { MagneticClickWrapper } from "../../../AnimationWrappers";
 import { TbShare3 } from "react-icons/tb";
 
 export const ShareButton = ({
