@@ -4,7 +4,7 @@ export const commentDefaults: Omit<BaseCommentProps, "comment"> = {
 	avatar: "https://images.unsplash.com/photo-1511806754518-53bada35f930",
 	user: "Nicholas Bruno",
 	relationship: "Brother",
-	datePosted: new Date(),
+	datePosted: new Date(2025, 7, 25, 19, 0, 0), // August 25, 2025 7:00pm
 };
 
 export const shortComment = {

@@ -19,6 +19,7 @@ export const BaseComment = ({
 }: BaseCommentProps) => {
 	const [isLiked, setIsLiked] = React.useState(false);
 	const [isExpanded, setIsExpanded] = React.useState(false);
+	const curTimestamp = React.useRef(Date.now() - datePosted.getTime()).current;
 
 	const remaining = Math.max(0, numReplies - numRepliesRendered);
 	const isThreadFullyExpanded = numReplies > 0 && remaining === 0;
@@ -76,7 +77,7 @@ export const BaseComment = ({
 					</Box>
 				</Text>
 				<Flex width="100%" gap="1rem">
-					<Text>{getPrettyDate(Date.now() - datePosted.getTime())}</Text>
+					<Text>{getPrettyDate(curTimestamp)}</Text>
 					<Text>{relationship}</Text>
 					<Text
 						onClick={handleReplyClick}

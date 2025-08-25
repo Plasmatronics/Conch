@@ -12,7 +12,7 @@ export default {
 } satisfies Meta<typeof BaseComment>;
 
 const Template: StoryFn<BaseCommentProps> = (args) => {
-	return <BaseComment {...args} {...commentDefaults} />;
+	return <BaseComment {...commentDefaults} {...args} />;
 };
 
 export const ShortComment = Template.bind({});
@@ -32,6 +32,13 @@ UnrenderedReplies.args = {
 	comment:
 		"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe consequuntur ipsa odio voluptas voluptatem maxime ut sit, iusto nam vero error voluptates dignissimos animi nesciunt sed inventore assumenda nemo officia? Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe consequuntur ipsa odio voluptas voluptatem maxime ut sit, iusto nam vero error voluptates dignissimos animi nesciunt sed inventore assumenda nemo officia? Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe consequuntur ipsa odio voluptas voluptatem maxime ut sit, iusto nam vero error voluptates dignissimos animi nesciunt sed inventore assumenda nemo officia?",
 	numReplies: 41,
+};
+
+export const CurrentDate = Template.bind({});
+CurrentDate.args = {
+	comment:
+		"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe consequuntur ipsa odio voluptas voluptatem maxime ut sit, iusto nam vero error voluptates dignissimos animi nesciunt sed inventore assumenda nemo officia? Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe consequuntur ipsa odio voluptas voluptatem maxime ut sit, iusto nam vero error voluptates dignissimos animi nesciunt sed inventore assumenda nemo officia? Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe consequuntur ipsa odio voluptas voluptatem maxime ut sit, iusto nam vero error voluptates dignissimos animi nesciunt sed inventore assumenda nemo officia?",
+	datePosted: new Date(),
 };
 
 export const CommentSkeleton = () => {
