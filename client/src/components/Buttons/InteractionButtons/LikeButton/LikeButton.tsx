@@ -1,8 +1,9 @@
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
 import { LikeButtonProps } from "./LikeButton.types";
-import { motion } from "framer-motion";
+import { useAnimate } from "framer-motion";
 import { MagneticClickWrapper } from "../../../AnimationWrappers";
 import { TbHeart, TbHeartFilled } from "react-icons/tb";
+import { useEffect } from "react";
 
 const LIKED_STYLES: IconButtonProps = {
 	bg: "red.100",
@@ -17,14 +18,24 @@ const UNLIKED_STYLES: IconButtonProps = {
 export const LikeButton = ({
 	isLiked,
 	setIsLiked,
-	ref,
 	onClick,
 	strokeWidth,
 	onToggle,
 	...iconButtonProps
 }: LikeButtonProps) => {
+	const [scope, animate] = useAnimate();
+
 	const HeartIcon = isLiked ? TbHeartFilled : TbHeart;
-	const MotionHeart = motion(HeartIcon);
+
+	useEffect(() => {
+		if (isLiked) {
+			animate(
+				"svg",
+				{ scale: [1, 1.22, 1] },
+				{ duration: 0.35, ease: "easeOut" },
+			);
+		}
+	}, [animate, isLiked]);
 
 	function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
 		onClick?.(e);
@@ -45,16 +56,11 @@ export const LikeButton = ({
 			aria-pressed={isLiked}
 			className="group"
 			onClick={handleClick}
-			ref={ref}
 		>
 			<MagneticClickWrapper>
-				<MotionHeart
-					// slight “beat” on like; no animation on unlike
-					animate={isLiked ? { scale: [1, 1.22, 1] } : { scale: 1 }}
-					transition={{ duration: 0.35, ease: "easeOut" }}
-					style={{ width: "1.1em", height: "1.1em" }}
-					strokeWidth={strokeWidth || "2px"}
-				/>
+				<span ref={scope}>
+					<HeartIcon strokeWidth={strokeWidth || "2px"} />
+				</span>
 			</MagneticClickWrapper>
 		</IconButton>
 	);

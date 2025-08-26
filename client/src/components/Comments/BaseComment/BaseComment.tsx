@@ -41,7 +41,7 @@ export const BaseComment = ({
 	};
 
 	const handleLike = () => {
-		return setIsLiked((prev) => !prev);
+		setIsLiked((prev) => !prev);
 	};
 
 	const handleDoubleClick = () => {
