@@ -1,7 +1,7 @@
 import { IconButton } from "@chakra-ui/react";
 import { CloseButtonProps } from "./CloseButton.types";
 import { TbX } from "react-icons/tb";
-import { MagneticClickWrapper } from "../../AnimationWrapper";
+import { MagneticClickWrapper } from "../../AnimationWrappers";
 
 export const CloseButton = ({
 	ref,
