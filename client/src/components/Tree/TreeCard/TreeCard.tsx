@@ -25,6 +25,10 @@ export const TreeCard = ({
 	const arrMemberData = isArr ? memberData : [memberData];
 	const curMember = arrMemberData[curCardIndex];
 
+	const handleTabClick = (idx: number) => {
+		setCurCardIndex(idx);
+	};
+
 	return (
 		<Card.Root {...cardRootProps} width={width} height={height}>
 			<Card.Body
@@ -46,10 +50,6 @@ export const TreeCard = ({
 						justifyContent="space-around"
 					>
 						{arrMemberData.map((member, idx) => {
-							const handleTabClick = () => {
-								setCurCardIndex(idx);
-							};
-
 							return (
 								<TabButton
 									unselectedStyles={{
@@ -68,7 +68,7 @@ export const TreeCard = ({
 									height="0.35rem"
 									key={`${member.name}-${idx}`}
 									zIndex="overlay"
-									onClick={() => handleTabClick()}
+									onClick={() => handleTabClick(idx)}
 									isSelected={idx === curCardIndex}
 								/>
 							);
