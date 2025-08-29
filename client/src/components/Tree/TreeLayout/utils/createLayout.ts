@@ -17,13 +17,18 @@ export const getOrientedNodes = ({
 	const graph: dagre.graphlib.Graph =
 		new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
-	graph.setGraph({ rankdir: "TB" });
+	graph.setGraph({
+		rankdir: "TB",
+		nodesep: nodeHorizontalMargin,
+		ranksep: nodeVerticalMargin,
+		marginx: 0,
+		marginy: 0,
+	});
 
 	nodes.forEach((node) => {
-		graph.setNode(node.id, {
-			width: nodeHorizontalMargin,
-			height: nodeVerticalMargin,
-		});
+		const w = node.data.width as number;
+		const h = node.data.height as number;
+		graph.setNode(node.id, { width: w, height: h });
 	});
 
 	edges.forEach((edge) => {
@@ -33,16 +38,12 @@ export const getOrientedNodes = ({
 	dagre.layout(graph);
 
 	const newNodes = nodes.map((node) => {
-		const nodeWithPosition = graph.node(node.id);
-		const newNode = {
-			...node,
-			position: {
-				x: nodeWithPosition.x - nodeHorizontalMargin / 2,
-				y: nodeWithPosition.y - nodeVerticalMargin / 2,
-			},
-		};
+		const { x, y, width, height } = graph.node(node.id);
 
-		return newNode;
+		return {
+			...node,
+			position: { x: x - width / 2, y: y - height / 2 },
+		};
 	});
 
 	return { nodes: newNodes, edges };

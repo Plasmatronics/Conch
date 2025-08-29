@@ -53,16 +53,16 @@ export const TreeCard = ({
 							return (
 								<TabButton
 									unselectedStyles={{
-										bg: "green.400",
+										bg: "orange.300",
 										_hover: {
-											bg: "green.500",
+											bg: "orange.400",
 										},
 									}}
 									selectedStyles={{
 										_hover: {
-											bg: "green.600",
+											bg: "orange.500",
 										},
-										bg: "green.700",
+										bg: "orange.600",
 									}}
 									width="0.35rem"
 									height="0.35rem"
@@ -99,15 +99,10 @@ export const TreeCard = ({
 						justifyContent="center"
 						pb="0.25rem"
 					>
-						<Text
-							textAlign="center"
-							fontSize="sm"
-							fontWeight="medium"
-							color="gray.800"
-						>
+						<Text textAlign="center" fontSize="sm" fontWeight="semibold">
 							{curMember.name}
 						</Text>
-						<Text fontSize="xs" fontWeight="medium" color="gray.500">
+						<Text fontSize="xs" color="gray.500">
 							{curMember.birthYear} -
 							{curMember.deathYear ? ` ${curMember.deathYear}` : " present"}
 						</Text>

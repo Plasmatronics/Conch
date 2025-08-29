@@ -1,6 +1,6 @@
 import { ImageProps, CardRootProps, CardBodyProps } from "@chakra-ui/react";
 
-interface MemberData {
+export interface MemberData {
 	name: string;
 	numMemories: number;
 	birthYear: number;

@@ -2,17 +2,28 @@ import React from "react";
 import { ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { TreeLayoutProps } from "./TreeLayout.types";
-import { getOrientedNodes } from "./utils";
+import { getOrientedNodes } from "./utils/createLayout";
 import { Box } from "@chakra-ui/react";
-import { initialEdges, initialNodes, nodeTypes } from "./initialEdges";
+import { createNodesAndEdges } from "./utils/nodeEdgeFactory";
+import { nodeTypes } from "./components";
 
-export const TreeLayout = ({ width }: TreeLayoutProps) => {
+export const TreeLayout = ({
+	people,
+	marriages,
+	parentChild,
+}: TreeLayoutProps) => {
 	const nodeHorizontalMargin = 300;
 	const nodeVerticalMargin = 100;
 
+	const { nodes: rawNodes, edges: rawEdges } = createNodesAndEdges({
+		people,
+		marriages,
+		parentChild,
+	});
+
 	const { nodes: orientedNodes, edges: orientedEdges } = getOrientedNodes({
-		nodes: initialNodes,
-		edges: initialEdges,
+		nodes: rawNodes,
+		edges: rawEdges,
 		nodeHorizontalMargin,
 		nodeVerticalMargin,
 	});
