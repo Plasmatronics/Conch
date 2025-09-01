@@ -1,19 +1,19 @@
 import { Node, Edge } from "@xyflow/react";
 import dagre from "@dagrejs/dagre";
 
-interface IGetOrientedNodes {
+interface IGetOrientedNodesAndEdges {
 	nodes: Node[];
 	edges: Edge[];
 	nodeHorizontalMargin: number;
 	nodeVerticalMargin: number;
 }
 
-export const getOrientedNodes = ({
+export const getOrientedNodesAndEdges = ({
 	nodes,
 	edges,
 	nodeHorizontalMargin,
 	nodeVerticalMargin,
-}: IGetOrientedNodes) => {
+}: IGetOrientedNodesAndEdges) => {
 	const graph: dagre.graphlib.Graph =
 		new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
@@ -26,9 +26,10 @@ export const getOrientedNodes = ({
 	});
 
 	nodes.forEach((node) => {
-		const w = node.data.width as number;
-		const h = node.data.height as number;
-		graph.setNode(node.id, { width: w, height: h });
+		graph.setNode(node.id, {
+			width: node.data.width as number,
+			height: node.data.height as number,
+		});
 	});
 
 	edges.forEach((edge) => {

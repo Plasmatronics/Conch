@@ -2,10 +2,11 @@ import React from "react";
 import { ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { TreeLayoutProps } from "./TreeLayout.types";
-import { getOrientedNodes } from "./utils/createLayout";
+import { getOrientedNodesAndEdges } from "./utils/createLayout";
 import { Box } from "@chakra-ui/react";
-import { createNodesAndEdges } from "./utils/nodeEdgeFactory";
-import { nodeTypes } from "./components";
+import { createNodesAndEdges } from "./utils/createNodesAndEdges";
+import { hubNodeTypes, memberNodeTypes } from "./components";
+import { snapHubs } from "./utils/snapHubs";
 
 export const TreeLayout = ({
 	people,
@@ -21,18 +22,21 @@ export const TreeLayout = ({
 		parentChild,
 	});
 
-	const { nodes: orientedNodes, edges: orientedEdges } = getOrientedNodes({
-		nodes: rawNodes,
-		edges: rawEdges,
-		nodeHorizontalMargin,
-		nodeVerticalMargin,
-	});
+	const { nodes: orientedNodes, edges: orientedEdges } =
+		getOrientedNodesAndEdges({
+			nodes: rawNodes,
+			edges: rawEdges,
+			nodeHorizontalMargin,
+			nodeVerticalMargin,
+		});
+
+	const snappedNodes = snapHubs(orientedNodes);
 
 	return (
-		<Box width="100vw" height="100vh">
+		<Box width="100vw" height="100vh" bg="gray.100">
 			<ReactFlow
-				nodes={orientedNodes}
-				nodeTypes={nodeTypes}
+				nodes={snappedNodes}
+				nodeTypes={{ ...memberNodeTypes, ...hubNodeTypes }}
 				edges={orientedEdges}
 				fitView
 				proOptions={{ hideAttribution: true }}

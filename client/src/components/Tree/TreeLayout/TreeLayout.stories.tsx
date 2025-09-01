@@ -21,8 +21,53 @@ const defaultdata: Omit<MemberData, "name"> = {
 		"https://m.media-amazon.com/images/M/MV5BMTE5MjM5MzM3M15BMl5BanBnXkFtZTYwOTEzOTY0._V1_.jpg",
 };
 
-export const MiniTree = Template.bind({});
-MiniTree.args = {
+export const SmallTree = Template.bind({});
+SmallTree.args = {
+	people: {
+		Roberta: {
+			content: {
+				memberData: { ...threeCards[0] },
+			},
+		},
+		Ray: {
+			content: {
+				memberData: { ...threeCards[1] },
+			},
+		},
+		Aggie: {
+			content: {
+				memberData: { ...threeCards[2] },
+			},
+		},
+		Chris: {
+			content: {
+				memberData: {
+					name: "Chris Ramos",
+					...defaultdata,
+				},
+			},
+		},
+	},
+	marriages: [
+		{
+			descendantId: "Roberta",
+			spouseIds: ["Ray"],
+		},
+	],
+	parentChild: [
+		{
+			parentId: "Roberta",
+			childIds: ["Aggie", "Chris"],
+		},
+		{
+			parentId: "Ray",
+			childIds: ["Aggie", "Chris"],
+		},
+	],
+};
+
+export const MediumTree = Template.bind({});
+MediumTree.args = {
 	people: {
 		Roberta: {
 			content: {
@@ -44,6 +89,8 @@ MiniTree.args = {
 				memberData: {
 					name: "Mike Quinones",
 					...defaultdata,
+					image:
+						"https://www.format.com/wp-content/uploads/portrait_of_black_man-731x1024.jpg",
 				},
 			},
 		},

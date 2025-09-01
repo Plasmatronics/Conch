@@ -28,7 +28,6 @@ export const TreeMemberNode = ({ data }: { data: MemberNodeData }) => {
 	return (
 		<Box
 			borderRadius="md"
-			bg="red.400"
 			className="nodrag"
 			w={`${width}px`}
 			h={`${height}px`}
@@ -54,4 +53,4 @@ export const TreeMemberNode = ({ data }: { data: MemberNodeData }) => {
 	);
 };
 
-export const nodeTypes: NodeTypes = { member: TreeMemberNode };
+export const memberNodeTypes: NodeTypes = { member: TreeMemberNode };

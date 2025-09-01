@@ -1,16 +1,20 @@
 import { Edge, Node } from "@xyflow/react";
-
 import { TreeLayoutProps } from "../TreeLayout.types";
-import { MemberNodeData } from "../components";
 
 export const NODE_HEIGHT = 240;
 export const NODE_WIDTH = 160;
+
+export const HUB_WIDTH = 1;
+export const HUB_HEIGHT = 1;
+
+//  edgeTypes: bezier, smoothstep, step, and straight
+const edgeType = "smoothstep";
 
 export const createNodesAndEdges = ({
 	people,
 	marriages,
 	parentChild,
-}: TreeLayoutProps): { nodes: Node<MemberNodeData>[]; edges: Edge[] } => {
+}: TreeLayoutProps): { nodes: Node[]; edges: Edge[] } => {
 	const marriageMap = new Map<string, string[]>(
 		marriages.map((marriage) => [marriage.descendantId, marriage.spouseIds]),
 	);
@@ -21,7 +25,7 @@ export const createNodesAndEdges = ({
 		]),
 	);
 
-	const nodes: Node<MemberNodeData>[] = [];
+	const nodes: Node[] = [];
 	const edges: Edge[] = [];
 
 	for (const descendantId of marriageMap.keys()) {
@@ -41,6 +45,17 @@ export const createNodesAndEdges = ({
 		if (marriageMap.has(descendantId)) {
 			//push spouse node
 			nodes.push({
+				id: `${descendantId}SpouseHub`,
+				type: "hub",
+				position: { x: 0, y: 0 },
+				data: {
+					id: `${descendantId}SpouseHub`,
+					width: HUB_WIDTH,
+					height: HUB_HEIGHT,
+				},
+			});
+
+			nodes.push({
 				id: `${descendantId}Spouse`,
 				type: "member",
 				position: { x: 0, y: 0 },
@@ -53,21 +68,58 @@ export const createNodesAndEdges = ({
 					height: NODE_HEIGHT,
 				},
 			});
+
+			//connecting each spouse to spouse hub
+			edges.push({
+				id: `${descendantId}-Hub`,
+				source: descendantId,
+				target: `${descendantId}SpouseHub`,
+				targetHandle: `tgt-left-${descendantId}SpouseHub`,
+				selectable: false,
+				type: edgeType,
+			});
+			edges.push({
+				id: `${descendantId}Spouse-${descendantId}SpouseHub`,
+				source: `${descendantId}Spouse`,
+				target: `${descendantId}SpouseHub`,
+				targetHandle: `tgt-right-${descendantId}SpouseHub`,
+				selectable: false,
+				type: edgeType,
+			});
 		}
 
 		const childrenIds = parentChildMap.get(descendantId);
 
 		if (childrenIds) {
+			//creating children hub and connecting spouse hub to children hub
+			nodes.push({
+				id: `${descendantId}ChildHub`,
+				type: "hub",
+				position: { x: 0, y: 0 },
+				data: {
+					id: `${descendantId}ChildHub`,
+					width: HUB_WIDTH,
+					height: HUB_HEIGHT,
+				},
+			});
+			edges.push({
+				id: `${descendantId}SpouseHub-${descendantId}ChildHub`,
+				source: `${descendantId}SpouseHub`,
+				target: `${descendantId}ChildHub`,
+				sourceHandle: `src-bottom-${descendantId}SpouseHub`,
+				targetHandle: `tgt-top-${descendantId}ChildHub`,
+				selectable: false,
+				type: edgeType,
+			});
+
 			for (const childId of childrenIds) {
 				edges.push({
-					id: `${descendantId}-${childId}`,
-					source: descendantId,
+					id: `${descendantId}ChildHub-${childId}`,
+					source: `${descendantId}ChildHub`,
+					sourceHandle: `src-bottom-${descendantId}ChildHub`,
+					selectable: false,
 					target: childId,
-				});
-				edges.push({
-					id: `${descendantId}Spouse-${childId}`,
-					source: `${descendantId}Spouse`,
-					target: childId,
+					type: edgeType,
 				});
 
 				//create node now if child is not married, bc we wont be able to create one later
@@ -85,15 +137,7 @@ export const createNodesAndEdges = ({
 					});
 				}
 			}
-		} else {
-			//if no children just connect descendant and spouse
-			edges.push({
-				id: `${descendantId}-${descendantId}Spouse`,
-				source: `${descendantId}`,
-				target: `${descendantId}Spouse`,
-			});
 		}
 	}
-
 	return { nodes, edges };
 };
