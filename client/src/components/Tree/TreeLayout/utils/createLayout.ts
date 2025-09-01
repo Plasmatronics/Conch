@@ -23,7 +23,6 @@ export const getOrientedNodesAndEdges = ({
 		ranksep: nodeVerticalMargin,
 		marginx: 0,
 		marginy: 0,
-		ranker: "tight-tree",
 	});
 
 	nodes.forEach((node) => {
