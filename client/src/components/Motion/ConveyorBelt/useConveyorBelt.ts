@@ -2,7 +2,7 @@ import { useAnimate } from "framer-motion";
 import React from "react";
 import { ConveyorBeltProps } from "./ConveyorBelt.types";
 
-interface IUseConveyerBelt {
+interface IUseConveyorBelt {
 	speed: ConveyorBeltProps["speed"];
 	direction: ConveyorBeltProps["direction"];
 	gap: ConveyorBeltProps["gap"];
@@ -12,7 +12,7 @@ export const useConveyorBelt = ({
 	speed,
 	direction,
 	gap,
-}: IUseConveyerBelt) => {
+}: IUseConveyorBelt) => {
 	const controlsRef = React.useRef<ReturnType<typeof animate>>();
 	const [scope, animate] = useAnimate();
 
@@ -26,7 +26,7 @@ export const useConveyorBelt = ({
 			{ repeat: Infinity, repeatType: "loop", duration: speed, ease: "linear" },
 		);
 		return () => controlsRef.current?.stop();
-	}, [scope, animate, speed, gap]);
+	}, [scope, animate, speed, gap, direction]);
 
 	const runBelt = () => controlsRef.current?.play();
 	const pauseBelt = () => controlsRef.current?.pause();
