@@ -9,7 +9,6 @@ const MotionFlex = motion.create(Flex);
 export const ConveyorBelt = ({
 	children,
 	speed = 20,
-	gap = "5rem",
 	...boxProps
 }: ConveyorBeltProps) => {
 	const { scope } = useConveyorBelt({ speed });

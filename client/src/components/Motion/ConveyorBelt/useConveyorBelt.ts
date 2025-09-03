@@ -17,7 +17,7 @@ export const useConveyorBelt = ({ speed }: { speed: number }) => {
 				ease: "linear",
 			},
 		);
-	}, [scope, animate]);
+	}, [scope, animate, speed]);
 
 	return { scope };
 };
