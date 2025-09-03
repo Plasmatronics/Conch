@@ -1,23 +1,35 @@
 import { useAnimate } from "framer-motion";
-import { useEffect } from "react";
+import React from "react";
+import { ConveyorBeltProps } from "./ConveyorBelt.types";
 
-export const useConveyorBelt = ({ speed }: { speed: number }) => {
+interface IUseConveyerBelt {
+	speed: ConveyorBeltProps["speed"];
+	direction: ConveyorBeltProps["direction"];
+	gap: ConveyorBeltProps["gap"];
+}
+
+export const useConveyorBelt = ({
+	speed,
+	direction,
+	gap,
+}: IUseConveyerBelt) => {
+	const controlsRef = React.useRef<ReturnType<typeof animate>>();
 	const [scope, animate] = useAnimate();
 
-	useEffect(() => {
-		animate(
-			scope.current,
-			{
-				x: ["-100vw", "0vw"],
-			},
-			{
-				repeat: Infinity,
-				repeatType: "loop",
-				duration: speed,
-				ease: "linear",
-			},
-		);
-	}, [scope, animate, speed]);
+	React.useEffect(() => {
+		const animationStartingPoint =
+			direction === "right" ? `-100vw - ${gap}` : `100vw + ${gap}`;
 
-	return { scope };
+		controlsRef.current = animate(
+			scope.current,
+			{ x: [`calc(${animationStartingPoint})`, "0vw"] },
+			{ repeat: Infinity, repeatType: "loop", duration: speed, ease: "linear" },
+		);
+		return () => controlsRef.current?.stop();
+	}, [scope, animate, speed, gap]);
+
+	const runBelt = () => controlsRef.current?.play();
+	const pauseBelt = () => controlsRef.current?.pause();
+
+	return { scope, runBelt, pauseBelt };
 };

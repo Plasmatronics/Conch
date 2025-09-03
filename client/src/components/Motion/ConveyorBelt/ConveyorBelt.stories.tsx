@@ -13,11 +13,34 @@ const Template: StoryFn<ConveyorBeltProps> = (args) => {
 	return <ConveyorBelt {...args} />;
 };
 
-export const Default = Template.bind({});
-Default.args = {
+export const ReverseDirection = Template.bind({});
+ReverseDirection.args = {
+	children: [<Box bg="red" width="5rem" height="5rem" />],
+	direction: "left",
+};
+
+export const OneChild = Template.bind({});
+OneChild.args = {
+	children: [<Box bg="red" width="5rem" height="5rem" />],
+};
+
+export const SomeChildren = Template.bind({});
+SomeChildren.args = {
 	children: [
 		<Box bg="red" width="5rem" height="5rem" />,
 		<Box bg="green" width="5rem" height="5rem" />,
+		<Box bg="yellow" width="5rem" height="5rem" />,
+	],
+};
+
+export const ManyChildren = Template.bind({});
+ManyChildren.args = {
+	children: [
+		<Box bg="orange" width="5rem" height="5rem" />,
+		<Box bg="green" width="5rem" height="5rem" />,
+		<Box bg="purple" width="5rem" height="5rem" />,
+		<Box bg="red" width="5rem" height="5rem" />,
+		<Box bg="black" width="5rem" height="5rem" />,
 		<Box bg="yellow" width="5rem" height="5rem" />,
 	],
 };
