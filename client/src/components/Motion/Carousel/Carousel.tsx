@@ -9,7 +9,7 @@ import {
 	TbChevronUp,
 } from "react-icons/tb";
 
-const MotionFlex = motion(Flex);
+const MotionFlex = motion.create(Flex);
 
 export const Carousel = ({
 	buttonProps,
