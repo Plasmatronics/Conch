@@ -28,7 +28,7 @@ export const TransitionIcons = ({
 			<MotionIcon
 				as={curIcon.icon}
 				key={`transition-icon-${curIndex}`}
-				{...(!unanimated ? defaultMotion : {})}
+				{...(unanimated ? {} : defaultMotion)}
 				{...uniformIconStyles}
 				{...curIcon.styles}
 			/>
