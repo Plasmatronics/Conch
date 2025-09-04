@@ -1,8 +1,8 @@
 import { IconProps } from "@chakra-ui/react";
-import { AnimatePresenceProps, SVGMotionProps } from "framer-motion";
+import { AnimatePresenceProps, MotionProps } from "framer-motion";
 import { IconType } from "react-icons/lib";
 
-type MotionIconProps = IconProps & SVGMotionProps<SVGSVGElement>;
+export type MotionIconProps = MotionProps & IconProps;
 
 interface ITransitionIcons {
 	icon: IconType;
@@ -12,5 +12,6 @@ interface ITransitionIcons {
 export interface TransitionIconProps extends AnimatePresenceProps {
 	icons: ITransitionIcons[];
 	activeIconIndex: number;
+	unanimated?: boolean;
 	uniformIconStyles?: MotionIconProps;
 }
