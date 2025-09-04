@@ -51,13 +51,13 @@ export const PersonControl = ({
 
 	const inactiveIconStyles = {
 		...defaultIconStyling,
-		...inactiveStyles,
 		...uniformIconProps,
+		...inactiveStyles,
 	};
 	const activeIconStyles = {
 		...defaultActiveIconStyling,
-		...activeStyles,
 		...uniformIconProps,
+		...activeStyles,
 	};
 
 	const items = [

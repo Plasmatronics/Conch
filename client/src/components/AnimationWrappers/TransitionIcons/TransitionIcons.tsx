@@ -20,13 +20,14 @@ export const TransitionIcons = ({
 	unanimated,
 	...animatePresenceProps
 }: TransitionIconProps) => {
-	const curIcon = icons[activeIconIndex];
+	const curIndex = Math.max(Math.min(activeIconIndex, icons.length - 1), 0);
+	const curIcon = icons[curIndex];
 
 	return (
 		<AnimatePresence mode="wait" initial={false} {...animatePresenceProps}>
 			<MotionIcon
 				as={curIcon.icon}
-				key={`transition-icon-${activeIconIndex}`}
+				key={`transition-icon-${curIndex}`}
 				{...(!unanimated ? defaultMotion : {})}
 				{...uniformIconStyles}
 				{...curIcon.styles}
