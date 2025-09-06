@@ -1,17 +1,7 @@
 import mongoose, { Document } from "mongoose";
+import { MemberFavThings } from "@conch/shared";
 
-interface IMemberFavThings {
-	movie?: string;
-	food?: string;
-	restaurant?: string;
-	color?: string;
-	place?: string;
-	decade?: string;
-	person?: string;
-	song?: string;
-}
-
-const memberFavoriteThingsSchema = new mongoose.Schema<IMemberFavThings>(
+const memberFavoriteThingsSchema = new mongoose.Schema<MemberFavThings>(
 	{
 		movie: { type: String },
 		food: { type: String },
@@ -59,7 +49,7 @@ export interface IFamilyTreeMember extends Document {
 	createdAt: Date;
 	deletedAt?: Date;
 	relationToRootMember: string;
-	favThings?: IMemberFavThings;
+	favThings?: MemberFavThings;
 	claimedId?: mongoose.Types.ObjectId;
 	keyPhoto?: mongoose.Types.ObjectId;
 }
