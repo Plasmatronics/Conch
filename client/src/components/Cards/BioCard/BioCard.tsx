@@ -49,7 +49,7 @@ export const BioCard = ({
 	const favThingsKeys = favThings && Object.keys(favThings);
 	const randomFavThingKey =
 		favThingsKeys &&
-		favThingsKeys[Math.round(Math.random() * favThingsKeys.length - 1)];
+		favThingsKeys[Math.floor(Math.random() * favThingsKeys.length)];
 	const formattedRandomFavThingKey =
 		randomFavThingKey &&
 		randomFavThingKey?.charAt(0)?.toUpperCase() + randomFavThingKey?.slice(1);
