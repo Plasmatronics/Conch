@@ -9,7 +9,7 @@ export default {
 	component: BioCard,
 } satisfies Meta<typeof BioCard>;
 
-const defaultInto = {
+const defaultInfo = {
 	keyPhotoSrc:
 		"https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRxSwCY9F--SzRe5tRL8fpupQeIRc4auqHR-MiHYkCSXYQjRqD9HYBDB9aXgh19YExZzjhUHhPFBQaOK_jM9oAGNlIUgC6hza9goKNYLWw",
 	keyPhotoCaption: "Albert Einstein in 1921",
@@ -39,7 +39,7 @@ const Template: StoryFn<BioCardProps> = (args) => {
 
 export const Einstein = Template.bind({});
 Einstein.args = {
-	info: defaultInto,
+	info: defaultInfo,
 };
 
 export const Madonna = Template.bind({});
@@ -82,7 +82,7 @@ export const SideBySide = () => {
 	return (
 		<Flex width="100%" height="100%" gap="1rem">
 			<Box height="50rem" flex="3" bg="red" />
-			<BioCard flex="2" info={defaultInto} />
+			<BioCard flex="2" info={defaultInfo} />
 		</Flex>
 	);
 };

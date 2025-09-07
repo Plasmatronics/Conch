@@ -1,8 +1,6 @@
 import { AspectRatio, Card, Flex, Grid, Image, Text } from "@chakra-ui/react";
 import { BioCardProps } from "./BioCard.types";
 
-const NUM_KEYS_NOT_INCLUDED_IN_GRID = 3;
-
 const renderDetail = (label: string, value: string[] | string) => {
 	const isValueArr = Array.isArray(value);
 
@@ -71,11 +69,7 @@ export const BioCard = ({
 					<Text fontSize="xs" alignSelf="center">
 						{keyPhotoCaption}
 					</Text>
-					<Grid
-						templateColumns="1fr 2fr"
-						templateRows={`repeat(${Object.keys(info).length - NUM_KEYS_NOT_INCLUDED_IN_GRID}, auto)`}
-						gap="0.25rem"
-					>
+					<Grid templateColumns="1fr 2fr" gap="0.25rem">
 						{renderDetail("Name", name)}
 						{renderDetail(
 							"Lifespan",
