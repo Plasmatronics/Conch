@@ -1,6 +1,5 @@
+import { PersonID } from "types";
 import { TreeCardProps } from "../TreeCard";
-
-type PersonID = string;
 
 type PersonData = {
 	content: Omit<TreeCardProps, "width" | "height"> &

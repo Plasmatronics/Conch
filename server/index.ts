@@ -25,15 +25,17 @@ const app = express();
 //Add CSPs
 let origin;
 if (process.env.NODE_ENV === "production") {
-	origin = process.env.HOST + ":" + process.env.PORT;
-} else {
 	origin = process.env.CLIENT_URL;
+} else {
+	origin = process.env.HOST + ":" + process.env.PORT;
 }
 
+const localDevURLs = ["http://localhost:6006", "http://127.0.0.1:6006"];
 const allowedOrigins: string[] = [
 	"'self'",
 	origin!,
 	`https://${process.env.S3_BUCKET_NAME}.s3.us-east-1.amazonaws.com`,
+	...localDevURLs,
 ].filter(Boolean);
 
 const connectSrcs: string[] = [
@@ -68,7 +70,28 @@ app.use(
 );
 
 //Only allow CORS for our client
-app.use(cors({ origin, credentials: true }));
+const corsOrigins: string[] =
+	process.env.NODE_ENV === "production"
+		? ([process.env.CLIENT_URL].filter(Boolean) as string[])
+		: ([
+				process.env.HOST && process.env.PORT
+					? `${process.env.HOST}:${process.env.PORT}`
+					: origin,
+				...localDevURLs,
+			].filter(Boolean) as string[]);
+app.use(
+	cors({
+		origin: corsOrigins,
+		credentials: true,
+		methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+		allowedHeaders: [
+			"Content-Type",
+			"Authorization",
+			"X-Requested-With",
+			"X-XSRF-TOKEN",
+		],
+	}),
+);
 
 //Compresses text
 app.use(compression());
