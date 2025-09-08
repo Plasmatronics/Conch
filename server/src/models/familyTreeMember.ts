@@ -43,7 +43,7 @@ export interface IFamilyTreeMember extends Document {
 	name: string;
 	nicknames?: string[];
 	birthLocation?: ILocation;
-	dateOfBirth?: Date;
+	dateOfBirth: Date;
 	dateOfDeath?: Date;
 	deathLocation?: ILocation;
 	createdAt: Date;
@@ -79,11 +79,9 @@ const familyTreeMemberSchema = new mongoose.Schema<FamilyTreeMemberDoc>(
 		},
 		dateOfDeath: {
 			type: Date,
-			required: [true, "A family tree member must have a date of death"],
 		},
 		deathLocation: {
 			type: locationSchema,
-			required: [true, "A family tree member must have a death location"],
 		},
 		createdAt: {
 			type: Date,
