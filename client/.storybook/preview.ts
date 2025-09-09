@@ -1,7 +1,12 @@
 import type { Preview } from "@storybook/react";
 import withChakra from "./chakraDecorator";
+import { initialize, mswLoader } from "msw-storybook-addon";
+import { handlers } from "./handlers";
+
+initialize();
 
 export const decorators = [withChakra];
+export const loaders = [mswLoader];
 
 const preview: Preview = {
 	parameters: {
@@ -11,6 +16,8 @@ const preview: Preview = {
 				date: /Date$/i,
 			},
 		},
+		msw: { handlers },
+
 		a11y: {
 			// 'todo' - show a11y violations in the test UI only
 			// 'error' - fail CI on a11y violations
