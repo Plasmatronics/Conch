@@ -1,5 +1,8 @@
 import type { Preview } from "@storybook/react";
 import withChakra from "./chakraDecorator";
+import { initialize, mswLoader } from "msw-storybook-addon";
+
+initialize();
 
 export const decorators = [withChakra];
 
@@ -11,6 +14,7 @@ const preview: Preview = {
 				date: /Date$/i,
 			},
 		},
+		loaders: [mswLoader],
 		a11y: {
 			// 'todo' - show a11y violations in the test UI only
 			// 'error' - fail CI on a11y violations
