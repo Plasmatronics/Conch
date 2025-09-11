@@ -114,6 +114,13 @@ const familyTreeMemberSchema = new mongoose.Schema<FamilyTreeMemberDoc>(
 	},
 );
 
+familyTreeMemberSchema.virtual("stories", {
+	ref: "Story",
+	localField: "_id",
+	foreignField: "involves",
+	justOne: false,
+});
+
 export const FamilyTreeMember = mongoose.model(
 	"FamilyTreeMember",
 	familyTreeMemberSchema,
