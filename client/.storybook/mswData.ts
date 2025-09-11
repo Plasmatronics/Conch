@@ -9,18 +9,22 @@ export const mockMediaData = {
 	involves: ["68bded593c9768d183ad7834"],
 };
 
-export const mockCommentOne = {
+export const mockParentComment = {
 	id: "687f19fe77c2242b69f1f261",
 	content: "This is the best post ever",
 	author: "68bded593c9768d183ad7834",
 };
 
-export const mockCommentTwo = {
+export const mockChildComment = {
 	id: "687f19fe77c2242b69f1f261",
 	content: "This is the best post ever",
 	author: "68bded593c9768d183ad7834",
 	parentComment: "687f19fe77c2242b69f1f261",
 };
+
+type Comment = typeof mockParentComment & { parentComment?: string };
+export type CommentWithReplies = Comment & { replies: typeof mockChildComment };
+export type CommentResponse = Comment | CommentWithReplies;
 
 export const mockMemberData = {
 	_id: "68bded593c9768d183ad7834",

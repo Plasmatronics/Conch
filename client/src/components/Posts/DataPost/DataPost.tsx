@@ -1,21 +1,15 @@
 import { PersonId, StoryId } from "types";
 import { useDataPost } from "./useDataPost";
 import { BasePost, BasePostProps } from "../BasePost";
-import { LikeCommentShareProps } from "../../Buttons";
+import { useState } from "react";
 
 export interface DataPostProps {
 	storyId: StoryId;
 	personId: PersonId;
-	isLiked: LikeCommentShareProps["isLiked"];
-	setIsLiked: LikeCommentShareProps["setIsLiked"];
 }
 
-export const DataPost = ({
-	storyId,
-	personId,
-	isLiked,
-	setIsLiked,
-}: DataPostProps) => {
+export const DataPost = ({ storyId, personId }: DataPostProps) => {
+	const [isLiked, setIsLiked] = useState(false);
 	const { dataQuery, avatarQuery, mediaQuery } = useDataPost({
 		storyId,
 		personId,
