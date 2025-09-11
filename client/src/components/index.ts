@@ -7,3 +7,4 @@ export * from "./Media";
 export * from "./Motion";
 export * from "./Tree";
 export * from "./Cards";
+export * from "./Typography";

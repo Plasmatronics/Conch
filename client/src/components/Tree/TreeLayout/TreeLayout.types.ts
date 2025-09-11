@@ -1,4 +1,4 @@
-import { PersonID } from "types";
+import { PersonId } from "types";
 import { TreeCardProps } from "../TreeCard";
 
 type PersonData = {
@@ -7,16 +7,16 @@ type PersonData = {
 };
 
 interface DescendantMarriages {
-	descendantId: PersonID;
-	spouseIds: PersonID[];
+	descendantId: PersonId;
+	spouseIds: PersonId[];
 }
 interface ParentChildRelationship {
-	parentId: PersonID;
-	childIds: PersonID[];
+	parentId: PersonId;
+	childIds: PersonId[];
 }
 
 export interface TreeLayoutProps {
-	people: Record<PersonID, PersonData>;
+	people: Record<PersonId, PersonData>;
 	marriages: DescendantMarriages[];
 	parentChild: ParentChildRelationship[];
 }
