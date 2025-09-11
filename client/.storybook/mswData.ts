@@ -9,6 +9,19 @@ export const mockMediaData = {
 	involves: ["68bded593c9768d183ad7834"],
 };
 
+export const mockCommentOne = {
+	id: "687f19fe77c2242b69f1f261",
+	content: "This is the best post ever",
+	author: "68bded593c9768d183ad7834",
+};
+
+export const mockCommentTwo = {
+	id: "687f19fe77c2242b69f1f261",
+	content: "This is the best post ever",
+	author: "68bded593c9768d183ad7834",
+	parentComment: "687f19fe77c2242b69f1f261",
+};
+
 export const mockMemberData = {
 	_id: "68bded593c9768d183ad7834",
 	name: "Joseph Bruno",

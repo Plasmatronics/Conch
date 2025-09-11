@@ -40,4 +40,11 @@ const commentSchema = new mongoose.Schema<CommentDoc>(
 	},
 );
 
+commentSchema.virtual("replies", {
+	ref: "Comment",
+	localField: "_id",
+	foreignField: "parentComment",
+	justOne: false,
+});
+
 export const Comment = mongoose.model("Comment", commentSchema);
