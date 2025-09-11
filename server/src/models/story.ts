@@ -48,7 +48,6 @@ const storySchema = new mongoose.Schema<StoryDoc>(
 		createdAt: {
 			type: Date,
 			default: Date.now(),
-			select: false,
 		},
 		deletedAt: {
 			type: Date,

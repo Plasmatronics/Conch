@@ -35,11 +35,13 @@ const mediaSchema = new mongoose.Schema<MediaDoc>(
 			ref: "User",
 			required: [true, "Media must belong to a user"],
 		},
-		involves: {
-			type: [mongoose.Schema.ObjectId],
-			ref: "FamilyTreeMember",
-			required: [true, "Media must have involved users"],
-		},
+		involves: [
+			{
+				type: mongoose.Schema.ObjectId,
+				ref: "FamilyTreeMember",
+				required: [true, "Media must have involved users"],
+			},
+		],
 		createdAt: {
 			type: Date,
 			default: Date.now(),

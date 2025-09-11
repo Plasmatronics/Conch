@@ -2,9 +2,9 @@ import mongoose, { Document } from "mongoose";
 
 export interface ILike {
 	fileKey: string;
-	target: mongoose.Types.ObjectId | string;
+	target: mongoose.Types.ObjectId;
 	targetType: "Media" | "Document";
-	author: mongoose.Types.ObjectId | string;
+	author: mongoose.Types.ObjectId;
 	createdAt: Date;
 }
 
