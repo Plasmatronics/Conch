@@ -10,6 +10,9 @@ export const PostGallery = ({
 	uniformGridItemProps,
 	onAllMediaLoaded,
 	onLoadStart,
+	loading,
+	onItemClick,
+	isVideoPlayable = true,
 	...gridProps
 }: PostGalleryProps) => {
 	const [numLoaded, setNumLoaded] = useState(0);
@@ -27,7 +30,7 @@ export const PostGallery = ({
 	};
 
 	const renderNode = (node: MediaNode) => {
-		if (node.type !== "Video") {
+		if (node.type !== "video") {
 			//destructure to sanitize
 			const {
 				type,
@@ -38,6 +41,7 @@ export const PostGallery = ({
 				index,
 				...img
 			} = node;
+
 			return (
 				<Image
 					src={src}
@@ -45,9 +49,12 @@ export const PostGallery = ({
 					height="100%"
 					borderRadius="sm"
 					{...img}
-					onLoadStart={onLoadStart}
 					onError={handleLoad}
-					onLoad={handleLoad}
+					onLoad={() => {
+						handleLoad?.();
+						//img doesnt emit onLoadStart to just simulate here
+						onLoadStart?.();
+					}}
 				/>
 			);
 		} else {
@@ -72,6 +79,7 @@ export const PostGallery = ({
 						onLoadedData: handleLoad,
 						onLoadStart: onLoadStart,
 					}}
+					onlyPoster={isVideoPlayable ? false : true}
 				/>
 			);
 		}
@@ -95,14 +103,16 @@ export const PostGallery = ({
 							width="100%"
 							height="100%"
 							gridArea={`media${idx + 1}`}
-							data-grid-area={`media${idx + 1}`}
-							key={file.src}
+							onClick={() => onItemClick?.(idx)}
+							key={`${file.src}-${idx}`}
 							position="relative"
 						>
 							<Skeleton
 								width="100%"
 								height="100%"
-								loading={numLoaded < Math.min(MAX_MEDIA, media.length)}
+								loading={
+									loading || numLoaded < Math.min(MAX_MEDIA, media.length)
+								}
 							>
 								{renderNode({ ...file })}
 								<Box
@@ -122,6 +132,7 @@ export const PostGallery = ({
 									left="50%"
 									top="50%"
 									zIndex="overlay"
+									pointerEvents="none"
 									fontSize="3xl"
 									color="white"
 									transform="translate(-50%, -50%)"
@@ -137,14 +148,16 @@ export const PostGallery = ({
 							width="100%"
 							height="100%"
 							gridArea={`media${idx + 1}`}
-							data-grid-area={`media${idx + 1}`}
-							key={file.src}
+							onClick={() => onItemClick?.(idx)}
+							key={`${file.src}-${idx}`}
 							asChild
 						>
 							<Skeleton
 								width="100%"
 								height="100%"
-								loading={numLoaded < Math.min(MAX_MEDIA, media.length)}
+								loading={
+									loading || numLoaded < Math.min(MAX_MEDIA, media.length)
+								}
 							>
 								{renderNode({ ...file })}
 							</Skeleton>

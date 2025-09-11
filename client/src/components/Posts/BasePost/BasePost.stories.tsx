@@ -1,9 +1,9 @@
 import type { Meta, StoryFn } from "@storybook/react-vite";
 
-import { BasePostSkeleton } from "./BasePostSkeleton";
+import { BasePostSkeleton } from "./Fragments";
 import { BasePost } from "./BasePost";
-import { BasePostProps } from "./BasePost.types";
-import { useState } from "react";
+import { BasePostHeaderProps, BasePostProps } from "./BasePost.types";
+import { useEffect, useState } from "react";
 import {
 	horizVideo,
 	postDefaults,
@@ -37,6 +37,10 @@ StoryPost.args = {
 			laborum, nam exercitationem explicabo incidunt maiores. Error nostrum
 			possimus natus excepturi nihil laborum eum animi quas aliquid! Maiores
 			exercitationem aut ea?`,
+};
+export const ShortPost = Template.bind({});
+ShortPost.args = {
+	text: "Apollo is my favorite mythological character!",
 };
 
 export const LongPost = Template.bind({});
@@ -74,9 +78,9 @@ Video.args = {
 	media: [{ src: "https://www.youtube.com/embed/QhBnZ6NPOY0", type: "Video" }],
 };
 
-export const MultiMediaPost = Template.bind({});
-MultiMediaPost.args = {
-	media: [...threeHorizontalImages, horizVideo],
+export const MediaPost = Template.bind({});
+MediaPost.args = {
+	media: [...threeHorizontalImages],
 };
 
 export const ManyMediaPost = Template.bind({});
@@ -95,6 +99,53 @@ FullPost.args = {
 			laborum, nam exercitationem explicabo incidunt maiores. Error nostrum
 			possimus natus excepturi nihil laborum eum animi quas aliquid! Maiores
 			exercitationem aut ea?`,
+};
+
+export const ThreeSecExternalLoadText = () => {
+	const [isLoading, setIsLoading] = useState(true);
+	const [isLiked, setIsLiked] = useState(false);
+
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			setIsLoading(false);
+		}, 3000);
+
+		return () => clearTimeout(timeout);
+	}, []);
+
+	return (
+		<BasePost
+			{...(postDefaults as BasePostHeaderProps)}
+			text="Apollo is my favorite mythological character!"
+			loading={isLoading}
+			isLiked={isLiked}
+			setIsLiked={setIsLiked}
+		/>
+	);
+};
+
+export const ThreeSecExternalLoadMedia = () => {
+	const [isLoading, setIsLoading] = useState(true);
+	const [isLiked, setIsLiked] = useState(false);
+
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			setIsLoading(false);
+		}, 3000);
+
+		return () => clearTimeout(timeout);
+	}, []);
+
+	return (
+		<BasePost
+			{...(postDefaults as BasePostHeaderProps)}
+			text="Apollo is my favorite mythological character!"
+			media={[...threeHorizontalImages]}
+			loading={isLoading}
+			isLiked={isLiked}
+			setIsLiked={setIsLiked}
+		/>
+	);
 };
 
 export const PostSkeleton = () => {

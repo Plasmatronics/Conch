@@ -19,7 +19,7 @@ const renderCarouselChildren = (
 		maxH: "100vh",
 		objectFit: "scale-down",
 	};
-	if (media.type === "Image") {
+	if (media.type === "image") {
 		//destructure to sanitize
 		const { type, src, ...img } = media;
 		return <Image src={src} {...sharedStyles} {...img} />;
@@ -52,25 +52,6 @@ export const PostGalleryModal = ({
 			? [...verticalMediaPrioArr, ...media.slice(MAX_MEDIA)]
 			: verticalMediaPrioArr;
 
-	function handleGalleryClick(e: React.MouseEvent) {
-		e.preventDefault();
-		const clickedTarget = e.currentTarget;
-		if (clickedTarget.getAttribute("data-component-type") !== "PostGallery")
-			return;
-
-		const elementClicked = Array.from(
-			clickedTarget.querySelectorAll<HTMLElement>("[data-grid-area]"),
-		).find((el) => el.contains(e.target as Node));
-		if (!elementClicked) return;
-
-		const mediaIndexClicked = elementClicked
-			?.getAttribute("data-grid-area")
-			?.split("media")[1];
-
-		setCarouselIndex(Number(mediaIndexClicked) - 1);
-		setIsCarouselOpen(true);
-	}
-
 	const handleCloseButtonClick = () => {
 		setIsCarouselOpen(false);
 	};
@@ -79,9 +60,13 @@ export const PostGalleryModal = ({
 		<>
 			<PostGallery
 				{...postGalleryProps}
+				onItemClick={(idx) => {
+					setCarouselIndex(idx);
+					setIsCarouselOpen(true);
+				}}
+				isVideoPlayable={isCarouselOpen}
 				cursor="pointer"
 				media={media}
-				onClick={handleGalleryClick}
 				hidden={isCarouselOpen}
 			/>
 
@@ -111,7 +96,9 @@ export const PostGalleryModal = ({
 										setCurrentIndex={setCarouselIndex}
 										{...carouselProps}
 									>
-										{allMedia.map((m) => renderCarouselChildren(m))}
+										{allMedia.map((mediaItem) =>
+											renderCarouselChildren(mediaItem),
+										)}
 									</Carousel>
 
 									<FullscreenButton
@@ -128,11 +115,11 @@ export const PostGalleryModal = ({
 										left={0}
 									/>
 								</Box>
-								{!isExpanded && rightSection && (
+								{rightSection && (
 									<Box
-										asChild
 										height="100%"
-										flex="0 0 40%"
+										flex="0 0 auto"
+										flexBasis={isExpanded ? "40%" : "0%"}
 										transition="flex-basis 200ms ease"
 									>
 										{rightSection}

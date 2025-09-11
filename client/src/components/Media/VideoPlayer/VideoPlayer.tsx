@@ -11,6 +11,7 @@ import { Box } from "@chakra-ui/react";
 
 export const VideoPlayer = ({
 	title,
+	onlyPoster,
 	src,
 	poster,
 	thumbnails,
@@ -38,11 +39,22 @@ export const VideoPlayer = ({
 				"--video-border-radius": "{radii.md}",
 				"--video-font-family": "{fonts.body}",
 				"--video-focus-ring-color": "colors.colorPalette.600",
-
 				...cssOverrides,
 			}}
+			position="relative"
 			{...boxProps}
 		>
+			{onlyPoster && (
+				<Box
+					position="absolute"
+					top={0}
+					left={0}
+					width="100%"
+					height="100%"
+					//vid controls have a computed index of 10
+					zIndex={11}
+				/>
+			)}
 			<MediaPlayer
 				title={title}
 				src={src}
@@ -67,6 +79,7 @@ export const VideoPlayer = ({
 							<Track key={track.src || `Track-${index}`} {...track} />
 						))}
 				</MediaProvider>
+
 				<DefaultVideoLayout
 					thumbnails={thumbnails}
 					{...defaultVideoLayoutProps}

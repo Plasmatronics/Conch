@@ -4,18 +4,24 @@ import { ReactNode } from "react";
 import { MediaItem } from "../PostGallery";
 import { PostGalleryModalProps } from "../PostGalleryModal";
 
-export interface BasePostProps extends Omit<CardRootProps, "content"> {
+export interface BasePostHeaderProps {
 	user: string;
 	avatar: AvatarImageProps["src"];
 	title: string;
 	relationship: string;
 	year?: Date;
 	headerRight?: ReactNode;
+	onLocationClick?: () => void;
+}
+
+export interface BasePostProps
+	extends Omit<CardRootProps, "content" | "title">,
+		BasePostHeaderProps {
 	likeCommentShareProps?: Omit<LikeCommentShareProps, "isLiked" | "setIsLiked">;
 	isLiked: LikeCommentShareProps["isLiked"];
 	setIsLiked: LikeCommentShareProps["setIsLiked"];
+	loading?: boolean;
 	text?: string;
-	onLocationClick?: () => void;
 	media?: MediaItem[];
 	postGalleryModalProps?: Omit<PostGalleryModalProps, "media">;
 }

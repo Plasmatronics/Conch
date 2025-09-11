@@ -5,6 +5,7 @@ export interface IStory {
 	content: string;
 	author: mongoose.Types.ObjectId;
 	involves: mongoose.Types.ObjectId[];
+	media?: mongoose.Types.ObjectId[];
 	createdAt: Date;
 	deletedAt?: Date;
 	storyDate?: Date;
@@ -18,8 +19,8 @@ const storySchema = new mongoose.Schema<StoryDoc>(
 			type: String,
 			required: [true, "A story must have a title"],
 			unique: true,
-			maxlength: [30, "A story musn't exceed 30 characters."],
-			minlength: [7, "A story must exceed 7 characters."],
+			maxlength: [30, "A story title musn't exceed 30 characters."],
+			minlength: [7, "A story title must exceed 7 characters."],
 		},
 		content: {
 			type: String,
@@ -31,11 +32,19 @@ const storySchema = new mongoose.Schema<StoryDoc>(
 			ref: "User",
 			required: [true, "A story must belong to a user"],
 		},
-		involves: {
-			type: [mongoose.Schema.ObjectId],
-			ref: "FamilyTreeMember",
-			required: [true, "A story must have involved users"],
-		},
+		involves: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "FamilyTreeMember",
+				required: true,
+			},
+		],
+		media: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "Media",
+			},
+		],
 		createdAt: {
 			type: Date,
 			default: Date.now(),

@@ -13,13 +13,11 @@ import type { DefaultVideoLayoutProps } from "@vidstack/react/player/layouts/def
  */
 export interface VideoPlayerProps extends Omit<BoxProps, "colorPalette"> {
 	title?: MediaPlayerProps["title"];
-	/** Video source URL, provide an array if you want different quality options */
+	onlyPoster?: boolean;
 	src: MediaPlayerProps["src"];
 	poster?: string;
 	thumbnails?: ThumbnailProps["src"];
-	/** Array of track objects (types include captions, subtitles, chapters) */
 	tracks?: TrackProps[];
-	/** ChakraUI Theme Color Palette, used to style controls */
 	colorPalette?: string;
 	/** CSS overrides for the MediaPlayer, DefaultLayout.
 	 * @see https://vidstack.io/docs/player/components/layouts/default-layout/?styling=default-theme#video-layout for variables

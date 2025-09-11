@@ -5,7 +5,7 @@ import {
 	SkeletonCircle,
 	SkeletonProps,
 } from "@chakra-ui/react";
-import { ConchSkeleton } from "../../Elements";
+import { ConchSkeleton } from "../../../Elements";
 import { ReactNode } from "react";
 
 interface BasePostSkeletonProps extends BoxProps {

@@ -1,7 +1,7 @@
 import { GridItemProps, GridProps, ImageProps } from "@chakra-ui/react";
 import { VideoPlayerProps } from "components/Media";
 
-export type MediaType = "Image" | "Video";
+export type MediaType = "image" | "video";
 
 type SafeGridItemProps = Omit<
 	GridItemProps,
@@ -30,13 +30,13 @@ export interface BaseMediaItem {
 export interface ImageMediaItem
 	extends Omit<BaseMediaItem, "type">,
 		Omit<ImageProps, "src"> {
-	type?: "Image";
+	type?: "image";
 }
 
 export interface VideoMediaItem
 	extends Omit<BaseMediaItem, "type">,
 		Omit<VideoPlayerProps, "src"> {
-	type: "Video";
+	type: "video";
 }
 
 export type MediaItem = ImageMediaItem | VideoMediaItem;
@@ -50,6 +50,9 @@ export interface PostGalleryProps
 	extends Omit<GridProps, "onLoadStart" | "onError" | "onLoad"> {
 	onLoadStart?: () => void;
 	onAllMediaLoaded?: () => void;
+	onItemClick?: (index: number) => void;
+	isVideoPlayable?: boolean;
+	loading?: boolean;
 	media: MediaItem[];
 	uniformGridItemProps?: SafeGridItemProps;
 }
