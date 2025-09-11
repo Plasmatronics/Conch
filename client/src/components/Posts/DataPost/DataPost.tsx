@@ -1,6 +1,6 @@
 import { PersonId, StoryId } from "types";
 import { useDataPost } from "./useDataPost";
-import { BasePost } from "../BasePost";
+import { BasePost, BasePostProps } from "../BasePost";
 import { LikeCommentShareProps } from "../../Buttons";
 
 export interface DataPostProps {
@@ -16,25 +16,36 @@ export const DataPost = ({
 	isLiked,
 	setIsLiked,
 }: DataPostProps) => {
-	const { dataQuery, imageQuery } = useDataPost({ storyId, personId });
+	const { dataQuery, avatarQuery, mediaQuery } = useDataPost({
+		storyId,
+		personId,
+	});
+	const isDataLoading =
+		dataQuery.isLoading || avatarQuery.isLoading || mediaQuery.isLoading;
 
-	if (dataQuery.isLoading || imageQuery.isLoading) return null;
-	if (dataQuery.isError || dataQuery.isError) return null;
-	if (!dataQuery.data?.memberData || !dataQuery.data?.storyData) return null;
+	const { name, relationToRootMember } =
+		!isDataLoading && dataQuery.data && dataQuery.data.memberData;
 
-	const { name, relationToRootMember } = dataQuery && dataQuery.data.memberData;
-	const { content, storyDate, title } = dataQuery && dataQuery.data.storyData;
+	const { content, storyDate, title } =
+		!isDataLoading && dataQuery.data && dataQuery.data.storyData;
+
+	const renderedMedia: BasePostProps["media"] =
+		mediaQuery.data &&
+		mediaQuery.data.map((properties) => {
+			return { src: properties.downloadUrl, type: properties.type };
+		});
 
 	return (
 		<BasePost
 			title={title}
 			text={content}
 			relationship={relationToRootMember}
-			loading={dataQuery.isPending && imageQuery.isPending}
+			loading={isDataLoading}
 			user={name}
 			isLiked={isLiked}
 			setIsLiked={setIsLiked}
-			avatar={imageQuery.data}
+			avatar={avatarQuery.data && avatarQuery.data[0].downloadUrl}
+			media={renderedMedia}
 			year={new Date(storyDate)}
 		/>
 	);

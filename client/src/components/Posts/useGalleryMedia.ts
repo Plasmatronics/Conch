@@ -26,7 +26,7 @@ export const useGalleryMedia = (media: MediaItem[]) => {
 
 				const fileWithDimensions = readMediaDimensions({
 					...file,
-					type: file.type || "Image",
+					type: file.type || "image",
 				});
 				cacheRef.current.set(file.src, fileWithDimensions);
 				return fileWithDimensions;

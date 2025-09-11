@@ -22,24 +22,24 @@ export const horizVideo: MediaItem = {
 
 export const vertImage: MediaItem = {
 	src: "https://i.pinimg.com/736x/2d/95/e5/2d95e5886fc4c65a6778b5fee94a7d59.jpg",
-	type: "Image",
+	type: "image",
 	alt: "feather",
 };
 
 export const threeHorizontalImages: MediaItem[] = [
 	{
 		src: "https://images.pexels.com/photos/1054655/pexels-photo-1054655.jpeg?cs=srgb&dl=pexels-hsapir-1054655.jpg&fm=jpg",
-		type: "Image",
+		type: "image",
 		alt: "elephant",
 	},
 	{
 		src: "https://images.ctfassets.net/hrltx12pl8hq/28ECAQiPJZ78hxatLTa7Ts/2f695d869736ae3b0de3e56ceaca3958/free-nature-images.jpg?fit=fill&w=1200&h=630",
-		type: "Image",
+		type: "image",
 		alt: "tree",
 	},
 	{
 		src: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
-		type: "Image",
+		type: "image",
 		alt: "photography",
 	},
 ];

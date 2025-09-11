@@ -32,6 +32,10 @@ export const CustomSize = () => {
 	);
 };
 
+export const OnlyPoster = () => {
+	return <VideoPlayer {...defaultStyles} onlyPoster />;
+};
+
 export const FillsParent = () => {
 	return (
 		<Box bg="red" width="13rem" height="20rem">

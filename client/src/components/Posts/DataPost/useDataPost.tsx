@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { DataPostProps } from "./DataPost";
-import { useFetchSecureImage } from "../../../api/useFetchSecureImage";
+import { useFetchMediaData } from "../../../api/useFetchMediaData";
 
 type useDataPostProps = Omit<DataPostProps, "isLiked" | "setIsLiked">;
 
@@ -22,8 +22,11 @@ export const useDataPost = ({ storyId, personId }: useDataPostProps) => {
 		queryFn: () => fetchPostData({ storyId, personId }),
 	});
 
-	const keyPhotoFileKey = dataQuery.data?.memberData?.keyPhoto;
-	const imageQuery = useFetchSecureImage(keyPhotoFileKey);
+	const keyPhotoFileId = [dataQuery.data?.memberData?.keyPhoto];
+	const mediaFileIds = dataQuery.data?.storyData?.media;
 
-	return { dataQuery, imageQuery };
+	const avatarQuery = useFetchMediaData(keyPhotoFileId);
+	const mediaQuery = useFetchMediaData(mediaFileIds);
+
+	return { dataQuery, avatarQuery, mediaQuery };
 };

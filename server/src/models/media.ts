@@ -3,7 +3,7 @@ import mongoose, { Document } from "mongoose";
 export interface IMedia {
 	fileKey: string;
 	description?: string;
-	type: "photo" | "video";
+	type: "image" | "video";
 	author: mongoose.Types.ObjectId;
 	involves: mongoose.Types.ObjectId[];
 	createdAt: Date;
@@ -26,8 +26,8 @@ const mediaSchema = new mongoose.Schema<MediaDoc>(
 			type: String,
 			required: [true, "Media must have a type"],
 			enum: {
-				values: ["photo", "video"],
-				message: "Media type must be either a photo or video",
+				values: ["image", "video"],
+				message: "Media type must be either a image or video",
 			},
 		},
 		author: {

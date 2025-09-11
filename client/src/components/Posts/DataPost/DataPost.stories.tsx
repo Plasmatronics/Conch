@@ -16,14 +16,14 @@ const Template: StoryFn<ConchDataPostProps> = (args) => {
 	return <ConchDataPost {...args} isLiked={isLiked} setIsLiked={setIsLiked} />;
 };
 
-export const JosephStory = Template.bind({});
-JosephStory.args = {
+export const ShortStoryNoMedia = Template.bind({});
+ShortStoryNoMedia.args = {
 	storyId: "68bf2a9895bde97c33918cef",
 	personId: "68bded593c9768d183ad7834",
 };
 
-export const ShortStory = Template.bind({});
-ShortStory.args = {
+export const StoryWithMedia = Template.bind({});
+StoryWithMedia.args = {
 	storyId: "68c1db520839cb6d80289c3f",
 	personId: "68bded593c9768d183ad7834",
 };

@@ -5,6 +5,7 @@ export interface IStory {
 	content: string;
 	author: mongoose.Types.ObjectId;
 	involves: mongoose.Types.ObjectId[];
+	media?: mongoose.Types.ObjectId[];
 	createdAt: Date;
 	deletedAt?: Date;
 	storyDate?: Date;
@@ -36,6 +37,12 @@ const storySchema = new mongoose.Schema<StoryDoc>(
 				type: mongoose.Schema.Types.ObjectId,
 				ref: "FamilyTreeMember",
 				required: true,
+			},
+		],
+		media: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "Media",
 			},
 		],
 		createdAt: {
