@@ -1,15 +1,5 @@
-import mongoose, { Document as MongooseDocument } from "mongoose";
-
-export interface IDocument {
-	fileKey: string;
-	type: string;
-	author: mongoose.Types.ObjectId;
-	involves: mongoose.Types.ObjectId[];
-	createdAt: Date;
-	deletedAt?: Date;
-}
-
-export type DocumentDoc = IDocument & MongooseDocument;
+import mongoose from "mongoose";
+import { DocumentDoc } from "packages/shared";
 
 const documentSchema = new mongoose.Schema<DocumentDoc>(
 	{

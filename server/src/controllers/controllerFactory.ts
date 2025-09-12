@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Document, Model, Types } from "mongoose";
 import { AppError, catchError, QueryBuilder, S3Service } from "../utils";
-import { MediaDoc, DocumentDoc } from "../models";
+import { MediaDoc, DocumentDoc } from "packages/shared";
 
 /**
  * Creates a new document

@@ -1,5 +1,5 @@
-import mongoose, { Document } from "mongoose";
-import { MemberFavThings } from "@conch/shared";
+import mongoose from "mongoose";
+import { FamilyTreeMemberDoc, ILocation, MemberFavThings } from "@conch/shared";
 
 const memberFavoriteThingsSchema = new mongoose.Schema<MemberFavThings>(
 	{
@@ -14,13 +14,6 @@ const memberFavoriteThingsSchema = new mongoose.Schema<MemberFavThings>(
 	},
 	{ _id: false },
 );
-
-interface ILocation {
-	type: "Point";
-	coordinates: number[];
-	address?: string;
-	description?: string;
-}
 
 const locationSchema = new mongoose.Schema<ILocation>(
 	{
@@ -38,23 +31,6 @@ const locationSchema = new mongoose.Schema<ILocation>(
 	},
 	{ _id: false },
 );
-
-export interface IFamilyTreeMember extends Document {
-	name: string;
-	nicknames?: string[];
-	birthLocation?: ILocation;
-	dateOfBirth: Date;
-	dateOfDeath?: Date;
-	deathLocation?: ILocation;
-	createdAt: Date;
-	deletedAt?: Date;
-	relationToRootMember: string;
-	favThings?: MemberFavThings;
-	claimedId?: mongoose.Types.ObjectId;
-	keyPhoto?: mongoose.Types.ObjectId;
-}
-
-export type FamilyTreeMemberDoc = IFamilyTreeMember & Document;
 
 const familyTreeMemberSchema = new mongoose.Schema<FamilyTreeMemberDoc>(
 	{

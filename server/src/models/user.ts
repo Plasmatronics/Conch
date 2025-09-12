@@ -1,26 +1,10 @@
-import mongoose, { Document } from "mongoose";
+import mongoose from "mongoose";
 import validator from "validator";
 import { AppError } from "../utils";
 import { hashPassword } from "../utils/password";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
-
-export interface IUser {
-	name: string;
-	email: string;
-	password: string;
-	passwordResetToken?: string;
-	passwordResetExpiresAt?: Date;
-	familyTreeMember: mongoose.Types.ObjectId;
-	createdAt: Date;
-	deletedAt?: Date;
-	_passwordConfirm?: string;
-
-	isPasswordCorrect: (password: string) => Promise<boolean>;
-	createResetPasswordToken: () => string;
-}
-
-export type UserDoc = IUser & Document;
+import { UserDoc } from "packages/shared/src";
 
 const userSchema = new mongoose.Schema<UserDoc>(
 	{

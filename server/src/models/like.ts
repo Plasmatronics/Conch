@@ -1,14 +1,5 @@
-import mongoose, { Document } from "mongoose";
-
-export interface ILike {
-	fileKey: string;
-	target: mongoose.Types.ObjectId;
-	targetType: "Media" | "Document";
-	author: mongoose.Types.ObjectId;
-	createdAt: Date;
-}
-
-export type LikeDoc = ILike & Document;
+import mongoose from "mongoose";
+import { LikeDoc } from "packages/shared";
 
 const likeSchema = new mongoose.Schema<LikeDoc>(
 	{

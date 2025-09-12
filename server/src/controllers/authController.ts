@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { IUser, User, UserDoc } from "../models";
+import { User } from "../models";
 import { AppError, catchError, Email } from "../utils";
 import mongoose from "mongoose";
 import crypto from "crypto";
+import { IUser, UserDoc } from "packages/shared";
 
 const signToken = async (id: mongoose.Types.ObjectId) => {
 	return await new Promise((resolve, reject) => {

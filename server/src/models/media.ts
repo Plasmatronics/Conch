@@ -1,16 +1,5 @@
-import mongoose, { Document } from "mongoose";
-
-export interface IMedia {
-	fileKey: string;
-	description?: string;
-	type: "image" | "video";
-	author: mongoose.Types.ObjectId;
-	involves: mongoose.Types.ObjectId[];
-	createdAt: Date;
-	deletedAt?: Date;
-}
-
-export type MediaDoc = IMedia & Document;
+import mongoose from "mongoose";
+import { MediaDoc } from "packages/shared";
 
 const mediaSchema = new mongoose.Schema<MediaDoc>(
 	{

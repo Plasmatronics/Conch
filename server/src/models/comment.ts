@@ -1,14 +1,5 @@
-import mongoose, { Document } from "mongoose";
-
-export interface IComment {
-	content: string;
-	author: mongoose.Types.ObjectId;
-	parentComment?: mongoose.Types.ObjectId;
-	createdAt: Date;
-	deletedAt?: Date;
-}
-
-export type CommentDoc = IComment & Document;
+import mongoose from "mongoose";
+import { CommentDoc } from "packages/shared";
 
 const commentSchema = new mongoose.Schema<CommentDoc>(
 	{
