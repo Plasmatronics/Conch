@@ -1,7 +1,7 @@
 import mongoose, { Document } from "mongoose";
 import { MemberFavThings } from "types/favThings.types";
 import { ILocation } from "types/location.types";
-import { HydrateWithMongoose } from "types/utils";
+import { HydrateWithMetadata } from "types/utils";
 import { IStory } from "./stories.types";
 
 export interface IFamilyTreeMember {
@@ -39,7 +39,7 @@ export interface UnhydratedFamilyTreeMemberDTO {
 }
 
 export type HydratedFamilyTreeMemberDTO =
-	HydrateWithMongoose<UnhydratedFamilyTreeMemberDTO>;
+	HydrateWithMetadata<UnhydratedFamilyTreeMemberDTO>;
 
 export type PopulatedFamilyTreeMemberAPIResponse = Omit<
 	HydratedFamilyTreeMemberDTO,

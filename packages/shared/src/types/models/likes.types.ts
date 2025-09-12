@@ -1,5 +1,5 @@
 import mongoose, { Document } from "mongoose";
-import { HydrateWithMongoose } from "types/utils";
+import { HydrateWithMetadata } from "types/utils";
 
 export interface ILike {
 	fileKey: string;
@@ -19,4 +19,4 @@ export interface UnhydratedLikeDTO {
 	createdAt: Date;
 }
 
-export type HydratedLikeDTO = HydrateWithMongoose<UnhydratedLikeDTO>;
+export type HydratedLikeDTO = HydrateWithMetadata<UnhydratedLikeDTO>;

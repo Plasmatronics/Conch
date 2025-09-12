@@ -1,5 +1,5 @@
 import mongoose, { Document } from "mongoose";
-import { HydrateWithMongoose } from "types/utils";
+import { HydrateWithMetadata } from "types/utils";
 
 export interface IStory {
 	title: string;
@@ -25,4 +25,4 @@ export interface UnhydratedStoryDTO {
 	storyDate?: Date;
 }
 
-export type HydratedStoryDTO = HydrateWithMongoose<UnhydratedStoryDTO>;
+export type HydratedStoryDTO = HydrateWithMetadata<UnhydratedStoryDTO>;

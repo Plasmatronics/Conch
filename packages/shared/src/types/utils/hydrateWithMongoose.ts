@@ -1,7 +1,5 @@
-import mongoose from "mongoose";
-
-export type HydrateWithMongoose<T> = T & {
-	_id?: mongoose.Types.ObjectId;
-	id?: mongoose.Types.ObjectId;
+export type HydrateWithMetadata<T> = T & {
+	_id?: string;
+	id: string;
 	__v?: number;
 };

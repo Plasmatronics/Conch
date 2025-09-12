@@ -1,5 +1,5 @@
 import mongoose, { Document } from "mongoose";
-import { HydrateWithMongoose } from "../utils";
+import { HydrateWithMetadata } from "../utils";
 
 export interface IComment {
 	content: string;
@@ -21,7 +21,7 @@ export interface UnhydratedCommentDTO {
 	replies?: UnhydratedCommentDTO[];
 }
 
-export type HydratedCommentDTO = HydrateWithMongoose<UnhydratedCommentDTO>;
+export type HydratedCommentDTO = HydrateWithMetadata<UnhydratedCommentDTO>;
 
 export type PopulatedCommentAPIResponse = Omit<
 	HydratedCommentDTO,

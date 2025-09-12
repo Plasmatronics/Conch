@@ -1,5 +1,5 @@
 import mongoose, { Document } from "mongoose";
-import { HydrateWithMongoose } from "types/utils";
+import { HydrateWithMetadata } from "types/utils";
 
 export interface IDocument {
 	fileKey: string;
@@ -21,4 +21,4 @@ export interface UnhydratedDocumentDTO {
 	deletedAt?: Date;
 }
 
-export type HydratedDocumentDTO = HydrateWithMongoose<UnhydratedDocumentDTO>;
+export type HydratedDocumentDTO = HydrateWithMetadata<UnhydratedDocumentDTO>;

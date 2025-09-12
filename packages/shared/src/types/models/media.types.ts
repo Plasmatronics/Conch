@@ -1,5 +1,5 @@
 import mongoose, { Document } from "mongoose";
-import { HydrateWithMongoose } from "types/utils";
+import { HydrateWithMetadata } from "types/utils";
 
 export interface IMedia {
 	fileKey: string;
@@ -23,4 +23,4 @@ export interface UnhydratedMediaDTO {
 	deletedAt?: Date;
 }
 
-export type HydratedMediaDTO = HydrateWithMongoose<UnhydratedMediaDTO>;
+export type HydratedMediaDTO = HydrateWithMetadata<UnhydratedMediaDTO>;

@@ -1,5 +1,5 @@
 import mongoose, { Document } from "mongoose";
-import { HydrateWithMongoose } from "types/utils";
+import { HydrateWithMetadata } from "types/utils";
 
 export interface IUser {
 	name: string;
@@ -33,4 +33,4 @@ export interface UnhydratedUserDTO {
 	createResetPasswordToken: () => string;
 }
 
-export type HydratedUserDTO = HydrateWithMongoose<UnhydratedUserDTO>;
+export type HydratedUserDTO = HydrateWithMetadata<UnhydratedUserDTO>;
