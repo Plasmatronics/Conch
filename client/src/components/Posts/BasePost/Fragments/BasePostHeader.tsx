@@ -21,7 +21,7 @@ export const BasePostHeader = ({
 			</Avatar.Root>
 			<Stack gap="0rem">
 				<Text lineClamp="1" fontWeight="semibold">
-					{`${title} (${storyDate && new Date(storyDate).getFullYear()})`}
+					{`${title} ${storyDate ? `(${new Date(storyDate).getFullYear()})` : ""}`}
 				</Text>
 				<HStack>
 					<Text color="gray.500" fontSize="xs">

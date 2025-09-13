@@ -1,4 +1,4 @@
-import { PersonId } from "types";
+import { HydratedFamilyTreeMemberDTO } from "@conch/shared";
 import { TreeCardProps } from "../TreeCard";
 
 type PersonData = {
@@ -7,16 +7,16 @@ type PersonData = {
 };
 
 interface DescendantMarriages {
-	descendantId: PersonId;
-	spouseIds: PersonId[];
+	descendantId: HydratedFamilyTreeMemberDTO["id"];
+	spouseIds: HydratedFamilyTreeMemberDTO["id"][];
 }
 interface ParentChildRelationship {
-	parentId: PersonId;
-	childIds: PersonId[];
+	parentId: HydratedFamilyTreeMemberDTO["id"];
+	childIds: HydratedFamilyTreeMemberDTO["id"][];
 }
 
 export interface TreeLayoutProps {
-	people: Record<PersonId, PersonData>;
+	people: Record<HydratedFamilyTreeMemberDTO["id"], PersonData>;
 	marriages: DescendantMarriages[];
 	parentChild: ParentChildRelationship[];
 }

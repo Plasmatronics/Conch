@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { BaseComment } from "../BaseComment";
-import { CommentId, PersonId } from "types";
 
 export interface DataCommentProps {
 	commentId: CommentId;

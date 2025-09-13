@@ -67,7 +67,7 @@ export const useFetchMemberData = ({
 	const keyPhotoId = memberQuery.data?.keyPhoto;
 
 	const keyPhotoQuery = useFetchMediaData({
-		ids: [keyPhotoId || ""],
+		ids: keyPhotoId ? [keyPhotoId] : [],
 		enabled: !!memberQuery.data && !!keyPhotoId,
 	});
 

@@ -1,11 +1,11 @@
 import { useDataPost } from "./useDataPost";
 import { BasePost, BasePostProps } from "../BasePost";
 import { useState } from "react";
-import { HydratedStoryDTO, HydratedUserDTO } from "@conch/shared";
+import { HydratedStoryDTO, HydratedFamilyTreeMemberDTO } from "@conch/shared";
 
 export interface DataPostProps {
 	storyId: HydratedStoryDTO["id"];
-	personId: HydratedUserDTO["id"];
+	personId: HydratedFamilyTreeMemberDTO["id"];
 }
 
 export const DataPost = ({ storyId, personId }: DataPostProps) => {
