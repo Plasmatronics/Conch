@@ -75,7 +75,7 @@ LongPost.args = {
 
 export const Video = Template.bind({});
 Video.args = {
-	media: [{ src: "https://www.youtube.com/embed/QhBnZ6NPOY0", type: "Video" }],
+	media: [{ src: "https://www.youtube.com/embed/QhBnZ6NPOY0", type: "video" }],
 };
 
 export const MediaPost = Template.bind({});

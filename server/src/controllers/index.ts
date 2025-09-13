@@ -9,3 +9,4 @@ export { mediaController } from "./mediaController";
 export { storyController } from "./storyController";
 export { userController } from "./userController";
 export { familyTreeMemberController } from "./familyTreeMemberController";
+export { commentController } from "./commentController";

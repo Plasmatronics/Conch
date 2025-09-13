@@ -3,8 +3,9 @@ import type { Meta, StoryFn } from "@storybook/react-vite";
 // import { BaseCommentSkeleton } from "./BaseCommentSkeleton";
 import { BaseComment } from "./BaseComment";
 import { BaseCommentProps } from "./BaseComment.types";
-import { Box } from "@chakra-ui/react";
 import { commentDefaults } from "../sharedCommentProps";
+import { BaseCommentSkeleton } from "./BaseCommentSkeleton";
+import React from "react";
 
 export default {
 	title: "Comments/BaseComment",
@@ -12,7 +13,15 @@ export default {
 } satisfies Meta<typeof BaseComment>;
 
 const Template: StoryFn<BaseCommentProps> = (args) => {
-	return <BaseComment {...commentDefaults} {...args} />;
+	const [isLiked, setIsLiked] = React.useState(false);
+	return (
+		<BaseComment
+			{...commentDefaults}
+			{...args}
+			isLiked={isLiked}
+			setIsLiked={setIsLiked}
+		/>
+	);
 };
 
 export const ShortComment = Template.bind({});
@@ -42,5 +51,5 @@ CurrentDate.args = {
 };
 
 export const CommentSkeleton = () => {
-	return <Box />;
+	return <BaseCommentSkeleton />;
 };

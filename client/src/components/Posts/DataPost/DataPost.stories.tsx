@@ -1,6 +1,5 @@
 import type { Meta, StoryFn } from "@storybook/react-vite";
 
-import { useState } from "react";
 import {
 	DataPost as ConchDataPost,
 	DataPostProps as ConchDataPostProps,
@@ -12,8 +11,7 @@ export default {
 } satisfies Meta<typeof ConchDataPost>;
 
 const Template: StoryFn<ConchDataPostProps> = (args) => {
-	const [isLiked, setIsLiked] = useState(false);
-	return <ConchDataPost {...args} isLiked={isLiked} setIsLiked={setIsLiked} />;
+	return <ConchDataPost {...args} />;
 };
 
 export const ShortStoryNoMedia = Template.bind({});

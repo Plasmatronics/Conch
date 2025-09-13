@@ -1,37 +1,37 @@
-import { PersonId, StoryId } from "types";
 import { useDataPost } from "./useDataPost";
 import { BasePost, BasePostProps } from "../BasePost";
-import { LikeCommentShareProps } from "../../Buttons";
+import { useState } from "react";
+import { HydratedStoryDTO, HydratedFamilyTreeMemberDTO } from "@conch/shared";
 
 export interface DataPostProps {
-	storyId: StoryId;
-	personId: PersonId;
-	isLiked: LikeCommentShareProps["isLiked"];
-	setIsLiked: LikeCommentShareProps["setIsLiked"];
+	storyId: HydratedStoryDTO["id"];
+	personId: HydratedFamilyTreeMemberDTO["id"];
 }
 
-export const DataPost = ({
-	storyId,
-	personId,
-	isLiked,
-	setIsLiked,
-}: DataPostProps) => {
-	const { dataQuery, avatarQuery, mediaQuery } = useDataPost({
-		storyId,
-		personId,
-	});
+export const DataPost = ({ storyId, personId }: DataPostProps) => {
+	const [isLiked, setIsLiked] = useState(false);
+	const { memberQuery, keyPhotoQuery, storyMediaQuery, storyContentData } =
+		useDataPost({
+			storyId,
+			personId,
+		});
+
 	const isDataLoading =
-		dataQuery.isLoading || avatarQuery.isLoading || mediaQuery.isLoading;
+		memberQuery.isLoading ||
+		keyPhotoQuery.isLoading ||
+		storyMediaQuery.isLoading;
 
-	const { name, relationToRootMember } =
-		!isDataLoading && dataQuery.data && dataQuery.data.memberData;
+	const { name = "", relationToRootMember = "" } = memberQuery.data ?? {};
+	const { downloadUrl = "" } = keyPhotoQuery.data?.at(0) ?? {};
 
-	const { content, storyDate, title } =
-		!isDataLoading && dataQuery.data && dataQuery.data.storyData;
-
+	const {
+		storyDate = new Date(),
+		title = "",
+		content = "",
+	} = storyContentData ?? {};
 	const renderedMedia: BasePostProps["media"] =
-		mediaQuery.data &&
-		mediaQuery.data.map((properties) => {
+		storyMediaQuery.data &&
+		storyMediaQuery.data.map((properties) => {
 			return { src: properties.downloadUrl, type: properties.type };
 		});
 
@@ -44,9 +44,9 @@ export const DataPost = ({
 			user={name}
 			isLiked={isLiked}
 			setIsLiked={setIsLiked}
-			avatar={avatarQuery.data && avatarQuery.data[0].downloadUrl}
+			avatar={downloadUrl}
 			media={renderedMedia}
-			year={new Date(storyDate)}
+			storyDate={storyDate}
 		/>
 	);
 };

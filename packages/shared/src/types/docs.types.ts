@@ -1,13 +1,15 @@
 import {
+	CommentDoc,
 	UserDoc,
 	MediaDoc,
 	LikeDoc,
 	FamilyTreeMemberDoc,
 	StoryDoc,
 	DocumentDoc,
-} from "../../../../server/src/models";
+} from "./models";
 
 export type AnyModelDoc =
+	| CommentDoc
 	| UserDoc
 	| MediaDoc
 	| LikeDoc

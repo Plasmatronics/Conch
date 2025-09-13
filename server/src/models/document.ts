@@ -1,15 +1,5 @@
-import mongoose, { Document as MongooseDocument } from "mongoose";
-
-export interface IDocument {
-	fileKey: string;
-	type: string;
-	author: mongoose.Types.ObjectId;
-	involves: mongoose.Types.ObjectId[];
-	createdAt: Date;
-	deletedAt?: Date;
-}
-
-export type DocumentDoc = IDocument & MongooseDocument;
+import mongoose from "mongoose";
+import { DocumentDoc } from "packages/shared";
 
 const documentSchema = new mongoose.Schema<DocumentDoc>(
 	{
@@ -27,11 +17,13 @@ const documentSchema = new mongoose.Schema<DocumentDoc>(
 			ref: "User",
 			required: [true, "A document must belong to a user"],
 		},
-		involves: {
-			type: [mongoose.Schema.ObjectId],
-			ref: "FamilyTreeMember",
-			required: [true, "A document must have involved tree members"],
-		},
+		involves: [
+			{
+				type: mongoose.Schema.ObjectId,
+				ref: "FamilyTreeMember",
+				required: [true, "A document must have involved tree members"],
+			},
+		],
 		createdAt: {
 			type: Date,
 			default: Date.now(),

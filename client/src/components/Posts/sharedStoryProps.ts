@@ -12,12 +12,12 @@ export const postDefaults: Partial<BasePostProps> = {
 
 export const vertVideo: MediaItem = {
 	src: "https://www.youtube.com/watch?v=q-Y0bnx6Ndw&list=RDq-Y0bnx6Ndw&start_radio=1",
-	type: "Video",
+	type: "video",
 };
 
 export const horizVideo: MediaItem = {
 	src: "https://www.youtube.com/watch?v=q-Y0bnx6Ndw&list=RDq-Y0bnx6Ndw&start_radio=1",
-	type: "Video",
+	type: "video",
 };
 
 export const vertImage: MediaItem = {

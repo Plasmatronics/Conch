@@ -1,25 +1,23 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { DataPostProps } from "./DataPost";
+import { DataCommentProps } from "./DataComment";
 import { useFetchMediaData } from "../../../api/useFetchMediaData";
 
-type useDataPostProps = Omit<DataPostProps, "isLiked" | "setIsLiked">;
-
-const fetchPostData = async ({ storyId, personId }: useDataPostProps) => {
+const fetchCommentData = async ({ commentId, personId }: DataCommentProps) => {
 	const { data } = await axios.get(
 		`http://127.0.0.1:3000/api/v1/familyTreeMembers/${personId}?include=stories`,
 	);
 
 	const memberData = data.data;
-	const storyData = memberData.stories.find((val: any) => val.id === storyId);
+	const storyData = memberData.stories.find((val: any) => val.id === commentId);
 
 	return { memberData, storyData };
 };
 
-export const useDataPost = ({ storyId, personId }: useDataPostProps) => {
+export const useDataComment = ({ commentId, personId }: DataCommentProps) => {
 	const dataQuery = useQuery({
-		queryKey: [storyId, personId],
-		queryFn: () => fetchPostData({ storyId, personId }),
+		queryKey: [commentId, personId],
+		queryFn: () => fetchCommentData({ commentId, personId }),
 	});
 
 	const keyPhotoFileId = [dataQuery.data?.memberData?.keyPhoto];

@@ -1,5 +1,5 @@
 import nodemailer, { Transporter } from "nodemailer";
-import { IUser } from "../models";
+import { IUser } from "packages/shared";
 import { AppError } from "./AppError";
 
 /**
