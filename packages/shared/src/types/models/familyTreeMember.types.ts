@@ -2,7 +2,7 @@ import mongoose, { Document } from "mongoose";
 import { MemberFavThings } from "types/favThings.types";
 import { ILocation } from "types/location.types";
 import { HydrateWithMetadata } from "types/utils";
-import { IStory } from "./stories.types";
+import { HydratedStoryDTO, IStory, UnhydratedStoryDTO } from "./stories.types";
 
 export interface IFamilyTreeMember {
 	name: string;
@@ -31,7 +31,7 @@ export interface UnhydratedFamilyTreeMemberDTO {
 	deathLocation?: ILocation;
 	createdAt: Date;
 	deletedAt?: Date;
-	stories?: IStory[];
+	stories?: UnhydratedStoryDTO[];
 	relationToRootMember: string;
 	favThings?: MemberFavThings;
 	claimedId?: string;
@@ -44,4 +44,4 @@ export type HydratedFamilyTreeMemberDTO =
 export type PopulatedFamilyTreeMemberAPIResponse = Omit<
 	HydratedFamilyTreeMemberDTO,
 	"stories"
-> & { stories: HydratedFamilyTreeMemberDTO[] };
+> & { stories: HydratedStoryDTO[] };

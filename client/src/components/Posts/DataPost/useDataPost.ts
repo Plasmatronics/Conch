@@ -1,32 +1,21 @@
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { DataPostProps } from "./DataPost";
-import { useFetchMediaData } from "../../../api/useFetchMediaData";
+import { useFetchMediaData, useFetchMemberData } from "../../../api";
+import { HydratedStoryDTO } from "@conch/shared";
 
-type useDataPostProps = Omit<DataPostProps, "isLiked" | "setIsLiked">;
-
-const fetchPostData = async ({ storyId, personId }: useDataPostProps) => {
-	const { data } = await axios.get(
-		`http://127.0.0.1:3000/api/v1/familyTreeMembers/${personId}?include=stories`,
-	);
-
-	const memberData = data.data;
-	const storyData = memberData.stories.find((val: any) => val.id === storyId);
-
-	return { memberData, storyData };
-};
-
-export const useDataPost = ({ storyId, personId }: useDataPostProps) => {
-	const dataQuery = useQuery({
-		queryKey: [storyId, personId],
-		queryFn: () => fetchPostData({ storyId, personId }),
+export const useDataPost = ({ storyId, personId }: DataPostProps) => {
+	const { memberQuery, keyPhotoQuery } = useFetchMemberData({
+		includeParamsValues: ["stories"],
+		personId,
 	});
 
-	const keyPhotoFileId = [dataQuery.data?.memberData?.keyPhoto];
-	const mediaFileIds = dataQuery.data?.storyData?.media;
+	const storyContentData = memberQuery.data?.stories?.find(
+		(story): story is HydratedStoryDTO => "id" in story && story.id === storyId,
+	);
 
-	const avatarQuery = useFetchMediaData(keyPhotoFileId);
-	const mediaQuery = useFetchMediaData(mediaFileIds);
+	const storyMediaQuery = useFetchMediaData({
+		ids: storyContentData?.media ? storyContentData.media : [],
+		enabled: !!storyContentData,
+	});
 
-	return { dataQuery, avatarQuery, mediaQuery };
+	return { memberQuery, keyPhotoQuery, storyMediaQuery, storyContentData };
 };

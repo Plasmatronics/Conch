@@ -1,4 +1,4 @@
-import { AvatarImageProps, CardRootProps } from "@chakra-ui/react";
+import { AvatarImageProps, CardRootProps, StackProps } from "@chakra-ui/react";
 import { LikeCommentShareProps } from "../../Buttons";
 import { ReactNode } from "react";
 import { MediaItem } from "../PostGallery";
@@ -9,9 +9,10 @@ export interface BasePostHeaderProps {
 	avatar: AvatarImageProps["src"];
 	title: string;
 	relationship: string;
-	year?: Date;
+	storyDate?: Date;
 	headerRight?: ReactNode;
 	onLocationClick?: () => void;
+	containerProps?: StackProps;
 }
 
 export interface BasePostProps

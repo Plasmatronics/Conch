@@ -2,6 +2,7 @@ import {
 	Box,
 	BoxProps,
 	Flex,
+	FlexProps,
 	SkeletonCircle,
 	SkeletonProps,
 } from "@chakra-ui/react";
@@ -11,17 +12,25 @@ import { ReactNode } from "react";
 interface BasePostSkeletonProps extends BoxProps {
 	children?: ReactNode;
 	loading: SkeletonProps["loading"];
+	containerProps?: FlexProps;
 }
 
 export const BasePostSkeleton = ({
 	children,
 	loading,
-	...BoxProps
+	containerProps,
+	...boxProps
 }: BasePostSkeletonProps) => {
 	return (
-		<Box width="100%" {...BoxProps}>
+		<Box width="100%" {...boxProps}>
 			{loading && (
-				<Flex p="1.5rem" height="100%" width="100%" gap="1.25rem">
+				<Flex
+					p="1.5rem"
+					height="100%"
+					width="100%"
+					gap="1.25rem"
+					{...containerProps}
+				>
 					<Flex
 						height="100%"
 						width="100%"

@@ -13,7 +13,7 @@ export const BasePost = ({
 	title,
 	user,
 	relationship,
-	year,
+	storyDate,
 	headerRight,
 	onLocationClick,
 	isLiked,
@@ -27,14 +27,16 @@ export const BasePost = ({
 }: BasePostProps) => {
 	const [isMediaLoading, setIsMediaLoading] = useState(!!media);
 	const [hasMediaStartedLoading, setHasMediaStartedLoading] = useState(!media);
-	const isContentLoading = loading || isMediaLoading;
+
+	//fetching data, or at least represents the state in which we dont yet know what the layout looks like
+	const isFetchingContent = loading || !hasMediaStartedLoading;
 
 	const headerProps = {
 		avatar,
 		title,
 		user,
 		relationship,
-		year,
+		storyDate,
 		headerRight,
 		onLocationClick,
 	};
@@ -52,11 +54,11 @@ export const BasePost = ({
 			<Card.Body
 				width="100%"
 				height="100%"
-				minH={hasMediaStartedLoading ? "auto" : "30rem"}
-				p={isContentLoading ? "0rem" : "auto"}
+				minH={isFetchingContent ? "30rem" : "auto"}
+				p={isFetchingContent ? "0rem" : "2rem"}
 				position="relative"
 			>
-				{!hasMediaStartedLoading && (
+				{isFetchingContent && (
 					<Box
 						position="absolute"
 						top="50%"
@@ -73,21 +75,22 @@ export const BasePost = ({
 					</Box>
 				)}
 				<BasePostSkeleton
-					opacity={!hasMediaStartedLoading ? 0 : 1}
-					pointerEvents={!hasMediaStartedLoading ? "none" : "auto"}
-					loading={isContentLoading}
+					//let skeleton be present but invisible so media load functions can run
+					opacity={isFetchingContent ? 0 : 1}
+					pointerEvents={isFetchingContent ? "none" : "auto"}
+					containerProps={{ p: "auto" }}
+					loading={isMediaLoading}
 				>
-					{!isContentLoading && BasePostHeader({ ...headerProps })}
+					{!isMediaLoading && <BasePostHeader {...headerProps} />}
 					<Flex
 						direction="column"
 						width="100%"
 						height="100%"
-						p={isContentLoading ? "1.5rem" : "auto"}
 						justifyContent="center"
 						alignItems="center"
 					>
 						<Box mb="2rem" width="100%" height="100%">
-							{!isContentLoading && text && (
+							{!isMediaLoading && text && (
 								<ExpandableText
 									text={text}
 									maxCharCount={MAX_CHARS_BEFORE_TRUNCATION}
@@ -100,12 +103,12 @@ export const BasePost = ({
 									postGalleryProps={{
 										onAllMediaLoaded: handleLoad,
 										onLoadStart: handleStartMediaLoad,
-										loading: isContentLoading,
+										loading: isMediaLoading,
 									}}
 								/>
 							)}
 						</Box>
-						{!isContentLoading && (
+						{!isMediaLoading && (
 							<Box width="100%">
 								<Separator mx="auto" width="95%" pb="0.5rem" />
 								<LikeCommentShare
