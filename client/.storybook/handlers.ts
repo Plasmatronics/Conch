@@ -54,7 +54,7 @@ export const handlers = [
 
 		const data: CommentResponse = { ...mockParentComment };
 		if (includeParam === "replies") {
-			(data as CommentWithReplies).replies = mockChildComment;
+			(data as CommentWithReplies).replies = [mockChildComment];
 		}
 
 		//second and a half

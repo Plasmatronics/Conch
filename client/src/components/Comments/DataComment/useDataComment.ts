@@ -1,30 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { DataCommentProps } from "./DataComment";
-import { useFetchMediaData } from "../../../api/useFetchMediaData";
+import { useFetchMemberData } from "../../../api";
+import { PopulatedCommentAPIResponse } from "@conch/shared";
 
-const fetchCommentData = async ({ commentId, personId }: DataCommentProps) => {
+const fetchCommentData = async ({ commentId }: DataCommentProps) => {
 	const { data } = await axios.get(
-		`http://127.0.0.1:3000/api/v1/familyTreeMembers/${personId}?include=stories`,
+		`http://127.0.0.1:3000/api/v1/comments/${commentId}?include=replies`,
 	);
 
-	const memberData = data.data;
-	const storyData = memberData.stories.find((val: any) => val.id === commentId);
-
-	return { memberData, storyData };
+	return data.data;
 };
 
-export const useDataComment = ({ commentId, personId }: DataCommentProps) => {
-	const dataQuery = useQuery({
-		queryKey: [commentId, personId],
-		queryFn: () => fetchCommentData({ commentId, personId }),
+export const useDataComment = ({ commentId }: DataCommentProps) => {
+	const commentQuery = useQuery<PopulatedCommentAPIResponse, Error>({
+		queryKey: [commentId],
+		queryFn: () => fetchCommentData({ commentId }),
 	});
 
-	const keyPhotoFileId = [dataQuery.data?.memberData?.keyPhoto];
-	const mediaFileIds = dataQuery.data?.storyData?.media;
+	const authorQuery = useFetchMemberData({
+		personId: commentQuery.data ? commentQuery.data.author : "",
+		enabled: !!commentQuery.data,
+	});
 
-	const avatarQuery = useFetchMediaData(keyPhotoFileId);
-	const mediaQuery = useFetchMediaData(mediaFileIds);
-
-	return { dataQuery, avatarQuery, mediaQuery };
+	return { commentQuery, authorQuery };
 };
