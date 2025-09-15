@@ -23,7 +23,6 @@ export const ExpandableText = ({
 	return (
 		<Box
 			width="100%"
-			mb="1.5rem"
 			{...containerProps}
 			onClick={clickOnTextToggling ? handlePostExpansion : undefined}
 		>

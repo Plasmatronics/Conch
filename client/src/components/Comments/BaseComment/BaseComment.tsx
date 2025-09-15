@@ -22,7 +22,9 @@ export const BaseComment = ({
 	setIsLiked,
 	numRepliesRendered = 0,
 }: BaseCommentProps) => {
-	const curTimestamp = React.useRef(Date.now() - datePosted.getTime()).current;
+	const curTimestamp = React.useRef(
+		Date.now() - new Date(datePosted).getTime(),
+	).current;
 
 	const remaining = Math.max(0, numReplies - numRepliesRendered);
 	const isThreadFullyExpanded = numReplies > 0 && remaining === 0;
@@ -57,15 +59,13 @@ export const BaseComment = ({
 					</Avatar.Root>
 
 					<Flex width="100%" direction="column">
-						<Text onDoubleClick={handleDoubleClick}>
-							<Box as="span" fontWeight="medium">
-								{`${user} `}
-							</Box>
-							<ExpandableText
-								text={comment}
-								maxCharCount={MAX_CHARS_BEFORE_TRUNCATION}
-							/>
-						</Text>
+						<Text fontWeight="medium">{`${user} `}</Text>
+						<ExpandableText
+							onDoubleClick={handleDoubleClick}
+							containerProps={{ mb: "0.5rem" }}
+							text={comment}
+							maxCharCount={MAX_CHARS_BEFORE_TRUNCATION}
+						/>
 						<Flex width="100%" gap="1rem">
 							<Text>{getPrettyDate(curTimestamp)}</Text>
 							<Text>{relationship}</Text>
