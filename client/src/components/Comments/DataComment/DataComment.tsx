@@ -37,7 +37,6 @@ export const DataComment = ({ commentId }: DataCommentProps) => {
 	} = commentQuery.data || {};
 	const { relationToRootMember = "", name = "" } =
 		authorQuery.memberQuery.data || {};
-	console.log(commentQuery.data?.replies);
 
 	return (
 		<BaseComment

@@ -1,9 +1,5 @@
 import { http, HttpResponse, delay } from "msw";
 import {
-	CommentResponse,
-	CommentWithReplies,
-	MemberResponse,
-	MemberWithStories,
 	mockChildComment,
 	mockFileUrl,
 	mockMediaData,
@@ -11,6 +7,7 @@ import {
 	mockParentComment,
 	mockStoriesData,
 } from "./mswData";
+import { HydratedFamilyTreeMemberDTO, HydratedCommentDTO } from "@conch/shared";
 
 export const handlers = [
 	http.get(
@@ -20,9 +17,9 @@ export const handlers = [
 
 			const includeParam = url.searchParams.get("include");
 
-			const data: MemberResponse = { ...mockMemberData };
+			const data: HydratedFamilyTreeMemberDTO = { ...mockMemberData };
 			if (includeParam === "stories") {
-				(data as MemberWithStories).stories = mockStoriesData;
+				data.stories = mockStoriesData;
 			}
 
 			//second and a half
@@ -52,9 +49,9 @@ export const handlers = [
 
 		const includeParam = url.searchParams.get("include");
 
-		const data: CommentResponse = { ...mockParentComment };
+		const data: HydratedCommentDTO = { ...mockParentComment };
 		if (includeParam === "replies") {
-			(data as CommentWithReplies).replies = [mockChildComment];
+			data.replies = [mockChildComment];
 		}
 
 		//second and a half

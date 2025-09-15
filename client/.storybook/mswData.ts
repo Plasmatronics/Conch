@@ -1,7 +1,14 @@
+import {
+	HydratedFamilyTreeMemberDTO,
+	HydratedMediaDTO,
+	HydratedCommentDTO,
+	HydratedStoryDTO,
+} from "@conch/shared";
+
 export const mockFileUrl =
 	"https://www.hoodedutilitarian.com/wp-content/uploads/2015/08/foxylady.jpg";
 
-export const mockMediaData = {
+export const mockMediaData: HydratedMediaDTO = {
 	id: "68bdedc63c9768d183ad7839",
 	fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
 	type: "image",
@@ -9,14 +16,14 @@ export const mockMediaData = {
 	involves: ["68bded593c9768d183ad7834"],
 };
 
-export const mockParentComment = {
+export const mockParentComment: HydratedCommentDTO = {
 	id: "687f19fe77c2242b69f1f261",
 	content: "This is the best post ever",
 	author: "68bded593c9768d183ad7834",
 	createdAt: new Date(2025, 8, 3),
 };
 
-export const mockChildComment = {
+export const mockChildComment: HydratedCommentDTO = {
 	id: "687f19fe77c2242b69f1f269",
 	content: "No this is the worst!!!!!",
 	author: "68bded593c9768d183ad7834",
@@ -24,13 +31,7 @@ export const mockChildComment = {
 	createdAt: new Date(2025, 8, 7),
 };
 
-type Comment = typeof mockParentComment & { parentComment?: string };
-export type CommentWithReplies = Comment & {
-	replies: (typeof mockChildComment)[];
-};
-export type CommentResponse = Comment | CommentWithReplies;
-
-export const mockMemberData = {
+export const mockMemberData: HydratedFamilyTreeMemberDTO = {
 	_id: "68bded593c9768d183ad7834",
 	name: "Joseph Bruno",
 	nicknames: ["Joey"],
@@ -57,7 +58,7 @@ export const mockMemberData = {
 	id: "68bded593c9768d183ad7834",
 };
 
-export const mockStoriesData = [
+export const mockStoriesData: HydratedStoryDTO = [
 	{
 		_id: "68bf2a9895bde97c33918cef",
 		title: "French Fries",
@@ -79,7 +80,3 @@ export const mockStoriesData = [
 		id: "68c1db520839cb6d80289c3f",
 	},
 ];
-
-type Member = typeof mockMemberData;
-export type MemberWithStories = Member & { stories: typeof mockStoriesData };
-export type MemberResponse = Member | MemberWithStories;
