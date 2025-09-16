@@ -3,11 +3,11 @@ import {
 	mockChildComment,
 	mockFileUrl,
 	mockMediaData,
+	mockMediaPopulatedStoryData,
 	mockMemberData,
 	mockParentComment,
-	mockStoriesData,
 } from "./mswData";
-import { HydratedFamilyTreeMemberDTO, HydratedCommentDTO } from "@conch/shared";
+import { HydratedCommentDTO } from "@conch/shared";
 
 export const handlers = [
 	http.get(
@@ -17,9 +17,9 @@ export const handlers = [
 
 			const includeParam = url.searchParams.get("include");
 
-			const data: HydratedFamilyTreeMemberDTO = { ...mockMemberData };
+			const data = { ...mockMemberData };
 			if (includeParam === "stories") {
-				data.stories = mockStoriesData;
+				data.stories = mockMediaPopulatedStoryData;
 			}
 
 			//second and a half
@@ -60,6 +60,16 @@ export const handlers = [
 		return HttpResponse.json({
 			status: "success",
 			data,
+		});
+	}),
+
+	http.get("http://127.0.0.1:3000/api/v1/stories/*", async () => {
+		//second and a half
+		await delay(1500);
+
+		return HttpResponse.json({
+			status: "success",
+			data: mockMediaPopulatedStoryData,
 		});
 	}),
 
