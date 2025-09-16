@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import {
 	FamilyTreeMemberDTOKeyPhotoPopulated,
 	FamilyTreeMemberDTOKeyPhotoAndStoryPopulated,
@@ -7,9 +7,6 @@ import {
 
 type ReactQueryOptions = Omit<
 	UseQueryOptions<
-		| FamilyTreeMemberDTOKeyPhotoPopulated
-		| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated,
-		Error,
 		| FamilyTreeMemberDTOKeyPhotoPopulated
 		| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated
 	>,
@@ -46,10 +43,11 @@ const fetchMemberData = async ({
 		}>(url);
 
 		return data.data;
-	} catch (err: unknown) {
-		throw new Error(
-			(err as AxiosError).message || "Failed to fetch member data",
-		);
+	} catch (err) {
+		if (axios.isAxiosError(err)) {
+			throw new Error(err.response?.data?.message ?? err.message);
+		}
+		throw err;
 	}
 };
 
@@ -60,8 +58,7 @@ export const useFetchMemberData = ({
 }: useFetchMemberDataProps) => {
 	const memberQuery = useQuery<
 		| FamilyTreeMemberDTOKeyPhotoPopulated
-		| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated,
-		Error
+		| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated
 	>({
 		queryKey: ["member", personId, includeParamsValues],
 		queryFn: () => fetchMemberData({ personId, includeParamsValues }),

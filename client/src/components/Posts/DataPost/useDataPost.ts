@@ -1,7 +1,7 @@
 import { HydratedStoryDTO, StoryDTOAuthorPopulated } from "@conch/shared";
 import { useQuery } from "@tanstack/react-query";
 import { useFetchMediaData } from "../../../api";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
 const fetchDataPost = async (
 	storyId: HydratedStoryDTO["id"],
@@ -13,33 +13,28 @@ const fetchDataPost = async (
 		}>(url);
 
 		return data.data;
-	} catch (err: unknown) {
-		throw new Error(
-			(err as AxiosError).message || "Failed to fetch story data",
-		);
+	} catch (err) {
+		if (axios.isAxiosError(err)) {
+			throw new Error(err.response?.data?.message ?? err.message);
+		}
+		throw err;
 	}
 };
 
 export const useDataPost = (storyId: HydratedStoryDTO["id"]) => {
-	const storyQuery = useQuery<StoryDTOAuthorPopulated | Error>({
+	const storyQuery = useQuery<StoryDTOAuthorPopulated>({
 		queryKey: ["story", storyId],
 		queryFn: () => fetchDataPost(storyId),
 	});
 
-	const memberAvatarData = {
-		fileKey:
-			storyQuery?.data instanceof Error
-				? ""
-				: (storyQuery?.data?.author?.keyPhoto?.fileKey ?? ""),
-		type:
-			storyQuery?.data instanceof Error
-				? "image"
-				: (storyQuery?.data?.author?.keyPhoto?.type ?? "image"),
+	const avatarFile = {
+		fileKey: storyQuery?.data?.author?.keyPhoto?.fileKey ?? "",
+		type: storyQuery?.data?.author?.keyPhoto?.type ?? "image",
 	};
 
 	const avatarQuery = useFetchMediaData({
-		files: [memberAvatarData],
-		enabled: !!(storyQuery?.data as StoryDTOAuthorPopulated).author.keyPhoto,
+		files: avatarFile ? [avatarFile] : [],
+		enabled: storyQuery.isSuccess && !!avatarFile,
 	});
 
 	return { avatarQuery, storyQuery };

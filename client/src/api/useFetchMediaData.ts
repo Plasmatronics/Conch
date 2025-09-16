@@ -1,9 +1,9 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { MediaTypeAndDownloadUrl, MediaTypeAndKey } from "@conch/shared";
 
 type ReactQueryOptions = Omit<
-	UseQueryOptions<MediaTypeAndDownloadUrl[], Error, MediaTypeAndDownloadUrl[]>,
+	UseQueryOptions<MediaTypeAndDownloadUrl[]>,
 	"queryFn" | "queryKey"
 >;
 
@@ -31,9 +31,10 @@ const fetchSingleMediaData = async ({
 		);
 		return { downloadUrl: data.downloadUrl, type };
 	} catch (err: unknown) {
-		throw new Error(
-			(err as AxiosError).message || "Failed to fetch media data",
-		);
+		if (axios.isAxiosError(err)) {
+			throw new Error(err.response?.data?.message ?? err.message);
+		}
+		throw err;
 	}
 };
 
@@ -51,9 +52,14 @@ export const useFetchMediaData = ({
 	files,
 	...reactQueryProps
 }: useFetchMediaDataProps) => {
-	return useQuery<MediaTypeAndDownloadUrl[], Error>({
-		queryKey: [files],
-		queryFn: () => fetchMediaData(files),
+	return useQuery<MediaTypeAndDownloadUrl[]>({
+		queryKey: [
+			files
+				.map((file) => `${file.type}: ${file.fileKey}`)
+				.sort()
+				.join(", "),
+		],
+		queryFn: () => fetchMediaData(files.filter(Boolean)),
 		...reactQueryProps,
 	});
 };
