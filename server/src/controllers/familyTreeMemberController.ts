@@ -58,7 +58,7 @@ const restoreFamilyTreeMember =
 const restoreAllFamilyTreeMembers =
 	handlerFactory.restoreSoftDeleted(FamilyTreeMember);
 
-const getAllFamilyTreeMembers = handlerFactory.getAll(FamilyTreeMember);
+const getManyFamilyTreeMembers = handlerFactory.getMany(FamilyTreeMember);
 
 export const familyTreeMemberController = {
 	createFamilyTreeMember,
@@ -68,5 +68,5 @@ export const familyTreeMemberController = {
 	cleanupAllDeletedFamilyTreeMembers,
 	restoreFamilyTreeMember,
 	restoreAllFamilyTreeMembers,
-	getAllFamilyTreeMembers,
+	getManyFamilyTreeMembers,
 };

@@ -15,7 +15,7 @@ router.route("/trash/:id").patch(commentController.restoreComment);
 
 router
 	.route("/")
-	.get(commentController.getAllComments)
+	.get(commentController.getManyComments)
 	.post(commentController.createComment);
 
 router

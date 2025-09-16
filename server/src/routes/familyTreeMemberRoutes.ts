@@ -36,7 +36,7 @@ router
 
 router
 	.route("/")
-	.get(familyTreeMemberController.getAllFamilyTreeMembers)
+	.get(familyTreeMemberController.getManyFamilyTreeMembers)
 	.post(
 		authController.protect,
 		familyTreeMemberController.createFamilyTreeMember,

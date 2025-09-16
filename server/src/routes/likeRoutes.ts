@@ -8,7 +8,7 @@ router.use(authController.protect);
 
 router
 	.route("/")
-	.get(likeController.getAllLikes)
+	.get(likeController.getManyLikes)
 	.post(likeController.createLike);
 
 router

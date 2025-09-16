@@ -15,7 +15,7 @@ router.route("/trash/:id").patch(storyController.restoreStory);
 
 router
 	.route("/")
-	.get(storyController.getAllStories)
+	.get(storyController.getManyStories)
 	.post(storyController.createStory);
 
 router
