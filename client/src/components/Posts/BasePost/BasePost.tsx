@@ -94,6 +94,9 @@ export const BasePost = ({
 								<ExpandableText
 									text={text}
 									maxCharCount={MAX_CHARS_BEFORE_TRUNCATION}
+									containerProps={{
+										mb: "1.5rem",
+									}}
 								/>
 							)}
 							{media && (

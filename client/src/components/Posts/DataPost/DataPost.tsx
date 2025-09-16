@@ -1,51 +1,53 @@
 import { useDataPost } from "./useDataPost";
-import { BasePost, BasePostProps } from "../BasePost";
+import { BasePost } from "../BasePost";
 import { useState } from "react";
-import { HydratedStoryDTO, HydratedFamilyTreeMemberDTO } from "@conch/shared";
+import {
+	HydratedStoryDTO,
+	HydratedFamilyTreeMemberDTO,
+	StoryDTOAuthorPopulated,
+} from "@conch/shared";
+import { MediaItem } from "../PostGallery";
 
 export interface DataPostProps {
 	storyId: HydratedStoryDTO["id"];
 	personId: HydratedFamilyTreeMemberDTO["id"];
 }
 
-export const DataPost = ({ storyId, personId }: DataPostProps) => {
+export const DataPost = ({ storyId }: DataPostProps) => {
 	const [isLiked, setIsLiked] = useState(false);
-	const { memberQuery, keyPhotoQuery, storyMediaQuery, storyContentData } =
-		useDataPost({
-			storyId,
-			personId,
-		});
-
-	const isDataLoading =
-		memberQuery.isLoading ||
-		keyPhotoQuery.isLoading ||
-		storyMediaQuery.isLoading;
-
-	const { name = "", relationToRootMember = "" } = memberQuery.data ?? {};
-	const { downloadUrl = "" } = keyPhotoQuery.data?.at(0) ?? {};
+	const { storyQuery, avatarQuery } = useDataPost(storyId);
 
 	const {
-		storyDate = new Date(),
+		author = {
+			relationToRootMember: "",
+			name: "",
+		},
 		title = "",
+		storyDate = new Date(),
 		content = "",
-	} = storyContentData ?? {};
-	const renderedMedia: BasePostProps["media"] =
-		storyMediaQuery.data &&
-		storyMediaQuery.data.map((properties) => {
-			return { src: properties.downloadUrl, type: properties.type };
-		});
+		media = [],
+	} = (storyQuery?.data as StoryDTOAuthorPopulated) ?? {};
+
+	const { downloadUrl: avatarImage } = avatarQuery?.data?.at?.(0) ?? {};
+
+	const typeSafeMedia: MediaItem[] = media.map((mediaItem) => {
+		return {
+			type: mediaItem.type,
+			src: mediaItem.downloadUrl,
+		};
+	});
 
 	return (
 		<BasePost
 			title={title}
 			text={content}
-			relationship={relationToRootMember}
-			loading={isDataLoading}
-			user={name}
+			relationship={author.relationToRootMember}
+			loading={storyQuery.isLoading}
+			user={author.name}
 			isLiked={isLiked}
+			media={typeSafeMedia}
 			setIsLiked={setIsLiked}
-			avatar={downloadUrl}
-			media={renderedMedia}
+			avatar={avatarImage}
 			storyDate={storyDate}
 		/>
 	);

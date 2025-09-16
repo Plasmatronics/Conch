@@ -1,22 +1,23 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
-import { useFetchMediaData } from "./useFetchMediaData";
 import {
-	HydratedFamilyTreeMemberDTO,
-	PopulatedFamilyTreeMemberAPIResponse,
+	FamilyTreeMemberDTOKeyPhotoPopulated,
+	FamilyTreeMemberDTOKeyPhotoAndStoryPopulated,
 } from "@conch/shared";
 
 type ReactQueryOptions = Omit<
 	UseQueryOptions<
-		HydratedFamilyTreeMemberDTO | PopulatedFamilyTreeMemberAPIResponse,
+		| FamilyTreeMemberDTOKeyPhotoPopulated
+		| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated,
 		Error,
-		HydratedFamilyTreeMemberDTO | PopulatedFamilyTreeMemberAPIResponse
+		| FamilyTreeMemberDTOKeyPhotoPopulated
+		| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated
 	>,
 	"queryFn" | "queryKey"
 >;
 
 interface IFetchMemberData {
-	personId: HydratedFamilyTreeMemberDTO["id"];
+	personId: FamilyTreeMemberDTOKeyPhotoPopulated["id"];
 	includeParamsValues?: string[];
 }
 
@@ -26,7 +27,8 @@ const fetchMemberData = async ({
 	personId,
 	includeParamsValues,
 }: IFetchMemberData): Promise<
-	HydratedFamilyTreeMemberDTO | PopulatedFamilyTreeMemberAPIResponse
+	| FamilyTreeMemberDTOKeyPhotoPopulated
+	| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated
 > => {
 	try {
 		const params = new URLSearchParams();
@@ -38,7 +40,9 @@ const fetchMemberData = async ({
 			params ? `?${params.toString()}` : ""
 		}`;
 		const { data } = await axios.get<{
-			data: HydratedFamilyTreeMemberDTO | PopulatedFamilyTreeMemberAPIResponse;
+			data:
+				| FamilyTreeMemberDTOKeyPhotoPopulated
+				| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated;
 		}>(url);
 
 		return data.data;
@@ -55,7 +59,8 @@ export const useFetchMemberData = ({
 	...reactQueryProps
 }: useFetchMemberDataProps) => {
 	const memberQuery = useQuery<
-		HydratedFamilyTreeMemberDTO | PopulatedFamilyTreeMemberAPIResponse,
+		| FamilyTreeMemberDTOKeyPhotoPopulated
+		| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated,
 		Error
 	>({
 		queryKey: ["member", personId, includeParamsValues],
@@ -64,12 +69,5 @@ export const useFetchMemberData = ({
 		...reactQueryProps,
 	});
 
-	const keyPhotoId = memberQuery.data?.keyPhoto;
-
-	const keyPhotoQuery = useFetchMediaData({
-		ids: keyPhotoId ? [keyPhotoId] : [],
-		enabled: !!memberQuery.data && !!keyPhotoId,
-	});
-
-	return { memberQuery, keyPhotoQuery };
+	return { memberQuery };
 };
