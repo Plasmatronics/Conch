@@ -2,7 +2,7 @@ import mongoose, { Document } from "mongoose";
 import { HydrateWithMetadata } from "types/utils";
 
 export interface ILike {
-	fileKey: string;
+	fileKey: mongoose.Types.ObjectId;
 	target: mongoose.Types.ObjectId;
 	targetType: "Media" | "Document";
 	author: mongoose.Types.ObjectId;

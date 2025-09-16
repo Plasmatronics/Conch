@@ -40,4 +40,12 @@ const documentSchema = new mongoose.Schema<DocumentDoc>(
 	},
 );
 
+documentSchema.pre(/^find/, function (next) {
+	(this as mongoose.Query<any, any>).populate({
+		path: "keyPhoto",
+		select: "type fileKey",
+	});
+	next();
+});
+
 export const Document = mongoose.model("Document", documentSchema);

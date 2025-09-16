@@ -4,9 +4,9 @@ import { LikeDoc } from "packages/shared";
 const likeSchema = new mongoose.Schema<LikeDoc>(
 	{
 		fileKey: {
-			type: String,
+			type: mongoose.Schema.ObjectId,
+			ref: "Media",
 			required: [true, "A like must have a fileKey"],
-			unique: true,
 		},
 		target: {
 			type: mongoose.Schema.ObjectId,

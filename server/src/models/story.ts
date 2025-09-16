@@ -55,14 +55,10 @@ storySchema.pre(/^find/, function (next) {
 	(this as mongoose.Query<any, any>).populate({
 		path: "author",
 		select: "relationToRootMember name keyPhoto",
-	});
-	next();
-});
-
-storySchema.pre(/^find/, function (next) {
-	(this as mongoose.Query<any, any>).populate({
-		path: "media",
-		select: "type fileKey",
+		populate: {
+			path: "media",
+			select: "type fileKey",
+		},
 	});
 	next();
 });
