@@ -21,7 +21,7 @@ router
 
 router
 	.route("/")
-	.get(mediaController.getAllMedia)
+	.get(mediaController.getManyMedia)
 	.post(authController.protect, mediaController.createMedia);
 
 export { router as mediaRouter };

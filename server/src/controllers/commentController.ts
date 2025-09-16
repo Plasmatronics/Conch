@@ -49,7 +49,7 @@ const restoreComment = handlerFactory.restoreOneSoftDeleted(Comment);
 
 const restoreAllComments = handlerFactory.restoreSoftDeleted(Comment);
 
-const getAllComments = handlerFactory.getAll(Comment);
+const getManyComments = handlerFactory.getMany(Comment);
 
 export const commentController = {
 	createComment,
@@ -59,5 +59,5 @@ export const commentController = {
 	cleanupAllDeletedComments,
 	restoreComment,
 	restoreAllComments,
-	getAllComments,
+	getManyComments,
 };

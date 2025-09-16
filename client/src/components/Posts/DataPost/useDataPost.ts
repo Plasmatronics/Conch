@@ -1,21 +1,41 @@
-import { DataPostProps } from "./DataPost";
-import { useFetchMediaData, useFetchMemberData } from "../../../api";
-import { HydratedStoryDTO } from "@conch/shared";
+import { HydratedStoryDTO, StoryDTOAuthorPopulated } from "@conch/shared";
+import { useQuery } from "@tanstack/react-query";
+import { useFetchMediaData } from "../../../api";
+import axios from "axios";
 
-export const useDataPost = ({ storyId, personId }: DataPostProps) => {
-	const { memberQuery, keyPhotoQuery } = useFetchMemberData({
-		includeParamsValues: ["stories"],
-		personId,
+const fetchDataPost = async (
+	storyId: HydratedStoryDTO["id"],
+): Promise<StoryDTOAuthorPopulated> => {
+	try {
+		const url = `http://127.0.0.1:3000/api/v1/stories/${storyId}`;
+		const { data } = await axios.get<{
+			data: StoryDTOAuthorPopulated;
+		}>(url);
+
+		return data.data;
+	} catch (err) {
+		if (axios.isAxiosError(err)) {
+			throw new Error(err.response?.data?.message ?? err.message);
+		}
+		throw err;
+	}
+};
+
+export const useDataPost = (storyId: HydratedStoryDTO["id"]) => {
+	const storyQuery = useQuery<StoryDTOAuthorPopulated>({
+		queryKey: ["story", storyId],
+		queryFn: () => fetchDataPost(storyId),
 	});
 
-	const storyContentData = memberQuery.data?.stories?.find(
-		(story): story is HydratedStoryDTO => "id" in story && story.id === storyId,
-	);
+	const avatarFile = {
+		fileKey: storyQuery?.data?.author?.keyPhoto?.fileKey ?? "",
+		type: storyQuery?.data?.author?.keyPhoto?.type ?? "image",
+	};
 
-	const storyMediaQuery = useFetchMediaData({
-		ids: storyContentData?.media ? storyContentData.media : [],
-		enabled: !!storyContentData,
+	const avatarQuery = useFetchMediaData({
+		files: avatarFile ? [avatarFile] : [],
+		enabled: storyQuery.isSuccess && !!avatarFile,
 	});
 
-	return { memberQuery, keyPhotoQuery, storyMediaQuery, storyContentData };
+	return { avatarQuery, storyQuery };
 };

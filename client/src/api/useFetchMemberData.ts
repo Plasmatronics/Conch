@@ -1,22 +1,20 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
-import { useFetchMediaData } from "./useFetchMediaData";
+import axios from "axios";
 import {
-	HydratedFamilyTreeMemberDTO,
-	PopulatedFamilyTreeMemberAPIResponse,
+	FamilyTreeMemberDTOKeyPhotoPopulated,
+	FamilyTreeMemberDTOKeyPhotoAndStoryPopulated,
 } from "@conch/shared";
 
 type ReactQueryOptions = Omit<
 	UseQueryOptions<
-		HydratedFamilyTreeMemberDTO | PopulatedFamilyTreeMemberAPIResponse,
-		Error,
-		HydratedFamilyTreeMemberDTO | PopulatedFamilyTreeMemberAPIResponse
+		| FamilyTreeMemberDTOKeyPhotoPopulated
+		| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated
 	>,
 	"queryFn" | "queryKey"
 >;
 
 interface IFetchMemberData {
-	personId: HydratedFamilyTreeMemberDTO["id"];
+	personId: FamilyTreeMemberDTOKeyPhotoPopulated["id"];
 	includeParamsValues?: string[];
 }
 
@@ -26,7 +24,8 @@ const fetchMemberData = async ({
 	personId,
 	includeParamsValues,
 }: IFetchMemberData): Promise<
-	HydratedFamilyTreeMemberDTO | PopulatedFamilyTreeMemberAPIResponse
+	| FamilyTreeMemberDTOKeyPhotoPopulated
+	| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated
 > => {
 	try {
 		const params = new URLSearchParams();
@@ -38,14 +37,17 @@ const fetchMemberData = async ({
 			params ? `?${params.toString()}` : ""
 		}`;
 		const { data } = await axios.get<{
-			data: HydratedFamilyTreeMemberDTO | PopulatedFamilyTreeMemberAPIResponse;
+			data:
+				| FamilyTreeMemberDTOKeyPhotoPopulated
+				| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated;
 		}>(url);
 
 		return data.data;
-	} catch (err: unknown) {
-		throw new Error(
-			(err as AxiosError).message || "Failed to fetch member data",
-		);
+	} catch (err) {
+		if (axios.isAxiosError(err)) {
+			throw new Error(err.response?.data?.message ?? err.message);
+		}
+		throw err;
 	}
 };
 
@@ -55,8 +57,8 @@ export const useFetchMemberData = ({
 	...reactQueryProps
 }: useFetchMemberDataProps) => {
 	const memberQuery = useQuery<
-		HydratedFamilyTreeMemberDTO | PopulatedFamilyTreeMemberAPIResponse,
-		Error
+		| FamilyTreeMemberDTOKeyPhotoPopulated
+		| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated
 	>({
 		queryKey: ["member", personId, includeParamsValues],
 		queryFn: () => fetchMemberData({ personId, includeParamsValues }),
@@ -64,12 +66,5 @@ export const useFetchMemberData = ({
 		...reactQueryProps,
 	});
 
-	const keyPhotoId = memberQuery.data?.keyPhoto;
-
-	const keyPhotoQuery = useFetchMediaData({
-		ids: keyPhotoId ? [keyPhotoId] : [],
-		enabled: !!memberQuery.data && !!keyPhotoId,
-	});
-
-	return { memberQuery, keyPhotoQuery };
+	return { memberQuery };
 };

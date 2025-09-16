@@ -9,7 +9,7 @@ const commentSchema = new mongoose.Schema<CommentDoc>(
 		},
 		author: {
 			type: mongoose.Schema.ObjectId,
-			ref: "User",
+			ref: "FamilyTreeMember",
 			required: [true, "A comment must belong to a user"],
 		},
 		parentComment: {
@@ -36,6 +36,18 @@ commentSchema.virtual("replies", {
 	localField: "_id",
 	foreignField: "parentComment",
 	justOne: false,
+});
+
+commentSchema.pre(/^find/, function (next) {
+	(this as mongoose.Query<any, any>).populate({
+		path: "author",
+		select: "relationToRootMember name keyPhoto",
+		populate: {
+			path: "keyPhoto",
+			select: "type fileKey",
+		},
+	});
+	next();
 });
 
 export const Comment = mongoose.model("Comment", commentSchema);

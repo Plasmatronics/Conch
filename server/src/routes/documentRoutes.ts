@@ -24,7 +24,7 @@ router
 
 router
 	.route("/")
-	.get(documentController.getAllDocuments)
+	.get(documentController.getManyDocuments)
 	.post(authController.protect, documentController.createDocument);
 
 export { router as documentRouter };

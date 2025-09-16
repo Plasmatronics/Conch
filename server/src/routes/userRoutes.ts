@@ -20,7 +20,7 @@ router.route("/trash/:id").patch(userController.restoreUser);
 
 router.route("/logout").get(authController.logout);
 
-router.route("/").get(userController.getAllUsers);
+router.route("/").get(userController.getManyUsers);
 router
 	.route("/:id")
 	.get(userController.getUser)

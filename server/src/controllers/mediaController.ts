@@ -15,7 +15,7 @@ const restoreMedia = handlerFactory.restoreOneSoftDeleted(Media);
 
 const restoreAllMedia = handlerFactory.restoreSoftDeleted(Media);
 
-const getAllMedia = handlerFactory.getAll(Media);
+const getManyMedia = handlerFactory.getMany(Media);
 
 export const mediaController = {
 	createMedia,
@@ -25,5 +25,5 @@ export const mediaController = {
 	cleanupAllDeletedMedia,
 	restoreMedia,
 	restoreAllMedia,
-	getAllMedia,
+	getManyMedia,
 };

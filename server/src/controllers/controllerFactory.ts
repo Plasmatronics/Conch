@@ -290,7 +290,7 @@ const restoreOneSoftDeleted =
 /**
  * Gets all documents
  */
-const getAll =
+const getMany =
 	<T extends Document>(Model: Model<T>) =>
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
@@ -298,6 +298,7 @@ const getAll =
 				.filter()
 				.paginate()
 				.sort()
+				.populate()
 				.limitFields();
 
 			const docs = await docQuery.query;
@@ -321,5 +322,5 @@ export const handlerFactory = {
 	cleanupDeleted,
 	restoreSoftDeleted,
 	restoreOneSoftDeleted,
-	getAll,
+	getMany,
 };

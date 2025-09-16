@@ -1,4 +1,4 @@
-import { Document, Query } from "mongoose";
+import mongoose, { Document, Query, Types } from "mongoose";
 import { AppError } from "./AppError";
 
 interface QueryString {
@@ -44,7 +44,7 @@ export class QueryBuilder<T extends Document> {
 
 	public filter() {
 		const queryObj = { ...this.queryString };
-		["fields", "sort", "page", "limit"].forEach((queryParam) => {
+		["fields", "sort", "page", "limit", "include"].forEach((queryParam) => {
 			delete queryObj[queryParam];
 		});
 
@@ -70,6 +70,13 @@ export class QueryBuilder<T extends Document> {
 				this.queryString.fields,
 			);
 			this.query = this.query.select(includedFields);
+		}
+		return this;
+	}
+
+	public populate() {
+		if (this.queryString.include) {
+			this.query = this.query.populate(`${this.queryString.include}`);
 		}
 		return this;
 	}

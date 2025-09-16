@@ -1,5 +1,9 @@
 import mongoose, { Document } from "mongoose";
-import { HydrateWithMetadata } from "../utils";
+import {
+	HydrateWithMetadata,
+	PopulateAuthor,
+	PopulateKeyPhoto,
+} from "types/utils";
 
 export interface IComment {
 	content: string;
@@ -23,7 +27,10 @@ export interface UnhydratedCommentDTO {
 
 export type HydratedCommentDTO = HydrateWithMetadata<UnhydratedCommentDTO>;
 
-export type PopulatedCommentAPIResponse = Omit<
-	HydratedCommentDTO,
+export type CommentDTOAuthorPopulated = PopulateKeyPhoto<
+	PopulateAuthor<HydratedCommentDTO>
+>;
+export type CommentDTOAuthorAndReplyPopulated = Omit<
+	PopulateAuthor<HydratedCommentDTO>,
 	"replies"
-> & { replies: HydratedCommentDTO[] };
+> & { replies: PopulateAuthor<HydratedCommentDTO>[] };

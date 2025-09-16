@@ -15,7 +15,7 @@ const restoreStory = handlerFactory.restoreOneSoftDeleted(Story);
 
 const restoreAllStories = handlerFactory.restoreSoftDeleted(Story);
 
-const getAllStories = handlerFactory.getAll(Story);
+const getManyStories = handlerFactory.getMany(Story);
 
 export const storyController = {
 	createStory,
@@ -25,5 +25,5 @@ export const storyController = {
 	cleanupAllDeletedStories,
 	restoreStory,
 	restoreAllStories,
-	getAllStories,
+	getManyStories,
 };

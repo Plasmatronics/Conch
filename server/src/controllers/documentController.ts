@@ -15,7 +15,7 @@ const restoreDocument = handlerFactory.restoreOneSoftDeleted(Document);
 
 const restoreAllDocuments = handlerFactory.restoreSoftDeleted(Document);
 
-const getAllDocuments = handlerFactory.getAll(Document);
+const getManyDocuments = handlerFactory.getMany(Document);
 
 export const documentController = {
 	createDocument,
@@ -25,5 +25,5 @@ export const documentController = {
 	cleanupAllDeletedDocuments,
 	restoreDocument,
 	restoreAllDocuments,
-	getAllDocuments,
+	getManyDocuments,
 };

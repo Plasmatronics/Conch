@@ -15,7 +15,7 @@ const restoreUser = handlerFactory.restoreOneSoftDeleted(User);
 
 const restoreAllUsers = handlerFactory.restoreSoftDeleted(User);
 
-const getAllUsers = handlerFactory.getAll(User);
+const getManyUsers = handlerFactory.getMany(User);
 
 export const userController = {
 	createUser,
@@ -25,5 +25,5 @@ export const userController = {
 	cleanupAllDeletedUsers,
 	restoreUser,
 	restoreAllUsers,
-	getAllUsers,
+	getManyUsers,
 };

@@ -1,40 +1,27 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
-import { HydratedMediaDTO } from "@conch/shared";
-
-type HydratedMediaDTOWithDownloadFile = HydratedMediaDTO & {
-	downloadUrl: string;
-};
+import axios from "axios";
+import { MediaTypeAndDownloadUrl, MediaTypeAndKey } from "@conch/shared";
 
 type ReactQueryOptions = Omit<
-	UseQueryOptions<
-		HydratedMediaDTOWithDownloadFile[],
-		Error,
-		HydratedMediaDTOWithDownloadFile[]
-	>,
+	UseQueryOptions<MediaTypeAndDownloadUrl[]>,
 	"queryFn" | "queryKey"
 >;
 
-interface IFetchMediaData {
-	ids: HydratedMediaDTO["id"][];
+interface useFetchMediaDataProps extends ReactQueryOptions {
+	files: MediaTypeAndKey[];
 }
 
-type useFetchMediaDataProps = IFetchMediaData & ReactQueryOptions;
-
-const fetchSingleMediaData = async (
-	id: HydratedMediaDTO["id"],
-): Promise<HydratedMediaDTOWithDownloadFile> => {
+const fetchSingleMediaData = async ({
+	fileKey,
+	type,
+}: MediaTypeAndKey): Promise<MediaTypeAndDownloadUrl> => {
 	try {
-		const { data: fileProperties } = await axios.get<{
-			data: HydratedMediaDTO;
-		}>(`http://127.0.0.1:3000/api/v1/media/${id}`);
-
-		const { data: mediaData } = await axios.post<{
+		const { data } = await axios.post<{
 			downloadUrl: string;
 		}>(
 			"http://127.0.0.1:3000/api/v1/files/download-url",
 			{
-				fileKey: fileProperties.data.fileKey,
+				fileKey,
 			},
 			{
 				headers: {
@@ -42,29 +29,37 @@ const fetchSingleMediaData = async (
 				},
 			},
 		);
-		return { ...fileProperties.data, downloadUrl: mediaData.downloadUrl };
+		return { downloadUrl: data.downloadUrl, type };
 	} catch (err: unknown) {
-		throw new Error(
-			(err as AxiosError).message || "Failed to fetch media data",
-		);
+		if (axios.isAxiosError(err)) {
+			throw new Error(err.response?.data?.message ?? err.message);
+		}
+		throw err;
 	}
 };
 
-const fetchMediaData = async ({
-	ids,
-}: IFetchMediaData): Promise<HydratedMediaDTOWithDownloadFile[]> => {
+const fetchMediaData = async (
+	files: MediaTypeAndKey[],
+): Promise<MediaTypeAndDownloadUrl[]> => {
 	return await Promise.all(
-		ids.map((key: HydratedMediaDTO["id"]) => fetchSingleMediaData(key)),
+		files.map((file) =>
+			fetchSingleMediaData({ fileKey: file.fileKey, type: file.type }),
+		),
 	);
 };
 
 export const useFetchMediaData = ({
-	ids,
+	files,
 	...reactQueryProps
 }: useFetchMediaDataProps) => {
-	return useQuery<HydratedMediaDTOWithDownloadFile[], Error>({
-		queryKey: [ids],
-		queryFn: () => fetchMediaData({ ids }),
+	return useQuery<MediaTypeAndDownloadUrl[]>({
+		queryKey: [
+			files
+				.map((file) => `${file.type}: ${file.fileKey}`)
+				.sort()
+				.join(", "),
+		],
+		queryFn: () => fetchMediaData(files.filter(Boolean)),
 		...reactQueryProps,
 	});
 };

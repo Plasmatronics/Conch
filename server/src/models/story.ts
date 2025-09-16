@@ -17,7 +17,7 @@ const storySchema = new mongoose.Schema<StoryDoc>(
 		},
 		author: {
 			type: mongoose.Schema.ObjectId,
-			ref: "User",
+			ref: "FamilyTreeMember",
 			required: [true, "A story must belong to a user"],
 		},
 		involves: [
@@ -50,5 +50,24 @@ const storySchema = new mongoose.Schema<StoryDoc>(
 		toObject: { virtuals: true },
 	},
 );
+
+storySchema.pre(/^find/, function (next) {
+	(this as mongoose.Query<any, any>).populate({
+		path: "author",
+		select: "relationToRootMember name keyPhoto",
+		populate: {
+			path: "keyPhoto",
+			select: "type fileKey",
+		},
+	});
+	next();
+});
+storySchema.pre(/^find/, function (next) {
+	(this as mongoose.Query<any, any>).populate({
+		path: "media",
+		select: "type fileKey",
+	});
+	next();
+});
 
 export const Story = mongoose.model("Story", storySchema);

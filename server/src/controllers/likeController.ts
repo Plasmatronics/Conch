@@ -9,12 +9,12 @@ const updateLike = handlerFactory.updateOne(Like);
 
 const deleteLike = handlerFactory.deleteOne(Like);
 
-const getAllLikes = handlerFactory.getAll(Like);
+const getManyLikes = handlerFactory.getMany(Like);
 
 export const likeController = {
 	createLike,
 	getLike,
 	updateLike,
 	deleteLike,
-	getAllLikes,
+	getManyLikes,
 };
