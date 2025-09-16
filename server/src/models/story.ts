@@ -17,7 +17,7 @@ const storySchema = new mongoose.Schema<StoryDoc>(
 		},
 		author: {
 			type: mongoose.Schema.ObjectId,
-			ref: "User",
+			ref: "FamilyTreeMember",
 			required: [true, "A story must belong to a user"],
 		},
 		involves: [
@@ -56,7 +56,7 @@ storySchema.pre(/^find/, function (next) {
 		path: "author",
 		select: "relationToRootMember name keyPhoto",
 		populate: {
-			path: "media",
+			path: "keyPhoto",
 			select: "type fileKey",
 		},
 	});
