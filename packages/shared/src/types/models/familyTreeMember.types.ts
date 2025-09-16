@@ -1,8 +1,12 @@
 import mongoose, { Document } from "mongoose";
 import { MemberFavThings } from "types/favThings.types";
 import { ILocation } from "types/location.types";
-import { HydrateWithMetadata } from "types/utils";
-import { HydratedStoryDTO, IStory, UnhydratedStoryDTO } from "./stories.types";
+import { HydrateWithMetadata, PopulateKeyPhoto } from "types/utils";
+import {
+	IStory,
+	StoryDTOAuthorPopulated,
+	UnhydratedStoryDTO,
+} from "./stories.types";
 
 export interface IFamilyTreeMember {
 	name: string;
@@ -41,7 +45,10 @@ export interface UnhydratedFamilyTreeMemberDTO {
 export type HydratedFamilyTreeMemberDTO =
 	HydrateWithMetadata<UnhydratedFamilyTreeMemberDTO>;
 
-export type PopulatedFamilyTreeMemberAPIResponse = Omit<
-	HydratedFamilyTreeMemberDTO,
+export type FamilyTreeMemberDTOKeyPhotoPopulated =
+	PopulateKeyPhoto<HydratedFamilyTreeMemberDTO>;
+
+export type FamilyTreeMemberDTOKeyPhotoAndStoryPopulated = Omit<
+	FamilyTreeMemberDTOKeyPhotoPopulated,
 	"stories"
-> & { stories: HydratedStoryDTO[] };
+> & { stories: StoryDTOAuthorPopulated[] };

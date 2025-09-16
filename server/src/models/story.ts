@@ -62,5 +62,12 @@ storySchema.pre(/^find/, function (next) {
 	});
 	next();
 });
+storySchema.pre(/^find/, function (next) {
+	(this as mongoose.Query<any, any>).populate({
+		path: "media",
+		select: "type fileKey",
+	});
+	next();
+});
 
 export const Story = mongoose.model("Story", storySchema);

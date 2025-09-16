@@ -1,5 +1,7 @@
 import mongoose, { Document } from "mongoose";
-import { HydrateWithMetadata } from "types/utils";
+import { HydrateWithMetadata, PopulateKeyPhoto } from "types/utils";
+
+type DownloadUrl = string;
 
 export interface IMedia {
 	fileKey: string;
@@ -23,4 +25,15 @@ export interface UnhydratedMediaDTO {
 	deletedAt?: Date;
 }
 
+export interface MediaTypeAndKey {
+	type: UnhydratedMediaDTO["type"];
+	fileKey: UnhydratedMediaDTO["fileKey"];
+}
+
+export interface MediaTypeAndDownloadUrl {
+	type: UnhydratedMediaDTO["type"];
+	downloadUrl: DownloadUrl;
+}
+
 export type HydratedMediaDTO = HydrateWithMetadata<UnhydratedMediaDTO>;
+export type MediaDTOFileKeyPopulated = PopulateKeyPhoto<HydratedMediaDTO>;

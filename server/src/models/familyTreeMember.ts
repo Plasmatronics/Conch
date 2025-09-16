@@ -97,6 +97,14 @@ familyTreeMemberSchema.virtual("stories", {
 	justOne: false,
 });
 
+familyTreeMemberSchema.pre(/^find/, function (next) {
+	(this as mongoose.Query<any, any>).populate({
+		path: "keyPhoto",
+		select: "type fileKey",
+	});
+	next();
+});
+
 export const FamilyTreeMember = mongoose.model(
 	"FamilyTreeMember",
 	familyTreeMemberSchema,
