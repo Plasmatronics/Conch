@@ -51,6 +51,20 @@ const storySchema = new mongoose.Schema<StoryDoc>(
 	},
 );
 
+storySchema.virtual("likes", {
+	ref: "Like",
+	localField: "_id",
+	foreignField: "target",
+	match: { targetType: "Story" },
+	count: true,
+});
+
+storySchema.virtual("comments", {
+	ref: "Comment",
+	localField: "_id",
+	foreignField: "target",
+});
+
 storySchema.pre(/^find/, function (next) {
 	(this as mongoose.Query<any, any>).populate({
 		path: "author",
@@ -66,6 +80,12 @@ storySchema.pre(/^find/, function (next) {
 	(this as mongoose.Query<any, any>).populate({
 		path: "media",
 		select: "type fileKey",
+	});
+	next();
+});
+storySchema.pre(/^find/, function (next) {
+	(this as mongoose.Query<any, any>).populate({
+		path: "likes",
 	});
 	next();
 });

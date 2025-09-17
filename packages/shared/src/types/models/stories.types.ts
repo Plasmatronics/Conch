@@ -5,6 +5,7 @@ import {
 	PopulateKeyPhoto,
 } from "types/utils";
 import { HydratedMediaDTO } from "./media.types";
+import { CommentDTOAuthorAndReplyPopulated } from "./comments.types";
 
 export interface IStory {
 	title: string;
@@ -16,6 +17,7 @@ export interface IStory {
 	deletedAt?: Date;
 	storyDate?: Date;
 	likes?: number;
+	comments?: mongoose.Types.ObjectId[];
 }
 
 export type StoryDoc = IStory & Document;
@@ -30,6 +32,7 @@ export interface UnhydratedStoryDTO {
 	deletedAt?: Date;
 	storyDate?: Date;
 	likes?: number;
+	comments?: CommentDTOAuthorAndReplyPopulated;
 }
 
 export type HydratedStoryDTO = HydrateWithMetadata<UnhydratedStoryDTO>;

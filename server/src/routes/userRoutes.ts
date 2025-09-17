@@ -20,11 +20,12 @@ router.route("/trash/:id").patch(userController.restoreUser);
 
 router.route("/logout").get(authController.logout);
 
-router.route("/").get(userController.getManyUsers);
 router
 	.route("/:id")
 	.get(userController.getUser)
 	.patch(userController.updateUser)
 	.delete(userController.softDeleteUser);
+
+router.route("/").get(userController.getManyUsers);
 
 export { router as userRouter };

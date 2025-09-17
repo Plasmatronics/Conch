@@ -16,6 +16,7 @@ const commentSchema = new mongoose.Schema<CommentDoc>(
 			type: mongoose.Schema.ObjectId,
 			ref: "Comment",
 		},
+		target: { type: mongoose.Schema.ObjectId, ref: "Story" },
 		createdAt: {
 			type: Date,
 			default: Date.now(),
@@ -47,18 +48,14 @@ commentSchema.virtual("likes", {
 });
 
 commentSchema.pre(/^find/, function (next) {
-	(this as mongoose.Query<any, any>)
-		.populate({
-			path: "author",
-			select: "relationToRootMember name keyPhoto",
-			populate: {
-				path: "keyPhoto",
-				select: "type fileKey",
-			},
-		})
-		.populate({
-			path: "likes",
-		});
+	(this as mongoose.Query<any, any>).populate({
+		path: "author",
+		select: "relationToRootMember name keyPhoto",
+		populate: {
+			path: "keyPhoto",
+			select: "type fileKey",
+		},
+	});
 	next();
 });
 commentSchema.pre(/^find/, function (next) {

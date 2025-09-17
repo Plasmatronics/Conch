@@ -1,11 +1,7 @@
 import { useDataPost } from "./useDataPost";
 import { BasePost } from "../BasePost";
 import { useState } from "react";
-import {
-	HydratedStoryDTO,
-	HydratedFamilyTreeMemberDTO,
-	StoryDTOAuthorPopulated,
-} from "@conch/shared";
+import { HydratedStoryDTO, HydratedFamilyTreeMemberDTO } from "@conch/shared";
 import { MediaItem } from "../PostGallery";
 
 export interface DataPostProps {
@@ -26,7 +22,7 @@ export const DataPost = ({ storyId }: DataPostProps) => {
 		storyDate = new Date(),
 		content = "",
 		media = [],
-	} = (storyQuery?.data as StoryDTOAuthorPopulated) ?? {};
+	} = storyQuery?.data ?? {};
 
 	const { downloadUrl: avatarImage } = avatarQuery?.data?.at?.(0) ?? {};
 

@@ -7,7 +7,7 @@ import {
 	mockMemberData,
 	mockParentComment,
 } from "./mswData";
-import { HydratedCommentDTO } from "@conch/shared";
+import { HydratedCommentDTO, StoryDTOMediaPopulated } from "@conch/shared";
 
 export const handlers = [
 	http.get(
@@ -19,7 +19,7 @@ export const handlers = [
 
 			const data = { ...mockMemberData };
 			if (includeParam === "stories") {
-				data.stories = mockMediaPopulatedStoryData;
+				data.stories = [mockMediaPopulatedStoryData];
 			}
 
 			//second and a half
@@ -63,7 +63,16 @@ export const handlers = [
 		});
 	}),
 
-	http.get("http://127.0.0.1:3000/api/v1/stories/*", async () => {
+	http.get("http://127.0.0.1:3000/api/v1/stories/*", async ({ request }) => {
+		const url = new URL(request.url);
+
+		const data: StoryDTOMediaPopulated = { ...mockMediaPopulatedStoryData };
+
+		if (url.pathname.endsWith("/comments")) {
+			data.comments = mockParentComment;
+			data.comments.replies = [mockChildComment];
+		}
+
 		//second and a half
 		await delay(1500);
 

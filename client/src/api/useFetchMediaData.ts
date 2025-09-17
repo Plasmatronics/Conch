@@ -3,18 +3,23 @@ import axios from "axios";
 import { MediaTypeAndDownloadUrl, MediaTypeAndKey } from "@conch/shared";
 
 type ReactQueryOptions = Omit<
-	UseQueryOptions<MediaTypeAndDownloadUrl[]>,
+	UseQueryOptions<MediaTypeAndDownloadUrlAndFileKey[]>,
 	"queryFn" | "queryKey"
 >;
 
-interface useFetchMediaDataProps extends ReactQueryOptions {
+export interface MediaTypeAndDownloadUrlAndFileKey
+	extends MediaTypeAndDownloadUrl {
+	fileKey: string;
+}
+
+export interface useFetchMediaDataProps extends ReactQueryOptions {
 	files: MediaTypeAndKey[];
 }
 
 const fetchSingleMediaData = async ({
 	fileKey,
 	type,
-}: MediaTypeAndKey): Promise<MediaTypeAndDownloadUrl> => {
+}: MediaTypeAndKey): Promise<MediaTypeAndDownloadUrlAndFileKey> => {
 	try {
 		const { data } = await axios.post<{
 			downloadUrl: string;
@@ -29,7 +34,7 @@ const fetchSingleMediaData = async ({
 				},
 			},
 		);
-		return { downloadUrl: data.downloadUrl, type };
+		return { downloadUrl: data.downloadUrl, type, fileKey };
 	} catch (err: unknown) {
 		if (axios.isAxiosError(err)) {
 			throw new Error(err.response?.data?.message ?? err.message);
@@ -40,10 +45,13 @@ const fetchSingleMediaData = async ({
 
 const fetchMediaData = async (
 	files: MediaTypeAndKey[],
-): Promise<MediaTypeAndDownloadUrl[]> => {
+): Promise<MediaTypeAndDownloadUrlAndFileKey[]> => {
 	return await Promise.all(
 		files.map((file) =>
-			fetchSingleMediaData({ fileKey: file.fileKey, type: file.type }),
+			fetchSingleMediaData({
+				fileKey: file.fileKey,
+				type: file.type,
+			}),
 		),
 	);
 };
@@ -52,7 +60,7 @@ export const useFetchMediaData = ({
 	files,
 	...reactQueryProps
 }: useFetchMediaDataProps) => {
-	return useQuery<MediaTypeAndDownloadUrl[]>({
+	return useQuery<MediaTypeAndDownloadUrlAndFileKey[]>({
 		queryKey: [
 			files
 				.map((file) => `${file.type}: ${file.fileKey}`)

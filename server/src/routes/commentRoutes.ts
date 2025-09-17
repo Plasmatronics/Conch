@@ -14,14 +14,14 @@ router
 router.route("/trash/:id").patch(commentController.restoreComment);
 
 router
-	.route("/")
-	.get(commentController.getManyComments)
-	.post(commentController.createComment);
-
-router
 	.route("/:id")
 	.get(commentController.getComment)
 	.patch(commentController.updateComment)
 	.delete(commentController.softDeleteComment);
+
+router
+	.route("/")
+	.get(commentController.getManyComments)
+	.post(commentController.createComment);
 
 export { router as commentRouter };

@@ -8,6 +8,7 @@ import {
 export interface IComment {
 	content: string;
 	author: mongoose.Types.ObjectId;
+	target: mongoose.Types.ObjectId;
 	parentComment?: mongoose.Types.ObjectId;
 	createdAt: Date;
 	deletedAt?: Date;
@@ -20,6 +21,7 @@ export type CommentDoc = IComment & Document;
 export interface UnhydratedCommentDTO {
 	content: string;
 	author: string;
+	target: string;
 	parentComment?: string;
 	createdAt: Date;
 	deletedAt?: Date;
