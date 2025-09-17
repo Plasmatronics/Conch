@@ -5,7 +5,11 @@
 		"composite": true,
 		"rootDir": "./src",
 		"outDir": "dist",
-		"baseUrl": "src"
+		"baseUrl": "src",
+		"declaration": true,
+		"declarationMap": true,
+		"emitDeclarationOnly": false,
+		"strict": true
 	},
 	"include": ["src"]
 }

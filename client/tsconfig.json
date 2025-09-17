@@ -13,7 +13,7 @@
 			"@conch/shared": ["../packages/shared/src"]
 		}
 	},
-	"include": ["src"],
+	"include": ["**/*.ts", "**/*.tsx"],
 	"references": [
 		{ "path": "../packages/shared" },
 		{ "path": "../packages/design-system" }

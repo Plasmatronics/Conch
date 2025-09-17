@@ -1,4 +1,4 @@
-import { Avatar, Box, Flex, Text } from "@chakra-ui/react";
+import { Avatar, Flex, Text } from "@chakra-ui/react";
 import { BaseCommentProps } from "./BaseComment.types";
 import { LikeButton } from "../../Buttons";
 import { getPrettyDate } from "../../../utils";
@@ -18,13 +18,13 @@ export const BaseComment = ({
 	loading,
 	onViewReplyClick,
 	numReplies = 0,
-	isLiked,
-	setIsLiked,
 	numRepliesRendered = 0,
 }: BaseCommentProps) => {
-	const curTimestamp = React.useRef(
-		Date.now() - new Date(datePosted).getTime(),
-	).current;
+	const [isLiked, setIsLiked] = React.useState(false);
+	const ageMs = React.useMemo(() => {
+		const time = new Date(datePosted).getTime();
+		return Math.max(0, Date.now() - time);
+	}, [datePosted]);
 
 	const remaining = Math.max(0, numReplies - numRepliesRendered);
 	const isThreadFullyExpanded = numReplies > 0 && remaining === 0;
@@ -67,7 +67,7 @@ export const BaseComment = ({
 							maxCharCount={MAX_CHARS_BEFORE_TRUNCATION}
 						/>
 						<Flex width="100%" gap="1rem">
-							<Text>{getPrettyDate(curTimestamp)}</Text>
+							<Text>{getPrettyDate(ageMs)}</Text>
 							<Text>{relationship}</Text>
 							<Text
 								onClick={handleReplyClick}

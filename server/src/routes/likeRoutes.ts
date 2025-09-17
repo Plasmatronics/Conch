@@ -7,14 +7,14 @@ const router = express.Router();
 router.use(authController.protect);
 
 router
-	.route("/")
-	.get(likeController.getManyLikes)
-	.post(likeController.createLike);
-
-router
 	.route("/:id")
 	.get(likeController.getLike)
 	.patch(likeController.updateLike)
 	.delete(likeController.deleteLike);
+
+router
+	.route("/")
+	.get(likeController.getManyLikes)
+	.post(likeController.createLike);
 
 export { router as likeRouter };

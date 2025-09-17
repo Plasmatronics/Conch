@@ -13,15 +13,17 @@ router
 
 router.route("/trash/:id").patch(storyController.restoreStory);
 
-router
-	.route("/")
-	.get(storyController.getManyStories)
-	.post(storyController.createStory);
+router.route("/:id/comments").get(storyController.getStoryComments);
 
 router
 	.route("/:id")
 	.get(storyController.getStory)
 	.patch(storyController.updateStory)
 	.delete(storyController.softDeleteStory);
+
+router
+	.route("/")
+	.get(storyController.getManyStories)
+	.post(storyController.createStory);
 
 export { router as storyRouter };

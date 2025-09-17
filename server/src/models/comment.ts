@@ -16,6 +16,7 @@ const commentSchema = new mongoose.Schema<CommentDoc>(
 			type: mongoose.Schema.ObjectId,
 			ref: "Comment",
 		},
+		target: { type: mongoose.Schema.ObjectId, ref: "Story" },
 		createdAt: {
 			type: Date,
 			default: Date.now(),
@@ -38,6 +39,14 @@ commentSchema.virtual("replies", {
 	justOne: false,
 });
 
+commentSchema.virtual("likes", {
+	ref: "Like",
+	localField: "_id",
+	foreignField: "target",
+	match: { targetType: "Comment" },
+	count: true,
+});
+
 commentSchema.pre(/^find/, function (next) {
 	(this as mongoose.Query<any, any>).populate({
 		path: "author",
@@ -46,6 +55,12 @@ commentSchema.pre(/^find/, function (next) {
 			path: "keyPhoto",
 			select: "type fileKey",
 		},
+	});
+	next();
+});
+commentSchema.pre(/^find/, function (next) {
+	(this as mongoose.Query<any, any>).populate({
+		path: "likes",
 	});
 	next();
 });

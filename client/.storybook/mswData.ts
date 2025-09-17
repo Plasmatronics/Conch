@@ -17,18 +17,45 @@ export const mockMediaData: HydratedMediaDTO = {
 };
 
 export const mockParentComment: HydratedCommentDTO = {
-	id: "687f19fe77c2242b69f1f261",
-	content: "This is the best post ever",
-	author: "68bded593c9768d183ad7834",
-	createdAt: new Date(2025, 8, 3),
+	_id: "68c3429ba477ed0dad6f5fbe",
+	content: "This is a really helpful post, thanks for sharing!",
+	target: "68bf2a9895bde97c33918cef",
+	author: {
+		_id: "68bded593c9768d183ad7834",
+		name: "Joseph Bruno",
+		relationToRootMember: "Brother",
+		keyPhoto: {
+			_id: "68bdedc63c9768d183ad7839",
+			fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
+			type: "photo",
+			id: "68bdedc63c9768d183ad7839",
+		},
+		id: "68bded593c9768d183ad7834",
+	},
+	createdAt: new Date("2025-09-11T21:43:11.882Z"),
+	__v: 0,
+	id: "68c3429ba477ed0dad6f5fbe",
 };
 
 export const mockChildComment: HydratedCommentDTO = {
-	id: "687f19fe77c2242b69f1f269",
-	content: "No this is the worst!!!!!",
-	author: "68bded593c9768d183ad7834",
-	parentComment: "687f19fe77c2242b69f1f261",
-	createdAt: new Date(2025, 8, 7),
+	_id: "68c345abc2eada301a2a38f8",
+	content: "What?? This post is terrible!",
+	target: "68bf2a9895bde97c33918cef",
+	author: {
+		_id: "68bded593c9768d183ad7834",
+		name: "Joseph Bruno",
+		relationToRootMember: "Brother",
+		keyPhoto: {
+			_id: "68bdedc63c9768d183ad7839",
+			fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
+			type: "photo",
+			id: "68bdedc63c9768d183ad7839",
+		},
+		id: "68bded593c9768d183ad7834",
+	},
+	parentComment: "68c3429ba477ed0dad6f5fbe",
+	createdAt: new Date("2025-09-11T21:55:00.721Z"),
+	id: "68c345abc2eada301a2a38f8",
 };
 
 export const mockMemberData: HydratedFamilyTreeMemberDTO = {

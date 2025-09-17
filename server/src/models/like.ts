@@ -16,7 +16,7 @@ const likeSchema = new mongoose.Schema<LikeDoc>(
 		targetType: {
 			type: String,
 			required: [true, "A like must have a target type"],
-			enum: ["Media", "Document"],
+			enum: ["Story", "Document", "Comment"],
 		},
 		author: {
 			type: mongoose.Schema.ObjectId,
