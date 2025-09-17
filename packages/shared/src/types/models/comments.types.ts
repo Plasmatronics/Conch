@@ -12,6 +12,7 @@ export interface IComment {
 	createdAt: Date;
 	deletedAt?: Date;
 	replies?: IComment[];
+	likes?: number;
 }
 
 export type CommentDoc = IComment & Document;
@@ -23,6 +24,7 @@ export interface UnhydratedCommentDTO {
 	createdAt: Date;
 	deletedAt?: Date;
 	replies?: UnhydratedCommentDTO[];
+	likes?: number;
 }
 
 export type HydratedCommentDTO = HydrateWithMetadata<UnhydratedCommentDTO>;

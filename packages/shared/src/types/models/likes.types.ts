@@ -14,7 +14,7 @@ export type LikeDoc = ILike & Document;
 export interface UnhydratedLikeDTO {
 	fileKey: string;
 	target: string;
-	targetType: "Media" | "Document";
+	targetType: "Comment" | "Document" | "Story";
 	author: string;
 	createdAt: Date;
 }

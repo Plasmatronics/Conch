@@ -21,6 +21,7 @@ const getComment = async (req: Request, res: Response, next: NextFunction) => {
 				path: "replies",
 				match: { deletedAt: { $exists: false } },
 				select: "-__v",
+				options: { sort: { createdAt: 1 } },
 			});
 		}
 

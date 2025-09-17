@@ -38,14 +38,32 @@ commentSchema.virtual("replies", {
 	justOne: false,
 });
 
+commentSchema.virtual("likes", {
+	ref: "Like",
+	localField: "_id",
+	foreignField: "target",
+	match: { targetType: "Comment" },
+	count: true,
+});
+
+commentSchema.pre(/^find/, function (next) {
+	(this as mongoose.Query<any, any>)
+		.populate({
+			path: "author",
+			select: "relationToRootMember name keyPhoto",
+			populate: {
+				path: "keyPhoto",
+				select: "type fileKey",
+			},
+		})
+		.populate({
+			path: "likes",
+		});
+	next();
+});
 commentSchema.pre(/^find/, function (next) {
 	(this as mongoose.Query<any, any>).populate({
-		path: "author",
-		select: "relationToRootMember name keyPhoto",
-		populate: {
-			path: "keyPhoto",
-			select: "type fileKey",
-		},
+		path: "likes",
 	});
 	next();
 });

@@ -15,6 +15,7 @@ export interface IStory {
 	createdAt: Date;
 	deletedAt?: Date;
 	storyDate?: Date;
+	likes?: number;
 }
 
 export type StoryDoc = IStory & Document;
@@ -28,6 +29,7 @@ export interface UnhydratedStoryDTO {
 	createdAt: Date;
 	deletedAt?: Date;
 	storyDate?: Date;
+	likes?: number;
 }
 
 export type HydratedStoryDTO = HydrateWithMetadata<UnhydratedStoryDTO>;
