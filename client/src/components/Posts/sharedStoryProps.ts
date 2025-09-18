@@ -1,3 +1,4 @@
+import { pileAvatars } from "../Elements";
 import { BasePostProps } from "./BasePost";
 import { MediaItem } from "./PostGallery/PostGallery.types";
 
@@ -7,7 +8,9 @@ export const postDefaults: Partial<BasePostProps> = {
 	relationship: "Brother",
 	title:
 		"Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas adipisci eveniet distinctio minus et culpa ipsum necessitatibus",
-	year: new Date(Date.now()),
+	storyDate: new Date(Date.now()),
+	numLikes: 98,
+	facePileAvatars: pileAvatars,
 };
 
 export const vertVideo: MediaItem = {

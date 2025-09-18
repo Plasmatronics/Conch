@@ -1,3 +1,4 @@
+import { FacePileProps } from "../../Elements";
 import { BaseCommentProps } from "../BaseComment";
 
 interface IReply {
@@ -12,4 +13,5 @@ interface ICommentWithReplies {
 
 export interface CommentThreadProps {
 	comment: ICommentWithReplies;
+	facePileAvatars?: FacePileProps["avatars"];
 }

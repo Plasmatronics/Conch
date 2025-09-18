@@ -22,6 +22,7 @@ export const DataPost = ({ storyId }: DataPostProps) => {
 		storyDate = new Date(),
 		content = "",
 		media = [],
+		likes = 0,
 	} = storyQuery?.data ?? {};
 
 	const { downloadUrl: avatarImage } = avatarQuery?.data?.at?.(0) ?? {};
@@ -45,6 +46,7 @@ export const DataPost = ({ storyId }: DataPostProps) => {
 			setIsLiked={setIsLiked}
 			avatar={avatarImage}
 			storyDate={storyDate}
+			numLikes={likes}
 		/>
 	);
 };

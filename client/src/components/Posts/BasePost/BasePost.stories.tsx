@@ -38,8 +38,15 @@ StoryPost.args = {
 			possimus natus excepturi nihil laborum eum animi quas aliquid! Maiores
 			exercitationem aut ea?`,
 };
+
 export const ShortPost = Template.bind({});
 ShortPost.args = {
+	text: "Apollo is my favorite mythological character!",
+};
+
+export const NoFacePile = Template.bind({});
+NoFacePile.args = {
+	facePileAvatars: undefined,
 	text: "Apollo is my favorite mythological character!",
 };
 
@@ -118,6 +125,7 @@ export const ThreeSecExternalLoadText = () => {
 			{...(postDefaults as BasePostHeaderProps)}
 			text="Apollo is my favorite mythological character!"
 			loading={isLoading}
+			numLikes={112}
 			isLiked={isLiked}
 			setIsLiked={setIsLiked}
 		/>
@@ -142,6 +150,7 @@ export const ThreeSecExternalLoadMedia = () => {
 			text="Apollo is my favorite mythological character!"
 			media={[...threeHorizontalImages]}
 			loading={isLoading}
+			numLikes={112}
 			isLiked={isLiked}
 			setIsLiked={setIsLiked}
 		/>

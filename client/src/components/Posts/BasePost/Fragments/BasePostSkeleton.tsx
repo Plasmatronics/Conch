@@ -60,7 +60,7 @@ export const BasePostSkeleton = ({
 			{loading && (
 				<Flex
 					p="1.5rem"
-					pt="0rem"
+					pt="3rem"
 					height="100%"
 					width="100%"
 					alignItems="center"

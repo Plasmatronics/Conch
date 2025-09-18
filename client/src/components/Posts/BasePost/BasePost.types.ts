@@ -3,6 +3,7 @@ import { LikeCommentShareProps } from "../../Buttons";
 import { ReactNode } from "react";
 import { MediaItem } from "../PostGallery";
 import { PostGalleryModalProps } from "../PostGalleryModal";
+import { FacePileProps } from "../../Elements";
 
 export interface BasePostHeaderProps {
 	user: string;
@@ -24,5 +25,7 @@ export interface BasePostProps
 	loading?: boolean;
 	text?: string;
 	media?: MediaItem[];
+	numLikes: number;
+	facePileAvatars?: FacePileProps["avatars"];
 	postGalleryModalProps?: Omit<PostGalleryModalProps, "media">;
 }

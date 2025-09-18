@@ -14,6 +14,7 @@ export const BaseComment = ({
 	avatar,
 	datePosted,
 	relationship,
+	numLikes,
 	onReplyClick,
 	loading,
 	onViewReplyClick,
@@ -92,16 +93,23 @@ export const BaseComment = ({
 						</Flex>
 					</Flex>
 
-					<LikeButton
-						pt="2rem"
-						bg="transparent"
-						_hover={{
-							bg: "transparent",
-							color: isLiked ? "red.400" : "gray.400",
-						}}
-						isLiked={isLiked}
-						setIsLiked={handleLike}
-					/>
+					<Flex align="center" gap="0.5rem" direction="column">
+						<LikeButton
+							pt="2rem"
+							bg="transparent"
+							_hover={{
+								bg: "transparent",
+								color: isLiked ? "red.400" : "gray.400",
+							}}
+							isLiked={isLiked}
+							setIsLiked={handleLike}
+						/>
+						{numLikes > 0 && (
+							<Text fontSize="sm" color="gray.500">
+								{numLikes}
+							</Text>
+						)}
+					</Flex>
 				</>
 			)}
 		</Flex>

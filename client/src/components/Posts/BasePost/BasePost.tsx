@@ -1,14 +1,25 @@
-import { Separator, Box, Flex, Card, Spinner } from "@chakra-ui/react";
+import {
+	Separator,
+	Box,
+	Flex,
+	Card,
+	Spinner,
+	Dialog,
+	Portal,
+	AspectRatio,
+} from "@chakra-ui/react";
 import { LikeCommentShare } from "../../Buttons";
 import React, { useState } from "react";
 import { BasePostProps } from "./BasePost.types";
 import { PostGalleryModal } from "../PostGalleryModal";
 import { ExpandableText } from "../../Typography";
+import { FacePile } from "../../Elements";
 import { BasePostHeader, BasePostSkeleton } from "./Fragments";
 
 const MAX_CHARS_BEFORE_TRUNCATION = 1500;
+const MAX_NUM_AVATARS_IN_FACEPILE = 3;
 
-export const BasePost = ({
+const BasePostWithoutComment = ({
 	avatar,
 	title,
 	user,
@@ -19,6 +30,8 @@ export const BasePost = ({
 	isLiked,
 	setIsLiked,
 	loading,
+	numLikes,
+	facePileAvatars,
 	likeCommentShareProps,
 	text,
 	media,
@@ -40,6 +53,11 @@ export const BasePost = ({
 		headerRight,
 		onLocationClick,
 	};
+
+	const numLikesDisplayed =
+		numLikes <= MAX_NUM_AVATARS_IN_FACEPILE
+			? 0
+			: numLikes - MAX_NUM_AVATARS_IN_FACEPILE;
 
 	const handleStartMediaLoad = () => {
 		setHasMediaStartedLoading(true);
@@ -94,9 +112,6 @@ export const BasePost = ({
 								<ExpandableText
 									text={text}
 									maxCharCount={MAX_CHARS_BEFORE_TRUNCATION}
-									containerProps={{
-										mb: "1.5rem",
-									}}
 								/>
 							)}
 							{media && (
@@ -111,6 +126,19 @@ export const BasePost = ({
 								/>
 							)}
 						</Box>
+						{!isMediaLoading && facePileAvatars && (
+							<Box mb="0.75rem" alignSelf="start">
+								<FacePile
+									avatars={facePileAvatars}
+									numAvatars={MAX_NUM_AVATARS_IN_FACEPILE}
+									text={
+										numLikesDisplayed > 0
+											? `+${numLikesDisplayed} Have Liked`
+											: "Have Liked"
+									}
+								/>
+							</Box>
+						)}
 						{!isMediaLoading && (
 							<Box width="100%">
 								<Separator mx="auto" width="95%" pb="0.5rem" />
@@ -127,3 +155,47 @@ export const BasePost = ({
 		</Card.Root>
 	);
 };
+
+const BasePostWithComment = ({ ...props }: BasePostProps) => {
+	const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+
+	const handleCommentClick = () => {
+		setIsCommentModalOpen(true);
+	};
+
+	const handleCloseCommentModal = () => {
+		setIsCommentModalOpen(false);
+	};
+
+	return (
+		<>
+			<BasePostWithoutComment
+				{...props}
+				likeCommentShareProps={{
+					commentButtonProps: {
+						onClick: handleCommentClick,
+					},
+				}}
+			/>
+			<Dialog.Root
+				open={isCommentModalOpen}
+				motionPreset="none"
+				scrollBehavior="inside"
+				onEscapeKeyDown={handleCloseCommentModal}
+				onPointerDownOutside={handleCloseCommentModal}
+				size="xl"
+			>
+				<Portal>
+					<Dialog.Backdrop style={{ pointerEvents: "auto" }} />
+					<Dialog.Positioner>
+						<Dialog.Content overflowY="auto">
+							<BasePostWithoutComment border="none" {...props} />
+						</Dialog.Content>
+					</Dialog.Positioner>
+				</Portal>
+			</Dialog.Root>
+		</>
+	);
+};
+
+export { BasePostWithComment as BasePost };

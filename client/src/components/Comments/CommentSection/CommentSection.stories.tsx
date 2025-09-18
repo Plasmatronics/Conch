@@ -3,6 +3,7 @@ import type { Meta, StoryFn } from "@storybook/react-vite";
 import { CommentSection } from "./CommentSection";
 import { CommentSectionProps } from "./CommentSection.types";
 import { fewReplies, longComment, manyReplies } from "../sharedCommentProps";
+import { pileAvatars } from "../../Elements";
 
 export default {
 	title: "Comments/CommentSection",
@@ -39,6 +40,26 @@ FewThreads.args = {
 				comment: longComment,
 				replies: manyReplies,
 			},
+		},
+	],
+};
+
+export const WithPiles = Template.bind({});
+WithPiles.args = {
+	commentThreads: [
+		{
+			comment: {
+				comment: longComment,
+				replies: fewReplies,
+			},
+			facePileAvatars: pileAvatars,
+		},
+		{
+			comment: {
+				comment: longComment,
+				replies: manyReplies,
+			},
+			facePileAvatars: pileAvatars,
 		},
 	],
 };

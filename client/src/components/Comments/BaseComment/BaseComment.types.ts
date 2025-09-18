@@ -9,6 +9,7 @@ export interface BaseCommentProps {
 	numRepliesRendered?: number;
 	numReplies?: number;
 	loading?: boolean;
+	numLikes: number;
 	onReplyClick?: () => void;
 	onViewReplyClick?: () => void;
 }
