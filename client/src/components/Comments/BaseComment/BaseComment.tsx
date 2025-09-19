@@ -49,7 +49,7 @@ export const BaseComment = ({
 	};
 
 	return (
-		<Flex width="100%" gapX="1rem">
+		<Flex width="100%" gapX="1rem" mb="1rem">
 			{loading ? (
 				<BaseCommentSkeleton />
 			) : (
@@ -67,7 +67,7 @@ export const BaseComment = ({
 							text={comment}
 							maxCharCount={MAX_CHARS_BEFORE_TRUNCATION}
 						/>
-						<Flex width="100%" gap="1rem">
+						<Flex width="100%" gap="1rem" alignItems="start">
 							<Text>{getPrettyDate(ageMs)}</Text>
 							<Text>{relationship}</Text>
 							<Text

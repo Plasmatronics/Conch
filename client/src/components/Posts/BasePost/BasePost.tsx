@@ -1,13 +1,4 @@
-import {
-	Separator,
-	Box,
-	Flex,
-	Card,
-	Spinner,
-	Dialog,
-	Portal,
-	AspectRatio,
-} from "@chakra-ui/react";
+import { Box, Flex, Card, Spinner, Dialog, Portal } from "@chakra-ui/react";
 import { LikeCommentShare } from "../../Buttons";
 import React, { useState } from "react";
 import { BasePostProps } from "./BasePost.types";
@@ -15,6 +6,7 @@ import { PostGalleryModal } from "../PostGalleryModal";
 import { ExpandableText } from "../../Typography";
 import { FacePile } from "../../Elements";
 import { BasePostHeader, BasePostSkeleton } from "./Fragments";
+import { CommentSection } from "../../Comments";
 
 const MAX_CHARS_BEFORE_TRUNCATION = 1500;
 const MAX_NUM_AVATARS_IN_FACEPILE = 3;
@@ -34,6 +26,7 @@ const BasePostWithoutComment = ({
 	facePileAvatars,
 	likeCommentShareProps,
 	text,
+	commentSectionProps,
 	media,
 	postGalleryModalProps,
 	...cardRootProps
@@ -104,12 +97,13 @@ const BasePostWithoutComment = ({
 						direction="column"
 						width="100%"
 						height="100%"
-						justifyContent="center"
+						justifyContent="start"
 						alignItems="center"
 					>
-						<Box mb="2rem" width="100%" height="100%">
+						<Box mb="2rem" width="100%">
 							{!isMediaLoading && text && (
 								<ExpandableText
+									mb="0.75rem"
 									text={text}
 									maxCharCount={MAX_CHARS_BEFORE_TRUNCATION}
 								/>
@@ -123,6 +117,9 @@ const BasePostWithoutComment = ({
 										onLoadStart: handleStartMediaLoad,
 										loading: isMediaLoading,
 									}}
+									rightSection={
+										<CommentSection mt="1rem" {...commentSectionProps} />
+									}
 								/>
 							)}
 						</Box>
@@ -141,7 +138,6 @@ const BasePostWithoutComment = ({
 						)}
 						{!isMediaLoading && (
 							<Box width="100%">
-								<Separator mx="auto" width="95%" pb="0.5rem" />
 								<LikeCommentShare
 									{...likeCommentShareProps}
 									isLiked={isLiked}
@@ -172,6 +168,7 @@ const BasePostWithComment = ({ ...props }: BasePostProps) => {
 			<BasePostWithoutComment
 				{...props}
 				likeCommentShareProps={{
+					noBottomSeparator: true,
 					commentButtonProps: {
 						onClick: handleCommentClick,
 					},
@@ -183,13 +180,23 @@ const BasePostWithComment = ({ ...props }: BasePostProps) => {
 				scrollBehavior="inside"
 				onEscapeKeyDown={handleCloseCommentModal}
 				onPointerDownOutside={handleCloseCommentModal}
-				size="xl"
+				size="tall"
 			>
 				<Portal>
 					<Dialog.Backdrop style={{ pointerEvents: "auto" }} />
 					<Dialog.Positioner>
-						<Dialog.Content overflowY="auto">
-							<BasePostWithoutComment border="none" {...props} />
+						<Dialog.Content maxH="100vh" overflow="hidden">
+							<Flex
+								width="100%"
+								height="100%"
+								direction="column"
+								overflowY="auto"
+								overflowX="hidden"
+								gap="0.5rem"
+							>
+								<BasePostWithoutComment border="none" {...props} />
+								<CommentSection {...props.commentSectionProps} />
+							</Flex>
 						</Dialog.Content>
 					</Dialog.Positioner>
 				</Portal>

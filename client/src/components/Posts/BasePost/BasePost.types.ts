@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import { MediaItem } from "../PostGallery";
 import { PostGalleryModalProps } from "../PostGalleryModal";
 import { FacePileProps } from "../../Elements";
+import { CommentSectionProps } from "components/Comments";
 
 export interface BasePostHeaderProps {
 	user: string;
@@ -28,4 +29,5 @@ export interface BasePostProps
 	numLikes: number;
 	facePileAvatars?: FacePileProps["avatars"];
 	postGalleryModalProps?: Omit<PostGalleryModalProps, "media">;
+	commentSectionProps: CommentSectionProps;
 }

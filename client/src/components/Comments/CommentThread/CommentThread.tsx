@@ -32,7 +32,7 @@ export const CommentThread = ({
 	const repliesRendered = comment.replies?.slice(0, repliesShown) || [];
 
 	return (
-		<Flex direction="column" gapY="1rem">
+		<Flex direction="column" gapY="1rem" pb="1rem">
 			<BaseComment
 				{...comment.comment}
 				numRepliesRendered={repliesShown}
