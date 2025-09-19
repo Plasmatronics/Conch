@@ -14,6 +14,7 @@ export const BaseComment = ({
 	avatar,
 	datePosted,
 	relationship,
+	numLikes,
 	onReplyClick,
 	loading,
 	onViewReplyClick,
@@ -48,7 +49,7 @@ export const BaseComment = ({
 	};
 
 	return (
-		<Flex width="100%" gapX="1rem">
+		<Flex width="100%" gapX="1rem" mb="1rem">
 			{loading ? (
 				<BaseCommentSkeleton />
 			) : (
@@ -66,7 +67,7 @@ export const BaseComment = ({
 							text={comment}
 							maxCharCount={MAX_CHARS_BEFORE_TRUNCATION}
 						/>
-						<Flex width="100%" gap="1rem">
+						<Flex width="100%" gap="1rem" alignItems="start">
 							<Text>{getPrettyDate(ageMs)}</Text>
 							<Text>{relationship}</Text>
 							<Text
@@ -92,16 +93,23 @@ export const BaseComment = ({
 						</Flex>
 					</Flex>
 
-					<LikeButton
-						pt="2rem"
-						bg="transparent"
-						_hover={{
-							bg: "transparent",
-							color: isLiked ? "red.400" : "gray.400",
-						}}
-						isLiked={isLiked}
-						setIsLiked={handleLike}
-					/>
+					<Flex align="center" gap="0.5rem" direction="column">
+						<LikeButton
+							pt="2rem"
+							bg="transparent"
+							_hover={{
+								bg: "transparent",
+								color: isLiked ? "red.400" : "gray.400",
+							}}
+							isLiked={isLiked}
+							setIsLiked={handleLike}
+						/>
+						{numLikes > 0 && (
+							<Text fontSize="sm" color="gray.500">
+								{numLikes}
+							</Text>
+						)}
+					</Flex>
 				</>
 			)}
 		</Flex>

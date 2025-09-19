@@ -1,11 +1,16 @@
-import { Flex } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import { BaseComment } from "../BaseComment";
 import { CommentThreadProps } from "./CommentThread.types";
 import { useState } from "react";
+import { FacePile } from "../../Elements";
 
 const NUM_REPLIES_EXPANDED_ON_CLICK = 5;
+const MAX_NUM_AVATARS_IN_FACEPILE = 3;
 
-export const CommentThread = ({ comment }: CommentThreadProps) => {
+export const CommentThread = ({
+	comment,
+	facePileAvatars,
+}: CommentThreadProps) => {
 	const totalReplies = comment.replies?.length || 0;
 	const [repliesShown, setRepliesShown] = useState(0);
 
@@ -19,16 +24,34 @@ export const CommentThread = ({ comment }: CommentThreadProps) => {
 		});
 	};
 
+	const numCommentsAdvertised =
+		totalReplies <= MAX_NUM_AVATARS_IN_FACEPILE
+			? 0
+			: totalReplies - MAX_NUM_AVATARS_IN_FACEPILE;
+
 	const repliesRendered = comment.replies?.slice(0, repliesShown) || [];
 
 	return (
-		<Flex direction="column" gapY="1rem">
+		<Flex direction="column" gapY="1rem" pb="1rem">
 			<BaseComment
 				{...comment.comment}
 				numRepliesRendered={repliesShown}
 				numReplies={totalReplies}
 				onViewReplyClick={handleViewRepliesClick}
 			/>
+			{repliesShown === 0 && facePileAvatars && (
+				<Box pl="3.5rem" alignSelf="start">
+					<FacePile
+						avatars={facePileAvatars}
+						size="xs"
+						text={
+							numCommentsAdvertised > 0
+								? `+${numCommentsAdvertised} have commented`
+								: "Have Commented"
+						}
+					/>
+				</Box>
+			)}
 			{repliesRendered.length > 0 && (
 				<Flex direction="column" gapY="1rem" pl="3.5rem">
 					{repliesRendered.map((reply, idx) => (

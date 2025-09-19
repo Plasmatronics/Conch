@@ -11,4 +11,5 @@ export interface LikeCommentShareProps extends FlexProps {
 	shareButtonProps?: ShareButtonProps;
 	commentButtonProps?: CommentButtonProps;
 	uniformIconButtonProps?: BaseButtonProps;
+	noBottomSeparator?: boolean;
 }

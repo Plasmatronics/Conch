@@ -10,6 +10,27 @@ import {
 	threeHorizontalImages,
 } from "../sharedStoryProps";
 import { Card, Grid, Skeleton } from "@chakra-ui/react";
+import { longComment, fewReplies, manyReplies } from "../../Comments";
+import { pileAvatars } from "../../Elements";
+
+const commentSectionProps: BasePostProps["commentSectionProps"] = {
+	commentThreads: [
+		{
+			comment: {
+				comment: longComment,
+				replies: fewReplies,
+			},
+			facePileAvatars: pileAvatars,
+		},
+		{
+			comment: {
+				comment: longComment,
+				replies: manyReplies,
+			},
+			facePileAvatars: pileAvatars,
+		},
+	],
+};
 
 export default {
 	title: "Posts/BasePost",
@@ -22,6 +43,7 @@ const Template: StoryFn<BasePostProps> = (args) => {
 		<BasePost
 			{...postDefaults}
 			{...args}
+			commentSectionProps={commentSectionProps}
 			isLiked={isLiked}
 			setIsLiked={setIsLiked}
 		/>
@@ -38,8 +60,15 @@ StoryPost.args = {
 			possimus natus excepturi nihil laborum eum animi quas aliquid! Maiores
 			exercitationem aut ea?`,
 };
+
 export const ShortPost = Template.bind({});
 ShortPost.args = {
+	text: "Apollo is my favorite mythological character!",
+};
+
+export const NoFacePile = Template.bind({});
+NoFacePile.args = {
+	facePileAvatars: undefined,
 	text: "Apollo is my favorite mythological character!",
 };
 
@@ -118,6 +147,8 @@ export const ThreeSecExternalLoadText = () => {
 			{...(postDefaults as BasePostHeaderProps)}
 			text="Apollo is my favorite mythological character!"
 			loading={isLoading}
+			numLikes={112}
+			commentSectionProps={commentSectionProps}
 			isLiked={isLiked}
 			setIsLiked={setIsLiked}
 		/>
@@ -141,7 +172,9 @@ export const ThreeSecExternalLoadMedia = () => {
 			{...(postDefaults as BasePostHeaderProps)}
 			text="Apollo is my favorite mythological character!"
 			media={[...threeHorizontalImages]}
+			commentSectionProps={commentSectionProps}
 			loading={isLoading}
+			numLikes={112}
 			isLiked={isLiked}
 			setIsLiked={setIsLiked}
 		/>

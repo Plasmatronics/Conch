@@ -1,6 +1,6 @@
 import { defineLayerStyles } from "@chakra-ui/react";
 
-export const layerStyles = defineLayerStyles({
+export const conchLayerStyles = defineLayerStyles({
 	interactionButton: {
 		description: "styling for interaction buttons",
 		value: {

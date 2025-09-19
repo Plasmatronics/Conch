@@ -82,7 +82,7 @@ export const PostGalleryModal = ({
 							<Flex width="100%" height="100%">
 								<Box
 									flexGrow={1}
-									flexBasis={isExpanded ? "100%" : "60%"}
+									flexBasis={isExpanded ? "60%" : "100%"}
 									minW={0}
 									height="100%"
 									position="relative"
@@ -119,8 +119,11 @@ export const PostGalleryModal = ({
 									<Box
 										height="100%"
 										flex="0 0 auto"
-										flexBasis={isExpanded ? "40%" : "0%"}
+										flexBasis={isExpanded ? "0%" : "40%"}
 										transition="flex-basis 200ms ease"
+										overflowX="hidden"
+										overflowY="auto"
+										bg="white"
 									>
 										{rightSection}
 									</Box>
