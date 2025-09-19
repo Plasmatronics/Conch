@@ -18,7 +18,7 @@ export const FacePile = ({
 		<Flex align="center" justify="center" gap="0.5rem">
 			<AvatarGroup gapX="-1rem" size="sm" {...avatarGroupProps}>
 				{avatars.slice(0, numAvatars).map((avatarObj, idx) => (
-					<Avatar.Root key={`${AvatarFallback}-${idx}`}>
+					<Avatar.Root key={`${avatarObj.fallback}-${idx}`}>
 						<Avatar.Fallback name={avatarObj.fallback} />
 						<Avatar.Image src={avatarObj.url} />
 					</Avatar.Root>
