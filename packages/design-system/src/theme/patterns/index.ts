@@ -1,2 +1,2 @@
-export { layerStyles } from "./layerStyles";
-export { textStyles } from "./textStyles";
+export { conchLayerStyles } from "./layerStyles";
+export { conchTextStyles } from "./textStyles";

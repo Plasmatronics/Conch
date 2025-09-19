@@ -1,5 +1,6 @@
 import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react";
-import { layerStyles, textStyles } from "./theme/patterns";
+import { conchLayerStyles, conchTextStyles } from "./theme/patterns";
+import { dialogRecipe } from "./theme/recipes";
 
 const config = defineConfig({
 	globalCss: {
@@ -8,8 +9,11 @@ const config = defineConfig({
 		},
 	},
 	theme: {
-		layerStyles,
-		textStyles,
+		slotRecipes: {
+			dialog: dialogRecipe,
+		},
+		layerStyles: conchLayerStyles,
+		textStyles: conchTextStyles,
 	},
 });
 

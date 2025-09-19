@@ -1,6 +1,6 @@
 import { defineTextStyles } from "@chakra-ui/react";
 
-export const textStyles = defineTextStyles({
+export const conchTextStyles = defineTextStyles({
 	paragraph: {
 		description: "style for text bodies",
 		value: {},
