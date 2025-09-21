@@ -12,9 +12,9 @@ export const FullscreenButton = ({
 	onToggle,
 	...iconButtonProps
 }: FullscreenButtonProps) => {
-	const topRot = !isExpanded ? "180deg" : "0deg";
-	const bottomRot = !isExpanded ? "-180deg" : "0deg";
-	const topArrowAnimation: BoxProps = !isExpanded
+	const topRot = isExpanded ? "180deg" : "0deg";
+	const bottomRot = isExpanded ? "-180deg" : "0deg";
+	const topArrowAnimation: BoxProps = isExpanded
 		? {
 				_groupHover: { transform: `translate(-2px, 2px) rotate(${topRot})` },
 				_groupActive: { transform: `translate(0, 0) rotate(${topRot})` },
@@ -24,7 +24,7 @@ export const FullscreenButton = ({
 				_groupActive: { transform: `translate(0, 0) rotate(${topRot})` },
 			};
 
-	const bottomArrowAnimation: BoxProps = !isExpanded
+	const bottomArrowAnimation: BoxProps = isExpanded
 		? {
 				_groupHover: { transform: `translate(2px, -2px) rotate(${bottomRot})` },
 				_groupActive: { transform: `translate(0, 0) rotate(${bottomRot})` },

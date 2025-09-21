@@ -1,12 +1,12 @@
 import { FacePileProps } from "../../Elements";
 import { BaseCommentProps } from "../BaseComment";
 
-interface IReply {
+export interface IReply {
 	comment: BaseCommentProps;
 	replyingTo: string;
 }
 
-interface ICommentWithReplies {
+export interface ICommentWithReplies {
 	comment: BaseCommentProps;
 	replies?: IReply[];
 }

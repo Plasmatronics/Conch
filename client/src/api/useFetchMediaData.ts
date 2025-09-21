@@ -3,7 +3,7 @@ import axios from "axios";
 import { MediaTypeAndDownloadUrl, MediaTypeAndKey } from "@conch/shared";
 
 type ReactQueryOptions = Omit<
-	UseQueryOptions<MediaTypeAndDownloadUrlAndFileKey[]>,
+	UseQueryOptions<Map<string, { downloadUrl: string; type: string }>>,
 	"queryFn" | "queryKey"
 >;
 
@@ -45,8 +45,13 @@ const fetchSingleMediaData = async ({
 
 const fetchMediaData = async (
 	files: MediaTypeAndKey[],
-): Promise<MediaTypeAndDownloadUrlAndFileKey[]> => {
-	return await Promise.all(
+): Promise<Map<string, { downloadUrl: string; type: string }>> => {
+	const imgRetrievalMap = new Map<
+		string,
+		{ downloadUrl: string; type: string }
+	>();
+
+	const fileData = await Promise.all(
 		files.map((file) =>
 			fetchSingleMediaData({
 				fileKey: file.fileKey,
@@ -54,13 +59,22 @@ const fetchMediaData = async (
 			}),
 		),
 	);
+
+	fileData.map((data) => {
+		imgRetrievalMap.set(data.fileKey, {
+			downloadUrl: data.downloadUrl,
+			type: data.type,
+		});
+	});
+
+	return imgRetrievalMap;
 };
 
 export const useFetchMediaData = ({
 	files,
 	...reactQueryProps
 }: useFetchMediaDataProps) => {
-	return useQuery<MediaTypeAndDownloadUrlAndFileKey[]>({
+	return useQuery<Map<string, { downloadUrl: string; type: string }>>({
 		queryKey: [
 			files
 				.map((file) => `${file.type}: ${file.fileKey}`)

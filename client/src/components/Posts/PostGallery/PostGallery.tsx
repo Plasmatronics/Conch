@@ -1,6 +1,6 @@
 import { Image, Grid, Box, Text, Skeleton } from "@chakra-ui/react";
 import { MediaNode, PostGalleryProps } from "./PostGallery.types";
-import React, { useState } from "react";
+import React from "react";
 import { MAX_MEDIA } from "./utils";
 import { VideoPlayer } from "../../Media";
 import { useGalleryMedia } from "../useGalleryMedia";
@@ -15,19 +15,22 @@ export const PostGallery = ({
 	isVideoPlayable = true,
 	...gridProps
 }: PostGalleryProps) => {
-	const [numLoaded, setNumLoaded] = useState(0);
+	const [numLoaded, setNumLoaded] = React.useState(0);
 
 	const { gridLayoutStyles, verticalMediaPrioArr, isGalleryClamped } =
 		useGalleryMedia(media);
 
-	const handleLoad = () => {
-		setNumLoaded((prev) => {
-			const next = prev + 1;
-			if (next >= Math.min(MAX_MEDIA, media.length)) onAllMediaLoaded?.();
+	const targetCount = Math.min(MAX_MEDIA, media.length);
 
-			return next;
-		});
+	const handleLoad = () => {
+		setNumLoaded((prev) => Math.min(prev + 1, targetCount));
 	};
+
+	React.useEffect(() => {
+		if (numLoaded >= targetCount) {
+			onAllMediaLoaded?.();
+		}
+	}, [numLoaded, targetCount, onAllMediaLoaded]);
 
 	const renderNode = (node: MediaNode) => {
 		if (node.type !== "video") {
@@ -49,11 +52,15 @@ export const PostGallery = ({
 					height="100%"
 					borderRadius="sm"
 					{...img}
-					onError={handleLoad}
-					onLoad={() => {
-						handleLoad?.();
+					onError={() => {
 						//img doesnt emit onLoadStart to just simulate here
 						onLoadStart?.();
+						handleLoad?.();
+					}}
+					onLoad={() => {
+						//img doesnt emit onLoadStart to just simulate here
+						onLoadStart?.();
+						handleLoad?.();
 					}}
 				/>
 			);
