@@ -59,6 +59,7 @@ export const PostGalleryModal = ({
 	return (
 		<>
 			<PostGallery
+				maxH="30rem"
 				{...postGalleryProps}
 				onItemClick={(idx) => {
 					setCarouselIndex(idx);

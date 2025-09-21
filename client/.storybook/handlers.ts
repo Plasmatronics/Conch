@@ -66,11 +66,12 @@ export const handlers = [
 	http.get("http://127.0.0.1:3000/api/v1/stories/*", async ({ request }) => {
 		const url = new URL(request.url);
 
-		const data: StoryDTOMediaPopulated = { ...mockMediaPopulatedStoryData };
+		const data = { ...mockMediaPopulatedStoryData };
+		const comments = { ...mockParentComment };
+		comments.replies = [mockChildComment];
 
 		if (url.pathname.endsWith("/comments")) {
-			data.comments = mockParentComment;
-			data.comments.replies = [mockChildComment];
+			data.comments = [comments];
 		}
 
 		//second and a half
@@ -78,7 +79,7 @@ export const handlers = [
 
 		return HttpResponse.json({
 			status: "success",
-			data: mockMediaPopulatedStoryData,
+			data: data,
 		});
 	}),
 

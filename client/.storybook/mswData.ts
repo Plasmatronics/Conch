@@ -27,7 +27,7 @@ export const mockParentComment: HydratedCommentDTO = {
 		keyPhoto: {
 			_id: "68bdedc63c9768d183ad7839",
 			fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
-			type: "photo",
+			type: "image",
 			id: "68bdedc63c9768d183ad7839",
 		},
 		id: "68bded593c9768d183ad7834",
@@ -48,7 +48,7 @@ export const mockChildComment: HydratedCommentDTO = {
 		keyPhoto: {
 			_id: "68bdedc63c9768d183ad7839",
 			fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
-			type: "photo",
+			type: "image",
 			id: "68bdedc63c9768d183ad7839",
 		},
 		id: "68bded593c9768d183ad7834",
@@ -88,8 +88,10 @@ export const mockMemberData: HydratedFamilyTreeMemberDTO = {
 export const mockMediaPopulatedStoryData: StoryDTOMediaPopulated = {
 	media: [
 		{
+			_id: "68bdedc63c9768d183ad7839",
+			fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
 			type: "image",
-			downloadUrl: mockFileUrl,
+			id: "68bdedc63c9768d183ad7839",
 		},
 	],
 	_id: "68bf2a9895bde97c33918cef",
@@ -103,7 +105,7 @@ export const mockMediaPopulatedStoryData: StoryDTOMediaPopulated = {
 		keyPhoto: {
 			_id: "68bdedc63c9768d183ad7839",
 			fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
-			type: "photo",
+			type: "image",
 			id: "68bdedc63c9768d183ad7839",
 		},
 		id: "68bded593c9768d183ad7834",

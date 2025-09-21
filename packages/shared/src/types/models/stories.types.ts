@@ -32,7 +32,7 @@ export interface UnhydratedStoryDTO {
 	deletedAt?: Date;
 	storyDate?: Date;
 	likes?: number;
-	comments?: CommentDTOAuthorAndReplyPopulated;
+	comments?: CommentDTOAuthorAndReplyPopulated[];
 }
 
 export type HydratedStoryDTO = HydrateWithMetadata<UnhydratedStoryDTO>;
@@ -42,7 +42,7 @@ export type StoryDTOAuthorPopulated = Omit<
 > & {
 	media: {
 		type: HydratedMediaDTO["type"];
-		downloadUrl: string;
+		fileKey: string;
 	}[];
 };
 export type StoryDTOMediaPopulated = PopulateKeyPhoto<
