@@ -5,6 +5,7 @@ import { MediaItem } from "../PostGallery";
 import { PostGalleryModalProps } from "../PostGalleryModal";
 import { FacePileProps } from "../../Elements";
 import { CommentSectionProps } from "components/Comments";
+import { PostCommentProps } from "../PostComment";
 
 export interface BasePostHeaderProps {
 	user: string;
@@ -30,4 +31,5 @@ export interface BasePostProps
 	facePileAvatars?: FacePileProps["avatars"];
 	postGalleryModalProps?: Omit<PostGalleryModalProps, "media">;
 	commentSectionProps: CommentSectionProps;
+	postCommentProps: PostCommentProps;
 }

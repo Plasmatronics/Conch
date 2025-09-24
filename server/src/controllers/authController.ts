@@ -65,9 +65,16 @@ const rollbackUser = async (email: IUser["email"]) => {
 
 const signup = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const { name, email, password, passwordConfirm } = req.body;
+		const { name, email, password, passwordConfirm, familyTreeMember } =
+			req.body;
 
-		const user = await User.create({ name, email, password, passwordConfirm });
+		const user = await User.create({
+			name,
+			email,
+			password,
+			passwordConfirm,
+			familyTreeMember,
+		});
 		if (!user) throw new AppError(400, "Could not signup. Please try again.");
 
 		await sendSignupEmail(user.email);

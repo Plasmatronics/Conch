@@ -16,7 +16,15 @@ const commentSchema = new mongoose.Schema<CommentDoc>(
 			type: mongoose.Schema.ObjectId,
 			ref: "Comment",
 		},
-		target: { type: mongoose.Schema.ObjectId, ref: "Story" },
+		replyingTo: {
+			type: mongoose.Schema.ObjectId,
+			ref: "User",
+		},
+		target: {
+			type: mongoose.Schema.ObjectId,
+			ref: "Story",
+			required: [true, "A comment must have a target post"],
+		},
 		createdAt: {
 			type: Date,
 			default: Date.now(),

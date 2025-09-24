@@ -1,17 +1,94 @@
 import { useDataPost } from "./useDataPost";
 import { BasePost } from "../BasePost";
 import React from "react";
-import { HydratedStoryDTO } from "@conch/shared";
+import {
+	HydratedStoryDTO,
+	HydratedUserDTO,
+	HydratedCommentDTO,
+	MAX_CHARS_IN_COMMENT,
+} from "@conch/shared";
 import { CommentSectionProps, IReply } from "../../Comments";
+import { useForm } from "react-hook-form";
+import { useFetchUserData } from "../../../api";
+import { useDataPostComment } from "./useDataPostComment";
 
 export interface DataPostProps {
 	storyId: HydratedStoryDTO["id"];
+	userId: HydratedUserDTO["id"];
 }
 
-export const DataPost = ({ storyId }: DataPostProps) => {
+export type DataPostCommentInputs = {
+	comment: string;
+	replyingToName: HydratedUserDTO["name"];
+	replyingToId: HydratedUserDTO["id"];
+};
+
+export const DataPost = ({ userId, storyId }: DataPostProps) => {
 	const [isLiked, setIsLiked] = React.useState(false);
-	const { storyQuery, avatarQuery } = useDataPost(storyId);
+
+	const { storyQuery, avatarQuery, commentAuthorMap } = useDataPost(storyId);
 	const isLoading = storyQuery.isLoading || avatarQuery.isLoading;
+
+	const { userQuery, avatarQuery: userAvatarQuery } = useFetchUserData({
+		userId,
+		includeParamsValues: ["member"],
+	});
+
+	const {
+		handleSubmit,
+		reset,
+		setValue,
+		getValues,
+		register,
+		formState: { isSubmitting },
+	} = useForm<DataPostCommentInputs>({
+		defaultValues: { comment: "", replyingToName: "", replyingToId: "" },
+		mode: "onSubmit",
+	});
+
+	const { mutate, isPending } = useDataPostComment({
+		userId,
+		storyId,
+		onSuccess: () => reset(),
+	});
+
+	const handleReplyClick = (targetCommentId: HydratedCommentDTO["id"]) => {
+		const targetUser = commentAuthorMap.get(targetCommentId);
+		if (!targetCommentId || !targetUser) return;
+
+		if (!getValues("comment").startsWith(`@${targetUser.name}`))
+			setValue("comment", `@${targetUser.name} `);
+
+		setValue("replyingToId", targetUser.authorId);
+		setValue("replyingToName", targetUser.name);
+	};
+
+	const handleBackspace = () => {
+		if (getValues("comment") === `@${getValues("replyingToName")}`) {
+			clearReplyTarget();
+			setValue("comment", "");
+		}
+	};
+
+	const handleCommentSubmit = handleSubmit((data) => {
+		let commentWithoutMention = data.comment;
+		if (`${getValues("replyingToName")}`) {
+			commentWithoutMention = commentWithoutMention.replace(
+				`@${getValues("replyingToName")}`,
+				"",
+			);
+		}
+		const trimmedComment = commentWithoutMention.trim();
+
+		if (!trimmedComment) return;
+
+		return mutate({ comment: trimmedComment, replyingTo: data.replyingToId });
+	});
+
+	const clearReplyTarget = () => {
+		setValue("replyingToId", "");
+		setValue("replyingToName", "");
+	};
 
 	const {
 		author = {
@@ -42,6 +119,9 @@ export const DataPost = ({ storyId }: DataPostProps) => {
 								avatar: avatarQuery.data?.get(
 									commentThread.author.keyPhoto.fileKey,
 								)?.downloadUrl,
+								onReplyClick: () => {
+									handleReplyClick(commentThread.id);
+								},
 								datePosted: commentThread.createdAt,
 								relationship: commentThread.author.relationToRootMember,
 								loading: avatarQuery.isLoading || storyQuery.isLoading,
@@ -59,6 +139,9 @@ export const DataPost = ({ storyId }: DataPostProps) => {
 										relationship: reply.author.relationToRootMember,
 										loading: avatarQuery.isLoading || storyQuery.isLoading,
 										numLikes: reply.likes,
+										onReplyClick: () => {
+											handleReplyClick(reply.id);
+										},
 									},
 									replyingTo: commentThread.author.name,
 								};
@@ -101,6 +184,24 @@ export const DataPost = ({ storyId }: DataPostProps) => {
 			storyDate={storyDate}
 			commentSectionProps={{
 				commentThreads: commentSectionData,
+			}}
+			postCommentProps={{
+				registerField: register("comment", {
+					maxLength: {
+						value: MAX_CHARS_IN_COMMENT,
+						message: `Comment must be ${MAX_CHARS_IN_COMMENT} characters or less.`,
+					},
+				}),
+				onSubmit: handleCommentSubmit,
+				placeholder: `Comment as ${userQuery.data?.name}...`,
+				user: userQuery.data?.name || "",
+				avatar:
+					userQuery.data?.familyTreeMember.keyPhoto &&
+					userAvatarQuery.data?.get(
+						userQuery.data?.familyTreeMember.keyPhoto.fileKey,
+					)?.downloadUrl,
+				posting: isPending || isSubmitting,
+				onHandleBackspace: handleBackspace,
 			}}
 			numLikes={likes}
 		/>

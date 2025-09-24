@@ -7,6 +7,7 @@ import { ExpandableText } from "../../Typography";
 import { FacePile } from "../../Elements";
 import { BasePostHeader, BasePostSkeleton } from "./Fragments";
 import { CommentSection } from "../../Comments";
+import { PostComment } from "../PostComment";
 
 const MAX_CHARS_BEFORE_TRUNCATION = 1500;
 const MAX_NUM_AVATARS_IN_FACEPILE = 3;
@@ -29,6 +30,7 @@ const BasePostWithoutComment = ({
 	commentSectionProps,
 	media,
 	postGalleryModalProps,
+	postCommentProps,
 	...cardRootProps
 }: BasePostProps) => {
 	const [isMediaLoading, setIsMediaLoading] = useState(!!media);
@@ -118,7 +120,10 @@ const BasePostWithoutComment = ({
 										loading: isMediaLoading,
 									}}
 									rightSection={
-										<CommentSection mt="1rem" {...commentSectionProps} />
+										<Box width="100%" height="100%" overflowY="auto">
+											<CommentSection mt="1rem" {...commentSectionProps} />
+											<PostComment {...postCommentProps} />
+										</Box>
 									}
 								/>
 							)}
@@ -196,6 +201,7 @@ const BasePostWithComment = ({ ...props }: BasePostProps) => {
 							>
 								<BasePostWithoutComment border="none" {...props} />
 								<CommentSection {...props.commentSectionProps} />
+								<PostComment {...props.postCommentProps} />
 							</Flex>
 						</Dialog.Content>
 					</Dialog.Positioner>

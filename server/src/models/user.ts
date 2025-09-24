@@ -31,6 +31,7 @@ const userSchema = new mongoose.Schema<UserDoc>(
 		familyTreeMember: {
 			type: mongoose.Schema.ObjectId,
 			ref: "FamilyTreeMember",
+			required: [true, "A user themselves must be a member of the family"],
 		},
 		createdAt: {
 			type: Date,

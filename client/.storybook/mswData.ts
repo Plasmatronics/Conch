@@ -116,3 +116,11 @@ export const mockMediaPopulatedStoryData: StoryDTOMediaPopulated = {
 	__v: 0,
 	id: "68bf2a9895bde97c33918cef",
 };
+
+export const userData = {
+	_id: "68d198b963d016325c3c45dd",
+	name: "Nicholas Bruno",
+	email: "nicholaskgp@gmail.com",
+	__v: 0,
+	id: "68d198b963d016325c3c45dd",
+};

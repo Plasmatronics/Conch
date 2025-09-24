@@ -39,11 +39,21 @@ export default {
 
 const Template: StoryFn<BasePostProps> = (args) => {
 	const [isLiked, setIsLiked] = useState(false);
+	const [value, setValue] = useState("");
+
 	return (
 		<BasePost
 			{...postDefaults}
 			{...args}
 			commentSectionProps={commentSectionProps}
+			postCommentProps={{
+				onChange: (value) => setValue(value),
+				onSubmit: () => console.log(value),
+				value,
+				user: "Jules",
+				avatar:
+					"https://s.yimg.com/ny/api/res/1.2/0QYorOmF3ufQwqL03Y5IXA--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyNDI7aD02OTk7Y2Y9d2VicA--/https://media.zenfs.com/en/comingsoon_net_477/8eac91586badf4ce58f7a5f3ff598cb5",
+			}}
 			isLiked={isLiked}
 			setIsLiked={setIsLiked}
 		/>
@@ -133,6 +143,7 @@ FullPost.args = {
 export const ThreeSecExternalLoadText = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [isLiked, setIsLiked] = useState(false);
+	const [value, setValue] = useState("");
 
 	useEffect(() => {
 		const timeout = setTimeout(() => {
@@ -151,6 +162,14 @@ export const ThreeSecExternalLoadText = () => {
 			commentSectionProps={commentSectionProps}
 			isLiked={isLiked}
 			setIsLiked={setIsLiked}
+			postCommentProps={{
+				onChange: (value) => setValue(value),
+				onSubmit: () => console.log(value),
+				value,
+				user: "Jules",
+				avatar:
+					"https://s.yimg.com/ny/api/res/1.2/0QYorOmF3ufQwqL03Y5IXA--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyNDI7aD02OTk7Y2Y9d2VicA--/https://media.zenfs.com/en/comingsoon_net_477/8eac91586badf4ce58f7a5f3ff598cb5",
+			}}
 		/>
 	);
 };
@@ -158,6 +177,7 @@ export const ThreeSecExternalLoadText = () => {
 export const ThreeSecExternalLoadMedia = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [isLiked, setIsLiked] = useState(false);
+	const [value, setValue] = useState("");
 
 	useEffect(() => {
 		const timeout = setTimeout(() => {
@@ -177,6 +197,14 @@ export const ThreeSecExternalLoadMedia = () => {
 			numLikes={112}
 			isLiked={isLiked}
 			setIsLiked={setIsLiked}
+			postCommentProps={{
+				onChange: (value) => setValue(value),
+				onSubmit: () => console.log(value),
+				value,
+				user: "Jules",
+				avatar:
+					"https://s.yimg.com/ny/api/res/1.2/0QYorOmF3ufQwqL03Y5IXA--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyNDI7aD02OTk7Y2Y9d2VicA--/https://media.zenfs.com/en/comingsoon_net_477/8eac91586badf4ce58f7a5f3ff598cb5",
+			}}
 		/>
 	);
 };

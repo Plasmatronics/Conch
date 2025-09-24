@@ -4,6 +4,7 @@ import {
 	FamilyTreeMemberDTOKeyPhotoPopulated,
 	FamilyTreeMemberDTOKeyPhotoAndStoryPopulated,
 } from "@conch/shared";
+import { useFetchMediaData } from "./useFetchMediaData";
 
 type ReactQueryOptions = Omit<
 	UseQueryOptions<
@@ -66,5 +67,20 @@ export const useFetchMemberData = ({
 		...reactQueryProps,
 	});
 
-	return { memberQuery };
+	const keyPhotoData = memberQuery.data?.keyPhoto;
+	const avatarFile = keyPhotoData
+		? [
+				{
+					fileKey: keyPhotoData.fileKey,
+					type: keyPhotoData.type,
+				},
+			]
+		: [];
+
+	const avatarQuery = useFetchMediaData({
+		files: avatarFile,
+		enabled: !!keyPhotoData,
+	});
+
+	return { memberQuery, avatarQuery };
 };
