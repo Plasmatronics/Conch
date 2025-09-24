@@ -72,7 +72,7 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 
 	const handleCommentSubmit = handleSubmit((data) => {
 		let commentWithoutMention = data.comment;
-		if (`${getValues("replyingToName")}`) {
+		if (getValues("replyingToName")) {
 			commentWithoutMention = commentWithoutMention.replace(
 				`@${getValues("replyingToName")}`,
 				"",
