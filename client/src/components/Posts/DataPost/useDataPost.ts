@@ -1,5 +1,7 @@
 import {
+	HydratedCommentDTO,
 	HydratedStoryDTO,
+	HydratedUserDTO,
 	MediaTypeAndKey,
 	StoryDTOAuthorPopulated,
 } from "@conch/shared";
@@ -38,10 +40,27 @@ export const useDataPost = (storyId: HydratedStoryDTO["id"]) => {
 		},
 	];
 
+	const commentAuthorMap = new Map<
+		HydratedCommentDTO["id"],
+		{ authorId: HydratedUserDTO["id"]; name: HydratedUserDTO["name"] }
+	>();
+
 	storyQuery?.data?.comments?.map((comment) => {
 		imgFiles.push({
 			fileKey: comment.author.keyPhoto.fileKey,
 			type: comment.author.keyPhoto.type,
+		});
+
+		commentAuthorMap.set(comment.id, {
+			authorId: comment.author.id,
+			name: comment.author.name,
+		});
+
+		comment.replies.map((reply) => {
+			commentAuthorMap.set(reply.id, {
+				authorId: reply.author.id,
+				name: reply.author.name,
+			});
 		});
 	});
 
@@ -50,5 +69,5 @@ export const useDataPost = (storyId: HydratedStoryDTO["id"]) => {
 		enabled: storyQuery.isSuccess && !!imgFiles,
 	});
 
-	return { avatarQuery, storyQuery };
+	return { avatarQuery, storyQuery, commentAuthorMap };
 };

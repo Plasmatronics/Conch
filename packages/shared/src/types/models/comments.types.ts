@@ -10,6 +10,7 @@ export interface IComment {
 	author: mongoose.Types.ObjectId;
 	target: mongoose.Types.ObjectId;
 	parentComment?: mongoose.Types.ObjectId;
+	replyingTo?: mongoose.Types.ObjectId;
 	createdAt: Date;
 	deletedAt?: Date;
 	replies?: IComment[];
@@ -22,6 +23,7 @@ export interface UnhydratedCommentDTO {
 	content: string;
 	author: string;
 	target: string;
+	replyingTo?: string;
 	parentComment?: string;
 	createdAt: Date;
 	deletedAt?: Date;

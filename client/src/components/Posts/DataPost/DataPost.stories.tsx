@@ -17,4 +17,5 @@ const Template: StoryFn<ConchDataPostProps> = (args) => {
 export const StoryWithMedia = Template.bind({});
 StoryWithMedia.args = {
 	storyId: "68c1db520839cb6d80289c3f",
+	userId: "68d198b963d016325c3c45dd",
 };

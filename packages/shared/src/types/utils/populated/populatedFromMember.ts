@@ -11,3 +11,7 @@ export type PopulateAuthor<T> = Omit<T, "author"> & {
 		}>
 	>;
 };
+
+export type PopulateFamilyTreeMember<T> = Omit<T, "familyTreeMember"> & {
+	familyTreeMember: PopulateKeyPhoto<HydratedFamilyTreeMemberDTO>;
+};

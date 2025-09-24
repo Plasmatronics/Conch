@@ -1,5 +1,5 @@
 import mongoose, { Document } from "mongoose";
-import { HydrateWithMetadata } from "types/utils";
+import { HydrateWithMetadata, PopulateFamilyTreeMember } from "types/utils";
 
 export interface IUser {
 	name: string;
@@ -34,3 +34,4 @@ export interface UnhydratedUserDTO {
 }
 
 export type HydratedUserDTO = HydrateWithMetadata<UnhydratedUserDTO>;
+export type UserDTOMemberPopulated = PopulateFamilyTreeMember<HydratedUserDTO>;
