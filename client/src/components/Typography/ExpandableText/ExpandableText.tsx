@@ -9,6 +9,8 @@ export const ExpandableText = ({
 	shrinkable = false,
 	clickOnTextToggling = true,
 	containerProps,
+	prependText,
+	prependTextStyles,
 	...textProps
 }: ExpandableTextProps) => {
 	const [isExpanded, setIsExpanded] = useState(false);
@@ -27,6 +29,9 @@ export const ExpandableText = ({
 			onClick={clickOnTextToggling ? handlePostExpansion : undefined}
 		>
 			<Text {...textProps}>
+				<Text {...prependTextStyles} as="span">
+					{prependText}
+				</Text>
 				{isTruncated && !isExpanded ? truncatedString : text}
 				{isTruncated && (shrinkable || !isExpanded) && (
 					<>

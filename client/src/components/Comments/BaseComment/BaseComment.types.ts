@@ -12,4 +12,5 @@ export interface BaseCommentProps {
 	numLikes: number;
 	onReplyClick?: () => void;
 	onViewReplyClick?: () => void;
+	replyToName?: string;
 }

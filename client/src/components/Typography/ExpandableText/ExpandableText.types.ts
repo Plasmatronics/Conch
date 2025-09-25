@@ -6,5 +6,7 @@ export interface ExpandableTextProps extends TextProps {
 	expansionTextProps?: BoxProps;
 	shrinkable?: boolean;
 	clickOnTextToggling?: boolean;
+	prependText?: string;
+	prependTextStyles?: TextProps;
 	containerProps?: BoxProps;
 }

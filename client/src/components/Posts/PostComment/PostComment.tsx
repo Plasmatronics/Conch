@@ -86,6 +86,9 @@ export const PostComment = ({
 							<IconButton
 								bg="transparent"
 								color="gray.500"
+								_hover={{
+									color: "gray.600",
+								}}
 								type="submit"
 								ml="auto"
 								size="md"

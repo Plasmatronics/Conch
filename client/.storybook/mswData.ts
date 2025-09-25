@@ -1,8 +1,8 @@
 import {
 	HydratedFamilyTreeMemberDTO,
 	HydratedMediaDTO,
-	HydratedCommentDTO,
 	StoryDTOMediaPopulated,
+	PopulatedCommentDTO,
 } from "@conch/shared";
 
 export const mockFileUrl =
@@ -16,7 +16,7 @@ export const mockMediaData: HydratedMediaDTO = {
 	involves: ["68bded593c9768d183ad7834"],
 };
 
-export const mockParentComment: HydratedCommentDTO = {
+export const mockParentComment: PopulatedCommentDTO = {
 	_id: "68c3429ba477ed0dad6f5fbe",
 	content: "This is a really helpful post, thanks for sharing!",
 	target: "68bf2a9895bde97c33918cef",
@@ -37,10 +37,14 @@ export const mockParentComment: HydratedCommentDTO = {
 	id: "68c3429ba477ed0dad6f5fbe",
 };
 
-export const mockChildComment: HydratedCommentDTO = {
+export const mockChildComment: PopulatedCommentDTO = {
 	_id: "68c345abc2eada301a2a38f8",
 	content: "What?? This post is terrible!",
 	target: "68bf2a9895bde97c33918cef",
+	replyingTo: {
+		id: "68c3429ba477ed0dad6f5fbe",
+		name: "Joseph Bruno",
+	},
 	author: {
 		_id: "68bded593c9768d183ad7834",
 		name: "Joseph Bruno",

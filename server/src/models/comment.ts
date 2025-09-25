@@ -72,5 +72,12 @@ commentSchema.pre(/^find/, function (next) {
 	});
 	next();
 });
+commentSchema.pre(/^find/, function (next) {
+	(this as mongoose.Query<any, any>).populate({
+		path: "replyingTo",
+		select: "name",
+	});
+	next();
+});
 
 export const Comment = mongoose.model("Comment", commentSchema);

@@ -136,6 +136,7 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 										avatar: avatarQuery.data?.get(reply.author.keyPhoto.fileKey)
 											?.downloadUrl,
 										datePosted: reply.createdAt,
+										replyToName: reply.replyingTo.name,
 										relationship: reply.author.relationToRootMember,
 										loading: avatarQuery.isLoading || storyQuery.isLoading,
 										numLikes: reply.likes,
@@ -143,7 +144,7 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 											handleReplyClick(reply.id);
 										},
 									},
-									replyingTo: commentThread.author.name,
+									replyingTo: commentThread.replyingTo?.name,
 								};
 								return replyDTO;
 							}),

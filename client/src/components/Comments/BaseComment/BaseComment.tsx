@@ -18,6 +18,7 @@ export const BaseComment = ({
 	onReplyClick,
 	loading,
 	onViewReplyClick,
+	replyToName,
 	numReplies = 0,
 	numRepliesRendered = 0,
 }: BaseCommentProps) => {
@@ -65,6 +66,15 @@ export const BaseComment = ({
 							onDoubleClick={handleDoubleClick}
 							containerProps={{ mb: "0.5rem" }}
 							text={comment}
+							prependText={replyToName && `@${replyToName} `}
+							prependTextStyles={{
+								color: "blue.600",
+								_hover: {
+									color: "blue.700",
+								},
+								cursor: "pointer",
+								fontWeight: "medium",
+							}}
 							maxCharCount={MAX_CHARS_BEFORE_TRUNCATION}
 						/>
 						<Flex width="100%" gap="1rem" alignItems="start">

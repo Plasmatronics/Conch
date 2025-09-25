@@ -1,3 +1,4 @@
+import { cp } from "fs";
 import { BaseCommentProps } from "./BaseComment";
 
 export const commentDefaults: Omit<BaseCommentProps, "comment"> = {
@@ -22,66 +23,66 @@ As a result, despite having more than 4,000 troops and 5,000 sailors, Howe’s a
 
 export const fewReplies = [
 	{
-		comment: shortComment,
+		comment: { ...shortComment, replyToName: commentDefaults.user },
 		replyingTo: commentDefaults.user,
 	},
 	{
-		comment: shortComment,
+		comment: { ...shortComment, replyToName: commentDefaults.user },
 		replyingTo: commentDefaults.user,
 	},
 	{
-		comment: shortComment,
+		comment: { ...shortComment, replyToName: commentDefaults.user },
 		replyingTo: commentDefaults.user,
 	},
 ];
 
 export const manyReplies = [
 	{
-		comment: shortComment,
+		comment: { ...shortComment, replyToName: commentDefaults.user },
 		replyingTo: commentDefaults.user,
 	},
 	{
-		comment: shortComment,
+		comment: { ...shortComment, replyToName: commentDefaults.user },
 		replyingTo: commentDefaults.user,
 	},
 	{
-		comment: shortComment,
+		comment: { ...shortComment, replyToName: commentDefaults.user },
 		replyingTo: commentDefaults.user,
 	},
 	{
-		comment: shortComment,
+		comment: { ...shortComment, replyToName: commentDefaults.user },
 		replyingTo: commentDefaults.user,
 	},
 	{
-		comment: shortComment,
+		comment: { ...shortComment, replyToName: commentDefaults.user },
 		replyingTo: commentDefaults.user,
 	},
 	{
-		comment: shortComment,
+		comment: { ...shortComment, replyToName: commentDefaults.user },
 		replyingTo: commentDefaults.user,
 	},
 	{
-		comment: shortComment,
+		comment: { ...shortComment, replyToName: commentDefaults.user },
 		replyingTo: commentDefaults.user,
 	},
 	{
-		comment: shortComment,
+		comment: { ...shortComment, replyToName: commentDefaults.user },
 		replyingTo: commentDefaults.user,
 	},
 	{
-		comment: shortComment,
+		comment: { ...shortComment, replyToName: commentDefaults.user },
 		replyingTo: commentDefaults.user,
 	},
 	{
-		comment: shortComment,
+		comment: { ...shortComment, replyToName: commentDefaults.user },
 		replyingTo: commentDefaults.user,
 	},
 	{
-		comment: shortComment,
+		comment: { ...shortComment, replyToName: commentDefaults.user },
 		replyingTo: commentDefaults.user,
 	},
 	{
-		comment: shortComment,
+		comment: { ...shortComment, replyToName: commentDefaults.user },
 		replyingTo: commentDefaults.user,
 	},
 ];

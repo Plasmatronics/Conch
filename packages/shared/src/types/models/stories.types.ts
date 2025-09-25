@@ -5,7 +5,7 @@ import {
 	PopulateKeyPhoto,
 } from "types/utils";
 import { HydratedMediaDTO } from "./media.types";
-import { CommentDTOAuthorAndReplyPopulated } from "./comments.types";
+import { PopulatedCommentDTO } from "./comments.types";
 
 export interface IStory {
 	title: string;
@@ -32,7 +32,7 @@ export interface UnhydratedStoryDTO {
 	deletedAt?: Date;
 	storyDate?: Date;
 	likes?: number;
-	comments?: CommentDTOAuthorAndReplyPopulated[];
+	comments?: PopulatedCommentDTO[];
 }
 
 export type HydratedStoryDTO = HydrateWithMetadata<UnhydratedStoryDTO>;
