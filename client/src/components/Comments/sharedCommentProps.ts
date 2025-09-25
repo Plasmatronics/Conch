@@ -1,4 +1,3 @@
-import { cp } from "fs";
 import { BaseCommentProps } from "./BaseComment";
 
 export const commentDefaults: Omit<BaseCommentProps, "comment"> = {
