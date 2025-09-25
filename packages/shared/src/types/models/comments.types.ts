@@ -35,22 +35,17 @@ export interface UnhydratedCommentDTO {
 export type HydratedCommentDTO = Omit<
 	HydrateWithMetadata<UnhydratedCommentDTO>,
 	"replies"
-> & { replies: HydrateWithMetadata<UnhydratedCommentDTO["replies"]> };
+> & { replies: HydratedCommentDTO[] };
 
-export type CommentDTOAuthorPopulated = PopulateKeyPhoto<
+type CommentDTOAuthorPopulated = PopulateKeyPhoto<
 	PopulateAuthor<HydratedCommentDTO>
 >;
 
-export type CommentDTOReplyingToPopulated =
-	PopulateReplyingTo<HydratedCommentDTO>;
+type CommentDTOReplyingToPopulated = PopulateReplyingTo<HydratedCommentDTO>;
 
-export type CommentDTOAuthorAndReplyPopulated = Omit<
-	PopulateAuthor<HydratedCommentDTO>,
+export type PopulatedCommentDTO = Omit<
+	CommentDTOAuthorPopulated & CommentDTOReplyingToPopulated,
 	"replies"
 > & {
-	replies: PopulateReplyingTo<PopulateAuthor<HydratedCommentDTO>>[];
+	replies: PopulatedCommentDTO[];
 };
-
-export type PopulatedCommentDTO = CommentDTOAuthorAndReplyPopulated &
-	CommentDTOReplyingToPopulated &
-	CommentDTOAuthorPopulated;

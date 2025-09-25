@@ -36,15 +36,16 @@ export interface UnhydratedStoryDTO {
 }
 
 export type HydratedStoryDTO = HydrateWithMetadata<UnhydratedStoryDTO>;
-export type StoryDTOAuthorPopulated = Omit<
-	PopulateAuthor<HydratedStoryDTO>,
-	"media"
-> & {
+
+type StoryDTOAuthorPopulated = PopulateKeyPhoto<
+	PopulateAuthor<HydratedStoryDTO>
+>;
+type StoryDTOMediaPopulated = Omit<HydratedStoryDTO, "media"> & {
 	media: {
 		type: HydratedMediaDTO["type"];
 		fileKey: string;
 	}[];
 };
-export type StoryDTOMediaPopulated = PopulateKeyPhoto<
-	PopulateAuthor<HydratedStoryDTO>
->;
+
+export type PopulatedStoryDTO = StoryDTOMediaPopulated &
+	StoryDTOAuthorPopulated;

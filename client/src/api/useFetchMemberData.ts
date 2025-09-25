@@ -1,21 +1,20 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
 import {
-	FamilyTreeMemberDTOKeyPhotoPopulated,
-	FamilyTreeMemberDTOKeyPhotoAndStoryPopulated,
+	PopulatedFamilyTreeMemberDTO,
+	PopulatedFamilyTreeMemberDTOWithStory,
 } from "@conch/shared";
 import { useFetchMediaData } from "./useFetchMediaData";
 
 type ReactQueryOptions = Omit<
 	UseQueryOptions<
-		| FamilyTreeMemberDTOKeyPhotoPopulated
-		| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated
+		PopulatedFamilyTreeMemberDTO | PopulatedFamilyTreeMemberDTOWithStory
 	>,
 	"queryFn" | "queryKey"
 >;
 
 interface IFetchMemberData {
-	personId: FamilyTreeMemberDTOKeyPhotoPopulated["id"];
+	personId: PopulatedFamilyTreeMemberDTO["id"];
 	includeParamsValues?: string[];
 }
 
@@ -25,8 +24,7 @@ const fetchMemberData = async ({
 	personId,
 	includeParamsValues,
 }: IFetchMemberData): Promise<
-	| FamilyTreeMemberDTOKeyPhotoPopulated
-	| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated
+	PopulatedFamilyTreeMemberDTO | PopulatedFamilyTreeMemberDTOWithStory
 > => {
 	try {
 		const params = new URLSearchParams();
@@ -39,8 +37,8 @@ const fetchMemberData = async ({
 		}`;
 		const { data } = await axios.get<{
 			data:
-				| FamilyTreeMemberDTOKeyPhotoPopulated
-				| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated;
+				| PopulatedFamilyTreeMemberDTO
+				| PopulatedFamilyTreeMemberDTOWithStory;
 		}>(url);
 
 		return data.data;
@@ -58,8 +56,7 @@ export const useFetchMemberData = ({
 	...reactQueryProps
 }: useFetchMemberDataProps) => {
 	const memberQuery = useQuery<
-		| FamilyTreeMemberDTOKeyPhotoPopulated
-		| FamilyTreeMemberDTOKeyPhotoAndStoryPopulated
+		PopulatedFamilyTreeMemberDTO | PopulatedFamilyTreeMemberDTOWithStory
 	>({
 		queryKey: ["member", personId, includeParamsValues],
 		queryFn: () => fetchMemberData({ personId, includeParamsValues }),
