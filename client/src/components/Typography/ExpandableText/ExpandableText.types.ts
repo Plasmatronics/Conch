@@ -1,4 +1,5 @@
 import { BoxProps, TextProps } from "@chakra-ui/react";
+import React from "react";
 
 export interface ExpandableTextProps extends TextProps {
 	text: string;
@@ -6,7 +7,6 @@ export interface ExpandableTextProps extends TextProps {
 	expansionTextProps?: BoxProps;
 	shrinkable?: boolean;
 	clickOnTextToggling?: boolean;
-	prependText?: string;
-	prependTextStyles?: TextProps;
+	prependElement?: React.ReactNode;
 	containerProps?: BoxProps;
 }

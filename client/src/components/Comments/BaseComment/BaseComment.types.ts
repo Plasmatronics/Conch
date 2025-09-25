@@ -13,4 +13,5 @@ export interface BaseCommentProps {
 	onReplyClick?: () => void;
 	onViewReplyClick?: () => void;
 	replyToName?: string;
+	replyingToLink?: string;
 }
