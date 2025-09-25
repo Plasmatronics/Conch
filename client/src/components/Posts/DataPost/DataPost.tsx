@@ -1,4 +1,3 @@
-import { useDataPost } from "./useDataPost";
 import { BasePost } from "../BasePost";
 import React from "react";
 import {
@@ -10,7 +9,7 @@ import {
 import { CommentSectionProps, IReply } from "../../Comments";
 import { useForm } from "react-hook-form";
 import { useFetchUserData } from "../../../api";
-import { useDataPostComment } from "./useDataPostComment";
+import { useDataPostComment, useDataPost } from "./hooks";
 
 export interface DataPostProps {
 	storyId: HydratedStoryDTO["id"];

@@ -1,5 +1,9 @@
 import mongoose, { Document } from "mongoose";
-import { HydrateWithMetadata, PopulateKeyPhoto } from "types/utils";
+import {
+	HydrateWithMetadata,
+	PopulateAuthor,
+	PopulateKeyPhoto,
+} from "types/utils";
 
 export interface IDocument {
 	fileKey: string;
@@ -22,4 +26,7 @@ export interface UnhydratedDocumentDTO {
 }
 
 export type HydratedDocumentDTO = HydrateWithMetadata<UnhydratedDocumentDTO>;
-export type DocumentDTOFileKeyPopulated = PopulateKeyPhoto<HydratedDocumentDTO>;
+
+export type PopulatedDocumentDTO = PopulateKeyPhoto<
+	PopulateAuthor<HydratedDocumentDTO>
+>;

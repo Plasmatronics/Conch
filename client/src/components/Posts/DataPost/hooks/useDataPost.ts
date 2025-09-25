@@ -3,19 +3,19 @@ import {
 	HydratedStoryDTO,
 	HydratedUserDTO,
 	MediaTypeAndKey,
-	StoryDTOAuthorPopulated,
+	PopulatedStoryDTO,
 } from "@conch/shared";
 import { useQuery } from "@tanstack/react-query";
-import { useFetchMediaData } from "../../../api";
+import { useFetchMediaData } from "../../../../api";
 import axios from "axios";
 
 const fetchDataPost = async (
 	storyId: HydratedStoryDTO["id"],
-): Promise<StoryDTOAuthorPopulated> => {
+): Promise<PopulatedStoryDTO> => {
 	try {
 		const url = `http://127.0.0.1:3000/api/v1/stories/${storyId}/comments`;
 		const { data } = await axios.get<{
-			data: StoryDTOAuthorPopulated;
+			data: PopulatedStoryDTO;
 		}>(url);
 
 		return data.data;
@@ -28,7 +28,7 @@ const fetchDataPost = async (
 };
 
 export const useDataPost = (storyId: HydratedStoryDTO["id"]) => {
-	const storyQuery = useQuery<StoryDTOAuthorPopulated>({
+	const storyQuery = useQuery<PopulatedStoryDTO>({
 		queryKey: ["story", storyId],
 		queryFn: () => fetchDataPost(storyId),
 	});
