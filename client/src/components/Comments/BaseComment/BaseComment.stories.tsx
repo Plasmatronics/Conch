@@ -22,8 +22,22 @@ ShortComment.args = {
 		"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe consequuntur ipsa odio voluptas voluptatem maxime ut sit, iusto nam vero error voluptates dignissimos animi nesciunt sed inventore assumenda nemo officia?",
 };
 
+export const Reply = Template.bind({});
+Reply.args = {
+	replyToName: "Boris",
+	comment:
+		"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe consequuntur ipsa odio voluptas voluptatem maxime ut sit, iusto nam vero error voluptates dignissimos animi nesciunt sed inventore assumenda nemo officia?",
+};
+
 export const LongComment = Template.bind({});
 LongComment.args = {
+	comment:
+		"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe consequuntur ipsa odio voluptas voluptatem maxime ut sit, iusto nam vero error voluptates dignissimos animi nesciunt sed inventore assumenda nemo officia? Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe consequuntur ipsa odio voluptas voluptatem maxime ut sit, iusto nam vero error voluptates dignissimos animi nesciunt sed inventore assumenda nemo officia? Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe consequuntur ipsa odio voluptas voluptatem maxime ut sit, iusto nam vero error voluptates dignissimos animi nesciunt sed inventore assumenda nemo officia?",
+};
+
+export const LongReply = Template.bind({});
+LongReply.args = {
+	replyToName: "Boris",
 	comment:
 		"Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe consequuntur ipsa odio voluptas voluptatem maxime ut sit, iusto nam vero error voluptates dignissimos animi nesciunt sed inventore assumenda nemo officia? Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe consequuntur ipsa odio voluptas voluptatem maxime ut sit, iusto nam vero error voluptates dignissimos animi nesciunt sed inventore assumenda nemo officia? Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe consequuntur ipsa odio voluptas voluptatem maxime ut sit, iusto nam vero error voluptates dignissimos animi nesciunt sed inventore assumenda nemo officia?",
 };

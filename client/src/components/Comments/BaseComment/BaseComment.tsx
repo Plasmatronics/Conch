@@ -1,4 +1,4 @@
-import { Avatar, Flex, Text } from "@chakra-ui/react";
+import { Avatar, Flex, Link, Text } from "@chakra-ui/react";
 import { BaseCommentProps } from "./BaseComment.types";
 import { LikeButton } from "../../Buttons";
 import { getPrettyDate } from "../../../utils";
@@ -18,6 +18,8 @@ export const BaseComment = ({
 	onReplyClick,
 	loading,
 	onViewReplyClick,
+	replyToName,
+	replyingToLink = "https://www.twitch.tv/bayroneri",
 	numReplies = 0,
 	numRepliesRendered = 0,
 }: BaseCommentProps) => {
@@ -65,6 +67,26 @@ export const BaseComment = ({
 							onDoubleClick={handleDoubleClick}
 							containerProps={{ mb: "0.5rem" }}
 							text={comment}
+							prependElement={
+								replyToName && (
+									<Link
+										color="blue.600"
+										cursor="pointer"
+										fontWeight="medium"
+										_hover={{
+											color: "blue.700",
+											textDecoration: "none",
+										}}
+										onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+											e.preventDefault();
+											window.location.href = replyingToLink;
+											e.stopPropagation();
+										}}
+									>
+										{`@${replyToName} `}
+									</Link>
+								)
+							}
 							maxCharCount={MAX_CHARS_BEFORE_TRUNCATION}
 						/>
 						<Flex width="100%" gap="1rem" alignItems="start">

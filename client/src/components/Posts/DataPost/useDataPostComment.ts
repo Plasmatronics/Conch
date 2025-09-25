@@ -1,6 +1,5 @@
 import {
-	CommentDTOAuthorAndReplyPopulated,
-	HydratedCommentDTO,
+	PopulatedCommentDTO,
 	HydratedStoryDTO,
 	HydratedUserDTO,
 } from "@conch/shared";
@@ -13,7 +12,7 @@ interface CommentDataProps {
 }
 
 type ReactQueryOptions = Omit<
-	UseMutationOptions<HydratedCommentDTO, Error, CommentDataProps>,
+	UseMutationOptions<PopulatedCommentDTO, Error, CommentDataProps>,
 	"mutationFn" | "mutationKey"
 >;
 
@@ -32,7 +31,7 @@ const postComment = async ({
 	userId,
 	comment,
 	replyingTo,
-}: IPostComment): Promise<HydratedCommentDTO> => {
+}: IPostComment): Promise<PopulatedCommentDTO> => {
 	try {
 		let parentComment;
 		let replyingToId;
@@ -41,21 +40,19 @@ const postComment = async ({
 				`http://127.0.0.1:3000/api/v1/stories/${storyId}/comments`,
 			);
 
-			storyData.comments.forEach(
-				(thread: CommentDTOAuthorAndReplyPopulated) => {
-					if (thread.id === replyingTo) {
-						parentComment = thread.id;
-						replyingToId = thread.author.id;
-					}
+			storyData.comments.forEach((thread: PopulatedCommentDTO) => {
+				if (thread.id === replyingTo) {
+					parentComment = thread.id;
+					replyingToId = thread.author.id;
+				}
 
-					thread?.replies.forEach((reply) => {
-						if (reply.parentComment === replyingTo) {
-							parentComment = reply.parentComment;
-							replyingToId = reply.author.id;
-						}
-					});
-				},
-			);
+				thread?.replies.forEach((reply) => {
+					if (reply.parentComment === replyingTo) {
+						parentComment = reply.parentComment;
+						replyingToId = reply.author.id;
+					}
+				});
+			});
 		}
 
 		const payload = {
@@ -86,7 +83,7 @@ export const useDataPostComment = ({
 	...reactQueryProps
 }: useDataPostCommentProps) => {
 	const commentMutation = useMutation<
-		HydratedCommentDTO,
+		PopulatedCommentDTO,
 		Error,
 		CommentDataProps
 	>({

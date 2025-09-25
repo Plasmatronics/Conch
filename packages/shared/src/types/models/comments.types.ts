@@ -3,6 +3,7 @@ import {
 	HydrateWithMetadata,
 	PopulateAuthor,
 	PopulateKeyPhoto,
+	PopulateReplyingTo,
 } from "types/utils";
 
 export interface IComment {
@@ -31,12 +32,25 @@ export interface UnhydratedCommentDTO {
 	likes: number;
 }
 
-export type HydratedCommentDTO = HydrateWithMetadata<UnhydratedCommentDTO>;
+export type HydratedCommentDTO = Omit<
+	HydrateWithMetadata<UnhydratedCommentDTO>,
+	"replies"
+> & { replies: HydrateWithMetadata<UnhydratedCommentDTO["replies"]> };
 
 export type CommentDTOAuthorPopulated = PopulateKeyPhoto<
 	PopulateAuthor<HydratedCommentDTO>
 >;
+
+export type CommentDTOReplyingToPopulated =
+	PopulateReplyingTo<HydratedCommentDTO>;
+
 export type CommentDTOAuthorAndReplyPopulated = Omit<
 	PopulateAuthor<HydratedCommentDTO>,
 	"replies"
-> & { replies: PopulateAuthor<HydratedCommentDTO>[] };
+> & {
+	replies: PopulateReplyingTo<PopulateAuthor<HydratedCommentDTO>>[];
+};
+
+export type PopulatedCommentDTO = CommentDTOAuthorAndReplyPopulated &
+	CommentDTOReplyingToPopulated &
+	CommentDTOAuthorPopulated;
