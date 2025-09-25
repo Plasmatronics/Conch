@@ -46,7 +46,7 @@ const postComment = async ({
 					replyingToId = thread.author.id;
 				}
 
-				thread?.replies.forEach((reply) => {
+				thread?.replies?.forEach((reply) => {
 					if (reply.parentComment === replyingTo) {
 						parentComment = reply.parentComment;
 						replyingToId = reply.author.id;

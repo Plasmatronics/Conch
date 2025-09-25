@@ -1,3 +1,3 @@
 export * from "./useDataPost";
 export * from "./useDataPostComment";
-export * from "./useLikeComment";
+export * from "./useLike";

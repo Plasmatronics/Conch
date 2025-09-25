@@ -14,4 +14,5 @@ export interface BaseCommentProps {
 	onViewReplyClick?: () => void;
 	replyToName?: string;
 	replyingToLink?: string;
+	onToggleLike?: () => void;
 }

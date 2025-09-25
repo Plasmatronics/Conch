@@ -1,14 +1,20 @@
 import { http, HttpResponse, delay } from "msw";
 import {
+	commentLikeData,
 	mockChildComment,
 	mockFileUrl,
 	mockMediaData,
 	mockMediaPopulatedStoryData,
 	mockMemberData,
 	mockParentComment,
+	postLikeData,
 	userData,
 } from "./mswData";
-import { HydratedCommentDTO, HydratedUserDTO } from "@conch/shared";
+import {
+	HydratedCommentDTO,
+	HydratedLikeDTO,
+	HydratedUserDTO,
+} from "@conch/shared";
 
 export const handlers = [
 	http.get(
@@ -75,6 +81,26 @@ export const handlers = [
 		}
 
 		//second and a half
+		await delay(1500);
+
+		return HttpResponse.json({
+			status: "success",
+			data,
+		});
+	}),
+
+	http.post("http://127.0.0.1:3000/api/v1/likes*", async ({ request }) => {
+		const body: HydratedLikeDTO = await request.json();
+		let data;
+
+		if (body?.targetType === "Story") {
+			data = postLikeData;
+		}
+
+		if (body?.targetType === "Comment") {
+			data = commentLikeData;
+		}
+
 		await delay(1500);
 
 		return HttpResponse.json({

@@ -15,6 +15,7 @@ export const BaseComment = ({
 	datePosted,
 	relationship,
 	numLikes,
+	onToggleLike,
 	onReplyClick,
 	loading,
 	onViewReplyClick,
@@ -24,6 +25,8 @@ export const BaseComment = ({
 	numRepliesRendered = 0,
 }: BaseCommentProps) => {
 	const [isLiked, setIsLiked] = React.useState(false);
+	const activeNumLikes = isLiked ? numLikes + 1 : numLikes;
+
 	const ageMs = React.useMemo(() => {
 		const time = new Date(datePosted).getTime();
 		return Math.max(0, Date.now() - time);
@@ -41,7 +44,10 @@ export const BaseComment = ({
 	};
 
 	const handleLike = () => {
-		setIsLiked((prev) => !prev);
+		setIsLiked((prev) => {
+			onToggleLike?.();
+			return !prev;
+		});
 	};
 
 	const handleDoubleClick = () => {
@@ -126,9 +132,9 @@ export const BaseComment = ({
 							isLiked={isLiked}
 							setIsLiked={handleLike}
 						/>
-						{numLikes > 0 && (
+						{activeNumLikes > 0 && (
 							<Text fontSize="sm" color="gray.500">
-								{numLikes}
+								{activeNumLikes}
 							</Text>
 						)}
 					</Flex>

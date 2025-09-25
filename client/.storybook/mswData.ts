@@ -1,8 +1,9 @@
 import {
 	HydratedFamilyTreeMemberDTO,
 	HydratedMediaDTO,
-	StoryDTOMediaPopulated,
+	PopulatedStoryDTO,
 	PopulatedCommentDTO,
+	HydratedLikeDTO,
 } from "@conch/shared";
 
 export const mockFileUrl =
@@ -89,7 +90,7 @@ export const mockMemberData: HydratedFamilyTreeMemberDTO = {
 	id: "68bded593c9768d183ad7834",
 };
 
-export const mockMediaPopulatedStoryData: StoryDTOMediaPopulated = {
+export const mockMediaPopulatedStoryData: PopulatedStoryDTO = {
 	media: [
 		{
 			_id: "68bdedc63c9768d183ad7839",
@@ -127,4 +128,24 @@ export const userData = {
 	email: "nicholaskgp@gmail.com",
 	__v: 0,
 	id: "68d198b963d016325c3c45dd",
+};
+
+export const postLikeData: HydratedLikeDTO = {
+	author: "68d198b963d016325c3c45dd",
+	targetType: "Story",
+	target: "68bf2a9895bde97c33918cef",
+	_id: "68d1a8b963d016325c3c45de",
+	__v: 0,
+	id: "68d1a8b963d016325c3c45de",
+	createdAt: "2025-09-08T19:00:00.000Z",
+};
+
+export const commentLikeData: HydratedLikeDTO = {
+	author: "68d198b963d016325c3c45dd",
+	targetType: "Comment",
+	target: "68c345abc2eada301a2a38f8",
+	_id: "68d1a8b963d016325c3c45df",
+	__v: 0,
+	id: "68d1a8b963d016325c3c45df",
+	createdAt: "2025-09-08T19:05:00.000Z",
 };

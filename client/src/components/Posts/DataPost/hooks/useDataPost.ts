@@ -56,7 +56,7 @@ export const useDataPost = (storyId: HydratedStoryDTO["id"]) => {
 			name: comment.author.name,
 		});
 
-		comment.replies.map((reply) => {
+		comment.replies?.map((reply) => {
 			commentAuthorMap.set(reply.id, {
 				authorId: reply.author.id,
 				name: reply.author.name,

@@ -9,7 +9,7 @@ import {
 import { CommentSectionProps, IReply } from "../../Comments";
 import { useForm } from "react-hook-form";
 import { useFetchUserData } from "../../../api";
-import { useDataPostComment, useDataPost } from "./hooks";
+import { useDataPostComment, useDataPost, useLike } from "./hooks";
 
 export interface DataPostProps {
 	storyId: HydratedStoryDTO["id"];
@@ -49,6 +49,19 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 		userId,
 		storyId,
 		onSuccess: () => reset(),
+	});
+
+	const { mutate: mutateLike } = useLike({
+		userId,
+		storyId,
+		onMutate: (likeData) => {
+			console.log(likeData);
+			if (!likeData.commentId) setIsLiked((prev) => !prev);
+		},
+		onError: (_, likeData) => {
+			console.log(likeData);
+			if (!likeData.commentId) setIsLiked((prev) => !prev);
+		},
 	});
 
 	const handleReplyClick = (targetCommentId: HydratedCommentDTO["id"]) => {
@@ -121,13 +134,16 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 								onReplyClick: () => {
 									handleReplyClick(commentThread.id);
 								},
+								onToggleLike: () => {
+									mutateLike({ commentId: commentThread.id, type: "Comment" });
+								},
 								datePosted: commentThread.createdAt,
 								relationship: commentThread.author.relationToRootMember,
 								loading: avatarQuery.isLoading || storyQuery.isLoading,
 								numLikes: commentThread.likes,
 							},
 
-							replies: commentThread?.replies.map((reply) => {
+							replies: commentThread?.replies?.map((reply) => {
 								const replyDTO: IReply = {
 									comment: {
 										comment: reply.content,
@@ -141,6 +157,12 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 										numLikes: reply.likes,
 										onReplyClick: () => {
 											handleReplyClick(reply.id);
+										},
+										onToggleLike: () => {
+											mutateLike({
+												commentId: reply.id,
+												type: "Comment",
+											});
 										},
 									},
 									replyingTo: commentThread.replyingTo?.name,
@@ -179,7 +201,10 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 			user={author.name}
 			isLiked={isLiked}
 			media={typeSafeMedia}
-			setIsLiked={setIsLiked}
+			setIsLiked={(val) => {
+				setIsLiked(val);
+				mutateLike({ type: "Story" });
+			}}
 			avatar={avatarQuery.data?.get(author.keyPhoto.fileKey)?.downloadUrl}
 			storyDate={storyDate}
 			commentSectionProps={{
