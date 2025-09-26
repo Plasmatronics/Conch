@@ -13,7 +13,17 @@ export default {
 } satisfies Meta<typeof BaseComment>;
 
 const Template: StoryFn<BaseCommentProps> = (args) => {
-	return <BaseComment {...commentDefaults} {...args} />;
+	const [isLiked, setIsLiked] = React.useState(false);
+	return (
+		<BaseComment
+			{...commentDefaults}
+			{...args}
+			isLiked={isLiked}
+			onToggleLike={() => {
+				setIsLiked((prev) => !prev);
+			}}
+		/>
+	);
 };
 
 export const ShortComment = Template.bind({});

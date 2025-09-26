@@ -1,9 +1,9 @@
-import { IUser } from "packages/shared";
+import { UserDoc } from "packages/shared";
 
 declare global {
 	namespace Express {
 		interface Request {
-			user?: IUser;
+			user?: UserDoc;
 		}
 	}
 }

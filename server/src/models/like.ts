@@ -3,11 +3,6 @@ import { LikeDoc } from "packages/shared";
 
 const likeSchema = new mongoose.Schema<LikeDoc>(
 	{
-		fileKey: {
-			type: mongoose.Schema.ObjectId,
-			ref: "Media",
-			required: [true, "A like must have a fileKey"],
-		},
 		target: {
 			type: mongoose.Schema.ObjectId,
 			required: [true, "A like must have a target"],
@@ -16,7 +11,7 @@ const likeSchema = new mongoose.Schema<LikeDoc>(
 		targetType: {
 			type: String,
 			required: [true, "A like must have a target type"],
-			enum: ["Story", "Document", "Comment"],
+			enum: ["Story", "Comment"],
 		},
 		author: {
 			type: mongoose.Schema.ObjectId,

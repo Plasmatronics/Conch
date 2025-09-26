@@ -9,7 +9,7 @@ import {
 import { CommentSectionProps, IReply } from "../../Comments";
 import { useForm } from "react-hook-form";
 import { useFetchUserData } from "../../../api";
-import { useDataPostComment, useDataPost } from "./hooks";
+import { useDataPostComment, useDataPost, useLike } from "./hooks";
 
 export interface DataPostProps {
 	storyId: HydratedStoryDTO["id"];
@@ -23,8 +23,6 @@ export type DataPostCommentInputs = {
 };
 
 export const DataPost = ({ userId, storyId }: DataPostProps) => {
-	const [isLiked, setIsLiked] = React.useState(false);
-
 	const { storyQuery, avatarQuery, commentAuthorMap } = useDataPost(storyId);
 	const isLoading = storyQuery.isLoading || avatarQuery.isLoading;
 
@@ -49,6 +47,11 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 		userId,
 		storyId,
 		onSuccess: () => reset(),
+	});
+
+	const { mutate: mutateLike } = useLike({
+		userId,
+		storyId,
 	});
 
 	const handleReplyClick = (targetCommentId: HydratedCommentDTO["id"]) => {
@@ -99,6 +102,7 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 			},
 		},
 		title = "",
+		isLikedByUser,
 		storyDate = new Date(),
 		content = "",
 		media = [],
@@ -113,6 +117,7 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 					const threadDTO = {
 						comment: {
 							comment: {
+								isLiked: commentThread.isLikedByUser || false,
 								comment: commentThread.content,
 								user: commentThread.author.name,
 								avatar: avatarQuery.data?.get(
@@ -121,15 +126,19 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 								onReplyClick: () => {
 									handleReplyClick(commentThread.id);
 								},
+								onToggleLike: () => {
+									mutateLike({ commentId: commentThread.id, type: "Comment" });
+								},
 								datePosted: commentThread.createdAt,
 								relationship: commentThread.author.relationToRootMember,
 								loading: avatarQuery.isLoading || storyQuery.isLoading,
 								numLikes: commentThread.likes,
 							},
 
-							replies: commentThread?.replies.map((reply) => {
+							replies: commentThread?.replies?.map((reply) => {
 								const replyDTO: IReply = {
 									comment: {
+										isLiked: reply.isLikedByUser || false,
 										comment: reply.content,
 										user: reply.author.name,
 										avatar: avatarQuery.data?.get(reply.author.keyPhoto.fileKey)
@@ -141,6 +150,12 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 										numLikes: reply.likes,
 										onReplyClick: () => {
 											handleReplyClick(reply.id);
+										},
+										onToggleLike: () => {
+											mutateLike({
+												commentId: reply.id,
+												type: "Comment",
+											});
 										},
 									},
 									replyingTo: commentThread.replyingTo?.name,
@@ -177,9 +192,11 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 			relationship={author.relationToRootMember}
 			loading={isLoading}
 			user={author.name}
-			isLiked={isLiked}
+			isLiked={isLikedByUser || false}
 			media={typeSafeMedia}
-			setIsLiked={setIsLiked}
+			setIsLiked={() => {
+				mutateLike({ type: "Story" });
+			}}
 			avatar={avatarQuery.data?.get(author.keyPhoto.fileKey)?.downloadUrl}
 			storyDate={storyDate}
 			commentSectionProps={{
