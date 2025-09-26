@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { Comment } from "../models";
+import { Comment, Like } from "../models";
 import { handlerFactory } from "./controllerFactory";
 import { Types } from "mongoose";
 import { AppError, catchError } from "../utils";
@@ -31,9 +31,16 @@ const getComment = async (req: Request, res: Response, next: NextFunction) => {
 			throw new AppError(404, "Could not find this document");
 		}
 
+		const currentUserId = req.user?.id;
+		const like = await Like.findOne({
+			author: currentUserId,
+			target: id,
+		});
+		const isLikedByUser = !!like;
+
 		res.status(200).json({
 			status: "success",
-			data: comment,
+			data: { ...comment, isLikedByUser },
 		});
 	} catch (err) {
 		catchError(err, next);

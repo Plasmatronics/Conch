@@ -18,15 +18,13 @@ export const BaseComment = ({
 	onToggleLike,
 	onReplyClick,
 	loading,
+	isLiked,
 	onViewReplyClick,
 	replyToName,
 	replyingToLink = "https://www.twitch.tv/bayroneri",
 	numReplies = 0,
 	numRepliesRendered = 0,
 }: BaseCommentProps) => {
-	const [isLiked, setIsLiked] = React.useState(false);
-	const activeNumLikes = isLiked ? numLikes + 1 : numLikes;
-
 	const ageMs = React.useMemo(() => {
 		const time = new Date(datePosted).getTime();
 		return Math.max(0, Date.now() - time);
@@ -44,15 +42,12 @@ export const BaseComment = ({
 	};
 
 	const handleLike = () => {
-		setIsLiked((prev) => {
-			onToggleLike?.();
-			return !prev;
-		});
+		onToggleLike?.();
 	};
 
 	const handleDoubleClick = () => {
 		if (!isLiked) {
-			setIsLiked(true);
+			onToggleLike?.();
 		}
 	};
 
@@ -132,9 +127,9 @@ export const BaseComment = ({
 							isLiked={isLiked}
 							setIsLiked={handleLike}
 						/>
-						{activeNumLikes > 0 && (
+						{numLikes > 0 && (
 							<Text fontSize="sm" color="gray.500">
-								{activeNumLikes}
+								{numLikes}
 							</Text>
 						)}
 					</Flex>

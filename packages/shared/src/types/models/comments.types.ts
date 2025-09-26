@@ -30,6 +30,8 @@ export interface UnhydratedCommentDTO {
 	deletedAt?: Date;
 	replies?: UnhydratedCommentDTO[];
 	likes: number;
+	//derived during get call
+	isLikedByUser?: boolean;
 }
 
 export type HydratedCommentDTO = Omit<

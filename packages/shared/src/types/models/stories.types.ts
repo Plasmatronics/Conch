@@ -33,6 +33,8 @@ export interface UnhydratedStoryDTO {
 	storyDate?: Date;
 	likes?: number;
 	comments?: PopulatedCommentDTO[];
+	//derived during get call
+	isLikedByUser?: boolean;
 }
 
 export type HydratedStoryDTO = HydrateWithMetadata<UnhydratedStoryDTO>;

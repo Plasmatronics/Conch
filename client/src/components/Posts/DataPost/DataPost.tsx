@@ -23,8 +23,6 @@ export type DataPostCommentInputs = {
 };
 
 export const DataPost = ({ userId, storyId }: DataPostProps) => {
-	const [isLiked, setIsLiked] = React.useState(false);
-
 	const { storyQuery, avatarQuery, commentAuthorMap } = useDataPost(storyId);
 	const isLoading = storyQuery.isLoading || avatarQuery.isLoading;
 
@@ -54,14 +52,6 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 	const { mutate: mutateLike } = useLike({
 		userId,
 		storyId,
-		onMutate: (likeData) => {
-			console.log(likeData);
-			if (!likeData.commentId) setIsLiked((prev) => !prev);
-		},
-		onError: (_, likeData) => {
-			console.log(likeData);
-			if (!likeData.commentId) setIsLiked((prev) => !prev);
-		},
 	});
 
 	const handleReplyClick = (targetCommentId: HydratedCommentDTO["id"]) => {
@@ -112,6 +102,7 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 			},
 		},
 		title = "",
+		isLikedByUser,
 		storyDate = new Date(),
 		content = "",
 		media = [],
@@ -126,6 +117,7 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 					const threadDTO = {
 						comment: {
 							comment: {
+								isLiked: commentThread.isLikedByUser || false,
 								comment: commentThread.content,
 								user: commentThread.author.name,
 								avatar: avatarQuery.data?.get(
@@ -146,6 +138,7 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 							replies: commentThread?.replies?.map((reply) => {
 								const replyDTO: IReply = {
 									comment: {
+										isLiked: reply.isLikedByUser || false,
 										comment: reply.content,
 										user: reply.author.name,
 										avatar: avatarQuery.data?.get(reply.author.keyPhoto.fileKey)
@@ -199,10 +192,9 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 			relationship={author.relationToRootMember}
 			loading={isLoading}
 			user={author.name}
-			isLiked={isLiked}
+			isLiked={isLikedByUser || false}
 			media={typeSafeMedia}
-			setIsLiked={(val) => {
-				setIsLiked(val);
+			setIsLiked={() => {
 				mutateLike({ type: "Story" });
 			}}
 			avatar={avatarQuery.data?.get(author.keyPhoto.fileKey)?.downloadUrl}

@@ -6,7 +6,11 @@ import {
 	PopulatedStoryDTO,
 	UnhydratedLikeDTO,
 } from "@conch/shared";
-import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import {
+	useMutation,
+	UseMutationOptions,
+	useQueryClient,
+} from "@tanstack/react-query";
 import axios from "axios";
 
 type LikeDataProps = {
@@ -75,6 +79,8 @@ export const useLike = ({
 	storyId,
 	...reactQueryProps
 }: useLikeProps) => {
+	const queryClient = useQueryClient();
+
 	const likeMutation = useMutation<HydratedLikeDTO, Error, LikeDataProps>({
 		mutationKey: ["like", userId],
 		mutationFn: (data) =>
@@ -84,6 +90,87 @@ export const useLike = ({
 				type: data.type,
 				storyId,
 			}),
+		onMutate: async (data) => {
+			await queryClient.cancelQueries({
+				queryKey: ["story", storyId],
+				exact: true,
+			});
+
+			const curStoryData = queryClient.getQueryData<PopulatedStoryDTO>([
+				"story",
+				storyId,
+			]);
+			if (!curStoryData) return { curStoryData };
+
+			const isAlreadyLikedComment = curStoryData.comments?.some(
+				(comment) => comment.id === data.commentId && comment.isLikedByUser,
+			);
+
+			const isAlreadyLikedStory =
+				data.type === "Story" && curStoryData.isLikedByUser;
+
+			const deltaLike = (
+				data.type === "Story" ? isAlreadyLikedStory : isAlreadyLikedComment
+			)
+				? -1
+				: 1;
+
+			const nextStoryData: PopulatedStoryDTO = {
+				...curStoryData,
+				likes:
+					data.type === "Story"
+						? (curStoryData.likes || 0) + deltaLike
+						: curStoryData.likes,
+
+				isLikedByUser:
+					data.type === "Story"
+						? !isAlreadyLikedStory
+						: curStoryData.isLikedByUser,
+
+				comments:
+					data.type === "Comment"
+						? curStoryData.comments?.map((comment) => {
+								if (comment.id === data.commentId) {
+									return {
+										...comment,
+										likes: (comment.likes || 0) + deltaLike,
+										isLikedByUser: !isAlreadyLikedComment,
+									};
+								}
+								if (comment.replies) {
+									return {
+										...comment,
+										replies: comment.replies.map((reply) =>
+											reply.id === data.commentId
+												? {
+														...reply,
+														likes: (reply.likes || 0) + deltaLike,
+														isLikedByUser: !reply.isLikedByUser,
+													}
+												: reply,
+										),
+									};
+								}
+								return comment;
+							}) || curStoryData.comments
+						: curStoryData.comments,
+			};
+
+			queryClient.setQueryData(["story", storyId], nextStoryData);
+
+			return { curStoryData };
+		},
+		onError: (_, __, mutationRes: any) => {
+			if (mutationRes?.curStoryData) {
+				queryClient.setQueryData(["story", storyId], mutationRes?.curStoryData);
+			}
+		},
+		onSettled: () => {
+			queryClient.invalidateQueries({
+				queryKey: ["story", storyId],
+				exact: true,
+			});
+		},
 		...reactQueryProps,
 	});
 
