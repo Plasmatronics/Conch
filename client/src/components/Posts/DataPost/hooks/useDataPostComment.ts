@@ -2,13 +2,23 @@ import {
 	PopulatedCommentDTO,
 	HydratedStoryDTO,
 	HydratedUserDTO,
+	PopulatedStoryDTO,
+	HydratedFamilyTreeMemberDTO,
 } from "@conch/shared";
-import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import {
+	useMutation,
+	UseMutationOptions,
+	useQueryClient,
+} from "@tanstack/react-query";
+import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 
 interface CommentDataProps {
 	comment: string;
 	replyingTo: HydratedUserDTO["id"];
+	author: HydratedUserDTO["name"];
+	userAvatar: string;
+	relationToRootMember: HydratedFamilyTreeMemberDTO["relationToRootMember"];
 }
 
 type ReactQueryOptions = Omit<
@@ -82,6 +92,8 @@ export const useDataPostComment = ({
 	storyId,
 	...reactQueryProps
 }: useDataPostCommentProps) => {
+	const queryClient = useQueryClient();
+
 	const commentMutation = useMutation<
 		PopulatedCommentDTO,
 		Error,
@@ -96,6 +108,83 @@ export const useDataPostComment = ({
 				replyingTo: data.replyingTo,
 			}),
 		...reactQueryProps,
+		onMutate: async (data) => {
+			await queryClient.cancelQueries({
+				queryKey: ["story", storyId],
+				exact: true,
+			});
+
+			const curStoryData = queryClient.getQueryData<PopulatedStoryDTO>([
+				"story",
+				storyId,
+			]);
+
+			if (!curStoryData) return { curStoryData };
+
+			const tempComment: PopulatedCommentDTO = {
+				id: uuidv4(),
+				author: {
+					id: userId,
+					name: data.author,
+					relationToRootMember: data.relationToRootMember,
+					keyPhoto: { fileKey: data.userAvatar, type: "image", id: uuidv4() },
+				} as PopulatedCommentDTO["author"],
+				content: data.comment,
+				createdAt: new Date(),
+				likes: 0,
+				isLikedByUser: false,
+				replies: [],
+				target: storyId,
+			};
+
+			let nextComments;
+			if (data.replyingTo) {
+				nextComments =
+					curStoryData.comments?.map((comment) => {
+						const isParent = comment.id === data.replyingTo;
+						const isReply = comment.replies?.some(
+							(reply) => reply.id === data.replyingTo,
+						);
+
+						if (isParent || isReply) {
+							return {
+								...comment,
+								replies: [
+									...(comment.replies || []),
+									{
+										...tempComment,
+										replyingTo: data.replyingTo,
+										parentComment: comment.id,
+									},
+								],
+							} as PopulatedCommentDTO;
+						}
+						return comment;
+					}) || [];
+			} else {
+				nextComments = [...(curStoryData.comments || []), tempComment];
+			}
+
+			const nextStoryData: PopulatedStoryDTO = {
+				...curStoryData,
+				comments: nextComments,
+			};
+
+			queryClient.setQueryData(["story", storyId], nextStoryData);
+
+			return { curStoryData };
+		},
+		onError: (_, __, mutationRes: any) => {
+			if (mutationRes?.curStoryData) {
+				queryClient.setQueryData(["story", storyId], mutationRes?.curStoryData);
+			}
+		},
+		onSettled: () => {
+			queryClient.invalidateQueries({
+				queryKey: ["story", storyId],
+				exact: true,
+			});
+		},
 	});
 
 	return commentMutation;
