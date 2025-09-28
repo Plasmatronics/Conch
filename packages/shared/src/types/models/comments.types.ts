@@ -2,7 +2,6 @@ import mongoose, { Document } from "mongoose";
 import {
 	HydrateWithMetadata,
 	PopulateAuthor,
-	PopulateKeyPhoto,
 	PopulateReplyingTo,
 } from "types/utils";
 
@@ -39,9 +38,7 @@ export type HydratedCommentDTO = Omit<
 	"replies"
 > & { replies?: HydratedCommentDTO[] };
 
-type CommentDTOAuthorPopulated = PopulateKeyPhoto<
-	PopulateAuthor<HydratedCommentDTO>
->;
+type CommentDTOAuthorPopulated = PopulateAuthor<HydratedCommentDTO>;
 
 type CommentDTOReplyingToPopulated = PopulateReplyingTo<HydratedCommentDTO>;
 

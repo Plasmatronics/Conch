@@ -31,6 +31,13 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 		includeParamsValues: ["member"],
 	});
 
+	const userAvatar =
+		userQuery.data?.familyTreeMember.keyPhoto &&
+		userAvatarQuery.data?.get(userQuery.data?.familyTreeMember.keyPhoto.fileKey)
+			?.downloadUrl;
+
+	const userFullName = userQuery.data?.name;
+
 	const {
 		handleSubmit,
 		reset,
@@ -84,7 +91,14 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 
 		if (!trimmedComment) return;
 
-		return mutate({ comment: trimmedComment, replyingTo: data.replyingToId });
+		return mutate({
+			comment: trimmedComment,
+			replyingTo: data.replyingToId,
+			userAvatar: userAvatar || "",
+			author: userFullName || "",
+			relationToRootMember:
+				userQuery.data?.familyTreeMember.relationToRootMember || "",
+		});
 	});
 
 	const clearReplyTarget = () => {
@@ -108,7 +122,7 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 		media = [],
 		likes = 0,
 		comments,
-	} = storyQuery?.data ?? {};
+	} = storyQuery?.data || {};
 
 	const commentSectionData: CommentSectionProps["commentThreads"] =
 		React.useMemo(() => {
@@ -144,7 +158,7 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 										avatar: avatarQuery.data?.get(reply.author.keyPhoto.fileKey)
 											?.downloadUrl,
 										datePosted: reply.createdAt,
-										replyToName: reply.replyingTo.name,
+										replyToName: reply?.replyingTo?.name,
 										relationship: reply.author.relationToRootMember,
 										loading: avatarQuery.isLoading || storyQuery.isLoading,
 										numLikes: reply.likes,
@@ -158,7 +172,7 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 											});
 										},
 									},
-									replyingTo: commentThread.replyingTo?.name,
+									replyingTo: commentThread.replyingTo?.name || "",
 								};
 								return replyDTO;
 							}),
@@ -211,12 +225,8 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 				}),
 				onSubmit: handleCommentSubmit,
 				placeholder: `Comment as ${userQuery.data?.name}...`,
-				user: userQuery.data?.name || "",
-				avatar:
-					userQuery.data?.familyTreeMember.keyPhoto &&
-					userAvatarQuery.data?.get(
-						userQuery.data?.familyTreeMember.keyPhoto.fileKey,
-					)?.downloadUrl,
+				user: userFullName || "",
+				avatar: userAvatar,
 				posting: isPending || isSubmitting,
 				onHandleBackspace: handleBackspace,
 			}}
