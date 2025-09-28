@@ -155,7 +155,6 @@ export const handlers = [
 	}),
 
 	http.delete("http://127.0.0.1:3000/api/v1/likes*", async ({ request }) => {
-		console.log("deleted!");
 		const url = new URL(request.url);
 		const targetId = url.searchParams.get("target");
 

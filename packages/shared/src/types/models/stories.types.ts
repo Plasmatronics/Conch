@@ -1,9 +1,5 @@
 import mongoose, { Document } from "mongoose";
-import {
-	HydrateWithMetadata,
-	PopulateAuthor,
-	PopulateKeyPhoto,
-} from "types/utils";
+import { HydrateWithMetadata, PopulateAuthor } from "types/utils";
 import { HydratedMediaDTO } from "./media.types";
 import { PopulatedCommentDTO } from "./comments.types";
 
@@ -39,9 +35,7 @@ export interface UnhydratedStoryDTO {
 
 export type HydratedStoryDTO = HydrateWithMetadata<UnhydratedStoryDTO>;
 
-type StoryDTOAuthorPopulated = PopulateKeyPhoto<
-	PopulateAuthor<HydratedStoryDTO>
->;
+type StoryDTOAuthorPopulated = PopulateAuthor<HydratedStoryDTO>;
 type StoryDTOMediaPopulated = Omit<HydratedStoryDTO, "media"> & {
 	media: {
 		type: HydratedMediaDTO["type"];
