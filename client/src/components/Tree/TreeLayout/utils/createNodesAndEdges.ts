@@ -4,8 +4,8 @@ import { TreeLayoutProps } from "../TreeLayout.types";
 export const NODE_HEIGHT = 240;
 export const NODE_WIDTH = 160;
 
-export const HUB_WIDTH = 1;
-export const HUB_HEIGHT = 1;
+export const HUB_WIDTH = 0.5;
+export const HUB_HEIGHT = 0.5;
 
 //  edgeTypes: bezier, smoothstep, step, and straight
 const edgeType = "smoothstep";

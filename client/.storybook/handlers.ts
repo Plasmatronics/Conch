@@ -1,6 +1,7 @@
 import { http, HttpResponse, delay } from "msw";
 import { v4 as uuidv4 } from "uuid";
 import {
+	mockAllMembers,
 	mockChildComment,
 	mockFileUrl,
 	mockMediaData,
@@ -24,18 +25,57 @@ export const handlers = [
 		async ({ request }) => {
 			const url = new URL(request.url);
 
-			const includeParam = url.searchParams.get("include");
+			const pathParts = url.pathname.split("/").filter(Boolean); // ["api", "v1", "familyTreeMembers"] or ["api","v1","familyTreeMembers","<id>"]
+			const isGetAll = pathParts.length === 3; // no id in path
 
-			const data = { ...mockMemberData };
-			if (includeParam === "stories") {
-				data.stories = [mockMediaPopulatedStoryData];
+			const includeParam = url.searchParams.get("include");
+			const relationParam = url.searchParams.get("relationToRootMember[ne]");
+			const countParam = url.searchParams.get("count");
+
+			let data;
+
+			if (isGetAll) {
+				data = [...mockAllMembers];
+
+				if (relationParam) {
+					data = data.filter(
+						(member) => member.relationToRootMember !== relationParam,
+					);
+				}
+
+				if (countParam === "stories") {
+					data = data.map((member) => ({
+						...member,
+						storiesCount: member.storiesCount || 0,
+						stories: undefined,
+					}));
+				}
+				if (includeParam === "stories" && data) {
+					data = data.map((member) => ({
+						...member,
+						stories: [mockMediaPopulatedStoryData],
+					}));
+				}
+			} else {
+				const id = pathParts[3];
+				data = mockAllMembers.find((member) => member.id === id) || null;
+
+				if (includeParam === "stories" && data) {
+					data.stories = [mockMediaPopulatedStoryData];
+				}
+
+				if (countParam === "stories" && data) {
+					data.storiesCount = data.storiesCount || 0;
+					data.stories = undefined;
+				}
 			}
 
-			//second and a half
+			// simulate delay
 			await delay(500);
 
 			return HttpResponse.json({
 				status: "success",
+				length: Array.isArray(data) ? data.length : undefined,
 				data,
 			});
 		},

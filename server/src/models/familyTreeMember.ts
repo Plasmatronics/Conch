@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
-import { FamilyTreeMemberDoc, ILocation, MemberFavThings } from "@conch/shared";
+import {
+	FamilyTreeMemberDoc,
+	ILocation,
+	MemberFavThings,
+	RelationToRootMemberEnum,
+} from "@conch/shared";
 
 const memberFavoriteThingsSchema = new mongoose.Schema<MemberFavThings>(
 	{
@@ -66,10 +71,7 @@ const familyTreeMemberSchema = new mongoose.Schema<FamilyTreeMemberDoc>(
 		},
 		relationToRootMember: {
 			type: String,
-			required: [
-				true,
-				"A family tree member must have a connection to root member",
-			],
+			enum: RelationToRootMemberEnum,
 		},
 		favThings: {
 			type: memberFavoriteThingsSchema,
@@ -79,6 +81,28 @@ const familyTreeMemberSchema = new mongoose.Schema<FamilyTreeMemberDoc>(
 			type: mongoose.Schema.ObjectId,
 			ref: "Media",
 		},
+		bestFriend: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "FamilyTreeMember",
+		},
+		spouses: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "FamilyTreeMember",
+			},
+		],
+		dated: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "FamilyTreeMember",
+			},
+		],
+		children: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "FamilyTreeMember",
+			},
+		],
 		deletedAt: {
 			type: Date,
 			select: false,
@@ -98,10 +122,15 @@ familyTreeMemberSchema.virtual("stories", {
 });
 
 familyTreeMemberSchema.pre(/^find/, function (next) {
-	(this as mongoose.Query<any, any>).populate({
-		path: "keyPhoto",
-		select: "type fileKey",
-	});
+	const query = this as mongoose.Query<any, any>;
+
+	query
+		.populate({ path: "keyPhoto", select: "type fileKey" })
+		.populate({ path: "bestFriend", select: "name" })
+		.populate({ path: "spouses", select: "name" })
+		.populate({ path: "dated", select: "name" })
+		.populate({ path: "children", select: "name" });
+
 	next();
 });
 

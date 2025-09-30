@@ -1,2 +1,3 @@
 export * from "./createLayout";
-export * from "./nodeEdgeFactory";
+export * from "./createNodesAndEdges";
+export * from "./snapHubs";

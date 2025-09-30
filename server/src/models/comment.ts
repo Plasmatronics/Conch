@@ -56,27 +56,23 @@ commentSchema.virtual("likes", {
 });
 
 commentSchema.pre(/^find/, function (next) {
-	(this as mongoose.Query<any, any>).populate({
-		path: "author",
-		select: "relationToRootMember name keyPhoto",
-		populate: {
-			path: "keyPhoto",
-			select: "type fileKey",
-		},
-	});
-	next();
-});
-commentSchema.pre(/^find/, function (next) {
-	(this as mongoose.Query<any, any>).populate({
-		path: "likes",
-	});
-	next();
-});
-commentSchema.pre(/^find/, function (next) {
-	(this as mongoose.Query<any, any>).populate({
-		path: "replyingTo",
-		select: "name",
-	});
+	(this as mongoose.Query<any, any>)
+		.populate({
+			path: "author",
+			select: "relationToRootMember name keyPhoto",
+			populate: {
+				path: "keyPhoto",
+				select: "type fileKey",
+			},
+		})
+		.populate({
+			path: "likes",
+		})
+		.populate({
+			path: "replyingTo",
+			select: "name",
+		});
+
 	next();
 });
 
