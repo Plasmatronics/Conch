@@ -14,6 +14,7 @@ export interface IStory {
 	storyDate?: Date;
 	likes?: number;
 	comments?: mongoose.Types.ObjectId[];
+	isLikedByUser: boolean;
 }
 
 export type StoryDoc = IStory & Document;
@@ -30,7 +31,7 @@ export interface UnhydratedStoryDTO {
 	likes?: number;
 	comments?: PopulatedCommentDTO[];
 	//derived during get call
-	isLikedByUser?: boolean;
+	isLikedByUser: boolean;
 }
 
 export type HydratedStoryDTO = HydrateWithMetadata<UnhydratedStoryDTO>;

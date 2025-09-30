@@ -44,6 +44,10 @@ const storySchema = new mongoose.Schema<StoryDoc>(
 		storyDate: {
 			type: Date,
 		},
+		isLikedByUser: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	{
 		toJSON: { virtuals: true },

@@ -3,7 +3,7 @@ import { Like, Story } from "../models";
 import { handlerFactory } from "./controllerFactory";
 import { AppError, catchError } from "../utils";
 import { Types } from "mongoose";
-import { PopulatedStoryDTO } from "packages/shared";
+import { PopulatedCommentDTO, PopulatedStoryDTO } from "packages/shared";
 
 const createStory = handlerFactory.createOne(Story);
 
@@ -57,11 +57,13 @@ const getStoryWithComments = async (
 	try {
 		const { id } = req.params;
 
-		if (!Types.ObjectId.isValid(id)) {
+		if (id && !Types.ObjectId.isValid(id)) {
 			throw new AppError(400, "Invalid ID format");
 		}
 
-		const story = await Story.findById(id).populate({
+		const query = id ? Story.findById(id) : Story.find();
+
+		const stories = await query.populate({
 			path: "comments",
 			select: "content author likes createdAt deletedAt",
 			match: {
@@ -76,51 +78,65 @@ const getStoryWithComments = async (
 			},
 		});
 
-		if (!story) {
+		if (id && !stories) {
 			throw new AppError(404, "Could not find this document");
 		}
 
 		const currentUserId = req.user?.id;
+		const storyArr = Array.isArray(stories) ? stories : [stories];
 		let likedSet = new Set<string>();
+
 		if (currentUserId) {
-			const ids: Types.ObjectId[] = [story.id];
+			const ids: string[] = [];
 
-			for (const comment of story.comments as any[]) {
-				if (comment && comment.id) ids.push(comment.id);
+			storyArr.forEach((story) => {
+				if (story) {
+					ids.push(story.id.toString());
 
-				for (const reply of comment.replies) {
-					if (reply && reply.id) ids.push(reply.id);
+					for (const comment of story.comments as any[]) {
+						if (comment && comment.id) ids.push(comment.id.toString());
+
+						for (const reply of comment.replies)
+							if (reply && reply.id) ids.push(reply.id.toString());
+					}
 				}
-			}
+			});
 
 			const likes = await Like.find({
 				author: currentUserId,
 				target: { $in: ids },
 			}).select("target");
 
-			likedSet = new Set(likes.map((like) => like.target.id.toString()));
+			likedSet = new Set(likes.map((like) => like.target.toString()));
 		}
 
-		const storyObj = story.toObject() as unknown as PopulatedStoryDTO & {
-			isLikedByUser?: boolean;
-		};
+		if (storyArr) {
+			storyArr.forEach((story) => {
+				if (story) {
+					if (likedSet.has(story.id)) {
+						story.isLikedByUser = true;
+					}
 
-		storyObj.isLikedByUser = likedSet.has(storyObj.id.toString());
-
-		if (storyObj.comments) {
-			for (const comment of storyObj.comments || []) {
-				comment.isLikedByUser = likedSet.has(comment.id.toString());
-				for (const reply of comment.replies || []) {
-					reply.isLikedByUser = likedSet.has(reply.id.toString());
+					if (story.comments) {
+						for (const comment of story.comments || []) {
+							(comment as any).isLikedByUser = likedSet.has(
+								comment.id.toString(),
+							);
+							for (const reply of (comment as any).replies || []) {
+								reply.isLikedByUser = likedSet.has(reply.id.toString());
+							}
+						}
+					}
 				}
-			}
+			});
 		}
 
 		res.status(200).json({
 			status: "success",
-			data: storyObj,
+			data: id ? storyArr[0] : storyArr,
 		});
 	} catch (err) {
+		console.log(err);
 		catchError(err, next);
 	}
 };
