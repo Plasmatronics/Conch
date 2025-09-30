@@ -6,11 +6,11 @@ type PersonData = {
 		Partial<Pick<TreeCardProps, "width" | "height">>;
 };
 
-interface DescendantMarriages {
+export interface DescendantMarriages {
 	descendantId: HydratedFamilyTreeMemberDTO["id"];
 	spouseIds: HydratedFamilyTreeMemberDTO["id"][];
 }
-interface ParentChildRelationship {
+export interface ParentChildRelationship {
 	parentId: HydratedFamilyTreeMemberDTO["id"];
 	childIds: HydratedFamilyTreeMemberDTO["id"][];
 }

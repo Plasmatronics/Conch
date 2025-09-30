@@ -2,11 +2,13 @@ import React from "react";
 import { ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { TreeLayoutProps } from "./TreeLayout.types";
-import { getOrientedNodesAndEdges } from "./utils/createLayout";
 import { Box } from "@chakra-ui/react";
-import { createNodesAndEdges } from "./utils/createNodesAndEdges";
+import {
+	createNodesAndEdges,
+	snapHubs,
+	getOrientedNodesAndEdges,
+} from "./utils";
 import { hubNodeTypes, memberNodeTypes } from "./components";
-import { snapHubs } from "./utils/snapHubs";
 
 export const TreeLayout = ({
 	people,

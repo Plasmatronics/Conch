@@ -1,4 +1,4 @@
-import mongoose, { Document, Query, Types } from "mongoose";
+import { Document, Query } from "mongoose";
 import { AppError } from "./AppError";
 
 interface QueryString {
@@ -44,19 +44,32 @@ export class QueryBuilder<T extends Document> {
 
 	public filter() {
 		const queryObj = { ...this.queryString };
-		["fields", "sort", "page", "limit", "include"].forEach((queryParam) => {
-			delete queryObj[queryParam];
-		});
-
-		// Finds all comparison operators and returns them in mongoose notation.
-		const filterJSON = JSON.stringify(queryObj).replace(
-			/\b(gte|gt|lte|lt|ne)\b/g,
-			(match) => `$${match}`,
+		["fields", "sort", "page", "limit", "include", "count"].forEach(
+			(queryParam) => {
+				delete queryObj[queryParam];
+			},
 		);
 
+		const mongoFilter: Record<string, any> = {};
+
+		for (const key in queryObj) {
+			const match = key.match(/^(.+)\[(gte|gt|lte|lt|ne)\]$/);
+
+			if (match) {
+				const field = match[1];
+				const operator = `$${match[2]}`;
+
+				if (!mongoFilter[field]) {
+					mongoFilter[field] = {};
+				}
+
+				mongoFilter[field][operator] = queryObj[key];
+			} else {
+				mongoFilter[key] = queryObj[key];
+			}
+		}
 		try {
-			const filterStr = JSON.parse(filterJSON);
-			this.query = this.query.find(filterStr);
+			this.query = this.query.find(mongoFilter);
 		} catch (err) {
 			throw new AppError(400, "Invalid filter format in query string.");
 		}

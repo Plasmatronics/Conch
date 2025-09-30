@@ -23,7 +23,7 @@ const handleStyles: React.CSSProperties = {
 export function RoutingHub({ data }: { data: RoutingHubData }) {
 	const { id, width, height } = data;
 	return (
-		<Box className="nodrag" w={`${width}px`} h={`${height}px`}>
+		<Box className="nodrag" w={`${width}px`} h={`${height}px`} bg="gray">
 			{SOURCE_POSITIONS.map((pos) => (
 				<Handle
 					key={`src-${pos}-${id}`}

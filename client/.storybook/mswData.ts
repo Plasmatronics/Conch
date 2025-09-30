@@ -4,6 +4,7 @@ import {
 	PopulatedStoryDTO,
 	PopulatedCommentDTO,
 	HydratedLikeDTO,
+	PopulatedFamilyTreeMemberDTOWithStoryCount,
 } from "@conch/shared";
 
 export const mockFileUrl =
@@ -151,3 +152,89 @@ export const commentLikeData: HydratedLikeDTO = {
 	id: "68d1a8b963d016325c3c45df",
 	createdAt: "2025-09-08T19:05:00.000Z",
 };
+
+export const mockAllMembers: PopulatedFamilyTreeMemberDTOWithStoryCount[] = [
+	{
+		id: "1",
+		name: "John Doe",
+		nicknames: ["Johnny"],
+		dateOfBirth: new Date("1960-01-01"),
+		createdAt: new Date(),
+		stories: [],
+		storiesCount: 2,
+		spouses: [{ id: "2", name: "Jane Smith" }],
+		children: [
+			{ id: "3", name: "Alice Doe" },
+			{ id: "4", name: "Bob Doe" },
+		],
+		dated: [],
+		keyPhoto: {
+			_id: "68bdedc63c9768d183ad7839",
+			fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
+			type: "image",
+			id: "68bdedc63c9768d183ad7839",
+		},
+		bestFriend: null,
+		relationToRootMember: "self",
+	},
+	{
+		id: "2",
+		name: "Jane Smith",
+		dateOfBirth: new Date("1962-05-15"),
+		createdAt: new Date(),
+		stories: [],
+		storiesCount: 1,
+		spouses: [{ id: "1", name: "John Doe" }],
+		children: [
+			{ id: "3", name: "Alice Doe" },
+			{ id: "4", name: "Bob Doe" },
+		],
+		dated: [],
+		keyPhoto: {
+			_id: "68bdedc63c9768d183ad7839",
+			fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
+			type: "image",
+			id: "68bdedc63c9768d183ad7839",
+		},
+		bestFriend: null,
+		relationToRootMember: "spouse",
+	},
+	{
+		id: "3",
+		name: "Alice Doe",
+		dateOfBirth: new Date("1985-03-20"),
+		createdAt: new Date(),
+		stories: [],
+		storiesCount: 0,
+		spouses: [],
+		children: [],
+		dated: [],
+		keyPhoto: {
+			_id: "68bdedc63c9768d183ad7839",
+			fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
+			type: "image",
+			id: "68bdedc63c9768d183ad7839",
+		},
+		bestFriend: null,
+		relationToRootMember: "daughter",
+	},
+	{
+		id: "4",
+		name: "Bob Doe",
+		dateOfBirth: new Date("1988-07-10"),
+		createdAt: new Date(),
+		stories: [],
+		storiesCount: 0,
+		spouses: [],
+		children: [],
+		dated: [],
+		keyPhoto: {
+			_id: "68bdedc63c9768d183ad7839",
+			fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
+			type: "image",
+			id: "68bdedc63c9768d183ad7839",
+		},
+		bestFriend: null,
+		relationToRootMember: "son",
+	},
+];
