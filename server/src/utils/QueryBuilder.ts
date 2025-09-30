@@ -44,7 +44,7 @@ export class QueryBuilder<T extends Document> {
 
 	public filter() {
 		const queryObj = { ...this.queryString };
-		["fields", "sort", "page", "limit", "include", "include", "count"].forEach(
+		["fields", "sort", "page", "limit", "include", "count"].forEach(
 			(queryParam) => {
 				delete queryObj[queryParam];
 			},
