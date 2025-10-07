@@ -3,23 +3,24 @@ import withChakra from "./chakraDecorator";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import { handlers } from "./handlers";
 
-const mswServer = initialize({
-	onUnhandledRequest(req, print) {
-		const ignoreKeywordArr = ["@fs", "src", "chrome-extension", "node_modules"];
-		const urlIncludesKeyword = ignoreKeywordArr.some((keyword) =>
-			req.url.includes(keyword),
-		);
-
-		//ignore browser and dependency console noise
-		if (urlIncludesKeyword) return;
-
-		//print all other warnings
-		print.warning();
-	},
-});
+if (typeof (globalThis as any).mswServer === "undefined") {
+	(globalThis as any).mswServer = initialize({
+		onUnhandledRequest(req, print) {
+			const ignoreKeywordArr = [
+				"@fs",
+				"src",
+				"chrome-extension",
+				"node_modules",
+			];
+			if (ignoreKeywordArr.some((k) => req.url.includes(k))) return;
+			print.warning();
+		},
+	});
+}
 
 export const decorators = [withChakra];
 export const loaders = [mswLoader];
+export const parameters = { msw: { handlers } };
 
 const preview: Preview = {
 	parameters: {
