@@ -5,15 +5,40 @@ import {
 	HydratedUserDTO,
 	HydratedCommentDTO,
 	MAX_CHARS_IN_COMMENT,
+	UserDTOMemberPopulated,
+	PopulatedStoryDTO,
 } from "@conch/shared";
 import { CommentSectionProps, IReply } from "../../Comments";
 import { useForm } from "react-hook-form";
 import { useFetchUserData } from "../../../api";
 import { useDataPostComment, useDataPost, useLike } from "./hooks";
+import { BoxProps, CardRootProps } from "@chakra-ui/react";
 
-export interface DataPostProps {
+interface ControlledProps {
+	story: PopulatedStoryDTO;
+	user: UserDTOMemberPopulated;
+	avatarAndMediaMap: Map<
+		string,
+		{
+			downloadUrl: string;
+			type: string;
+		}
+	>;
+	commentAuthorMap: Map<
+		string,
+		{
+			authorId: HydratedUserDTO["id"];
+			name: HydratedUserDTO["name"];
+		}
+	>;
+	loading: boolean;
+}
+
+export interface DataPostProps
+	extends Omit<CardRootProps, "content" | "title"> {
 	storyId: HydratedStoryDTO["id"];
 	userId: HydratedUserDTO["id"];
+	controlledProps?: ControlledProps;
 }
 
 export type DataPostCommentInputs = {
@@ -22,21 +47,51 @@ export type DataPostCommentInputs = {
 	replyingToId: HydratedUserDTO["id"];
 };
 
-export const DataPost = ({ userId, storyId }: DataPostProps) => {
-	const { storyQuery, avatarQuery, commentAuthorMap } = useDataPost(storyId);
-	const isLoading = storyQuery.isLoading || avatarQuery.isLoading;
+export const DataPost = ({
+	userId,
+	storyId,
+	controlledProps,
+	...cardRootProps
+}: DataPostProps) => {
+	const { storyQuery, avatarQuery, commentAuthorMap } = useDataPost({
+		storyId,
+		enabled: !controlledProps?.story,
+	});
 
 	const { userQuery, avatarQuery: userAvatarQuery } = useFetchUserData({
 		userId,
 		includeParamsValues: ["member"],
+		enabled: !controlledProps?.user,
 	});
 
-	const userAvatar =
-		userQuery.data?.familyTreeMember.keyPhoto &&
-		userAvatarQuery.data?.get(userQuery.data?.familyTreeMember.keyPhoto.fileKey)
-			?.downloadUrl;
+	const uncontrolledLoadingState =
+		storyQuery.isLoading ||
+		avatarQuery.isLoading ||
+		userQuery.isLoading ||
+		userAvatarQuery.isLoading;
 
-	const userFullName = userQuery.data?.name;
+	const isLoading = controlledProps
+		? controlledProps.loading
+		: uncontrolledLoadingState;
+
+	const uncontrolledMediaMap = new Map([
+		...(userAvatarQuery.data || []),
+		...(avatarQuery.data || []),
+	]);
+
+	const mediaMap = controlledProps
+		? controlledProps.avatarAndMediaMap
+		: uncontrolledMediaMap;
+
+	const userAvatar = mediaMap.get(
+		controlledProps
+			? controlledProps.user.familyTreeMember?.keyPhoto.fileKey || ""
+			: userQuery.data?.familyTreeMember?.keyPhoto.fileKey || "",
+	)?.downloadUrl;
+
+	const userFullName = controlledProps
+		? controlledProps.user.name
+		: userQuery.data?.name;
 
 	const {
 		handleSubmit,
@@ -51,18 +106,20 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 	});
 
 	const { mutate, isPending } = useDataPostComment({
-		userId,
-		storyId,
+		userId: controlledProps ? controlledProps.user.id : userId,
+		storyId: controlledProps ? controlledProps.story.id : storyId,
 		onSuccess: () => reset(),
 	});
 
 	const { mutate: mutateLike } = useLike({
-		userId,
-		storyId,
+		userId: controlledProps ? controlledProps.user.id : userId,
+		storyId: controlledProps ? controlledProps.story.id : storyId,
 	});
 
 	const handleReplyClick = (targetCommentId: HydratedCommentDTO["id"]) => {
-		const targetUser = commentAuthorMap.get(targetCommentId);
+		const targetUser = controlledProps
+			? controlledProps.commentAuthorMap.get(targetCommentId)
+			: commentAuthorMap.get(targetCommentId);
 		if (!targetCommentId || !targetUser) return;
 
 		if (!getValues("comment").startsWith(`@${targetUser.name}`))
@@ -96,8 +153,9 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 			replyingTo: data.replyingToId,
 			userAvatar: userAvatar || "",
 			author: userFullName || "",
-			relationToRootMember:
-				userQuery.data?.familyTreeMember.relationToRootMember || "",
+			relationToRootMember: controlledProps
+				? controlledProps.user.familyTreeMember.relationToRootMember
+				: userQuery.data?.familyTreeMember.relationToRootMember || "friend",
 		});
 	});
 
@@ -122,7 +180,7 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 		media = [],
 		likes = 0,
 		comments,
-	} = storyQuery?.data || {};
+	} = controlledProps ? controlledProps.story : storyQuery?.data || {};
 
 	const commentSectionData: CommentSectionProps["commentThreads"] =
 		React.useMemo(() => {
@@ -134,9 +192,8 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 								isLiked: commentThread.isLikedByUser || false,
 								comment: commentThread.content,
 								user: commentThread.author.name,
-								avatar: avatarQuery.data?.get(
-									commentThread.author.keyPhoto.fileKey,
-								)?.downloadUrl,
+								avatar: mediaMap.get(commentThread.author.keyPhoto.fileKey)
+									?.downloadUrl,
 								onReplyClick: () => {
 									handleReplyClick(commentThread.id);
 								},
@@ -155,7 +212,7 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 										isLiked: reply.isLikedByUser || false,
 										comment: reply.content,
 										user: reply.author.name,
-										avatar: avatarQuery.data?.get(reply.author.keyPhoto.fileKey)
+										avatar: mediaMap.get(reply.author.keyPhoto.fileKey)
 											?.downloadUrl,
 										datePosted: reply.createdAt,
 										replyToName: reply?.replyingTo?.name,
@@ -186,7 +243,7 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 	const typeSafeMedia = React.useMemo(() => {
 		return media
 			.map((mediaItem) => {
-				const src = avatarQuery.data?.get(mediaItem.fileKey)?.downloadUrl;
+				const src = mediaMap.get(mediaItem.fileKey)?.downloadUrl;
 				const type = mediaItem.type;
 
 				if (src && type) {
@@ -211,7 +268,7 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 			setIsLiked={() => {
 				mutateLike({ type: "Story" });
 			}}
-			avatar={avatarQuery.data?.get(author.keyPhoto.fileKey)?.downloadUrl}
+			avatar={mediaMap.get(author.keyPhoto.fileKey)?.downloadUrl}
 			storyDate={storyDate}
 			commentSectionProps={{
 				commentThreads: commentSectionData,
@@ -224,13 +281,14 @@ export const DataPost = ({ userId, storyId }: DataPostProps) => {
 					},
 				}),
 				onSubmit: handleCommentSubmit,
-				placeholder: `Comment as ${userQuery.data?.name}...`,
+				placeholder: `Comment as ${controlledProps?.user.name || userQuery.data?.name}...`,
 				user: userFullName || "",
 				avatar: userAvatar,
 				posting: isPending || isSubmitting,
 				onHandleBackspace: handleBackspace,
 			}}
 			numLikes={likes}
+			{...cardRootProps}
 		/>
 	);
 };

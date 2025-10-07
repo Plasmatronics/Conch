@@ -23,6 +23,13 @@ router
 	);
 
 router
+	.route("/:id/stories")
+	.get(
+		authController.protect,
+		familyTreeMemberController.getMemberStoriesAndComments,
+	);
+
+router
 	.route("/:id")
 	.get(familyTreeMemberController.getFamilyTreeMember)
 	.patch(

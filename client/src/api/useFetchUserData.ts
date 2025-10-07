@@ -53,7 +53,7 @@ export const useFetchUserData = ({
 		...reactQueryProps,
 	});
 
-	const keyPhotoData = userQuery.data?.familyTreeMember.keyPhoto;
+	const keyPhotoData = userQuery.data?.familyTreeMember?.keyPhoto;
 	const avatarFile = keyPhotoData
 		? [
 				{
@@ -65,7 +65,7 @@ export const useFetchUserData = ({
 
 	const avatarQuery = useFetchMediaData({
 		files: avatarFile,
-		enabled: !!keyPhotoData,
+		enabled: avatarFile.length > 0,
 	});
 
 	return { userQuery, avatarQuery };

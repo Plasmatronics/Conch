@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Like, Story } from "../models";
 import { handlerFactory } from "./controllerFactory";
-import { AppError, catchError } from "../utils";
+import { AppError, catchError, hasUserLikedStoryOrComments } from "../utils";
 import { Types } from "mongoose";
 import { PopulatedCommentDTO, PopulatedStoryDTO } from "packages/shared";
 
@@ -67,7 +67,6 @@ const getStoryWithComments = async (
 			path: "comments",
 			select: "content author likes createdAt deletedAt",
 			match: {
-				parentComment: { $exists: false },
 				deletedAt: { $exists: false },
 			},
 			populate: {
@@ -83,60 +82,16 @@ const getStoryWithComments = async (
 		}
 
 		const currentUserId = req.user?.id;
-		const storyArr = Array.isArray(stories) ? stories : [stories];
-		let likedSet = new Set<string>();
-
-		if (currentUserId) {
-			const ids: string[] = [];
-
-			storyArr.forEach((story) => {
-				if (story) {
-					ids.push(story.id.toString());
-
-					for (const comment of story.comments as any[]) {
-						if (comment && comment.id) ids.push(comment.id.toString());
-
-						for (const reply of comment.replies)
-							if (reply && reply.id) ids.push(reply.id.toString());
-					}
-				}
-			});
-
-			const likes = await Like.find({
-				author: currentUserId,
-				target: { $in: ids },
-			}).select("target");
-
-			likedSet = new Set(likes.map((like) => like.target.toString()));
-		}
-
-		if (storyArr) {
-			storyArr.forEach((story) => {
-				if (story) {
-					if (likedSet.has(story.id)) {
-						story.isLikedByUser = true;
-					}
-
-					if (story.comments) {
-						for (const comment of story.comments || []) {
-							(comment as any).isLikedByUser = likedSet.has(
-								comment.id.toString(),
-							);
-							for (const reply of (comment as any).replies || []) {
-								reply.isLikedByUser = likedSet.has(reply.id.toString());
-							}
-						}
-					}
-				}
-			});
-		}
+		const data = await hasUserLikedStoryOrComments(
+			stories || [],
+			currentUserId,
+		);
 
 		res.status(200).json({
 			status: "success",
-			data: id ? storyArr[0] : storyArr,
+			data,
 		});
 	} catch (err) {
-		console.log(err);
 		catchError(err, next);
 	}
 };

@@ -12,7 +12,7 @@ export const HoverCard = ({
 	trigger,
 	relationship,
 	overview,
-	user,
+	name,
 	numMemories,
 	...hoverCardRootProps
 }: HoverCardProps) => {
@@ -32,17 +32,17 @@ export const HoverCard = ({
 						>
 							<Flex alignItems="center" justifyContent="center" gap="0.5rem">
 								<Avatar.Root size="xl">
-									<Avatar.Image src={avatar} alt={user} />
-									<Avatar.Fallback name={user} />
+									<Avatar.Image src={avatar} alt={name} />
+									<Avatar.Fallback name={name} />
 								</Avatar.Root>
 								<Flex gap="0rem" direction="column">
-									<Text fontWeight="semibold">{user}</Text>
+									<Text fontWeight="semibold">{name}</Text>
 									<Text color="gray.500" fontSize="xs">
 										{relationship}
 									</Text>
 								</Flex>
 							</Flex>
-							<Text>{overview}</Text>
+							{overview && <Text>{overview}</Text>}
 							<Text fontSize="xs">
 								<Text fontWeight="medium" as="span">
 									{numMemories}

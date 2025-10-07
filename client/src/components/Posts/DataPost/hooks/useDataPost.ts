@@ -5,13 +5,24 @@ import {
 	MediaTypeAndKey,
 	PopulatedStoryDTO,
 } from "@conch/shared";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { useFetchMediaData } from "../../../../api";
 import axios from "axios";
 
-const fetchDataPost = async (
-	storyId: HydratedStoryDTO["id"],
-): Promise<PopulatedStoryDTO> => {
+type IFetchDataPost = {
+	storyId: HydratedStoryDTO["id"];
+};
+
+type ReactQueryOptions = Omit<
+	UseQueryOptions<PopulatedStoryDTO>,
+	"queryFn" | "queryKey"
+>;
+
+type useDataPostProps = IFetchDataPost & ReactQueryOptions;
+
+const fetchDataPost = async ({
+	storyId,
+}: IFetchDataPost): Promise<PopulatedStoryDTO> => {
 	try {
 		const url = `http://127.0.0.1:3000/api/v1/stories/${storyId}/comments`;
 		const { data } = await axios.get<{
@@ -27,10 +38,14 @@ const fetchDataPost = async (
 	}
 };
 
-export const useDataPost = (storyId: HydratedStoryDTO["id"]) => {
+export const useDataPost = ({
+	storyId,
+	...restQueryProps
+}: useDataPostProps) => {
 	const storyQuery = useQuery<PopulatedStoryDTO>({
 		queryKey: ["story", storyId],
-		queryFn: () => fetchDataPost(storyId),
+		queryFn: () => fetchDataPost({ storyId }),
+		...restQueryProps,
 	});
 
 	const imgFiles: MediaTypeAndKey[] = [
