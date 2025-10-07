@@ -5,3 +5,4 @@ export { catchError } from "./catchError";
 export { Email } from "./EmailService";
 export { S3Service } from "./S3";
 export { sanitize } from "./sanitizer";
+export { hasUserLikedStoryOrComments } from "./isLikedByUser";

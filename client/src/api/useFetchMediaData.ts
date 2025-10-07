@@ -74,7 +74,9 @@ export const useFetchMediaData = ({
 	files,
 	...reactQueryProps
 }: useFetchMediaDataProps) => {
-	return useQuery<Map<string, { downloadUrl: string; type: string }>>({
+	return useQuery<
+		Map<MediaTypeAndKey["fileKey"], { downloadUrl: string; type: string }>
+	>({
 		queryKey: [
 			files
 				.map((file) => `${file.type}: ${file.fileKey}`)

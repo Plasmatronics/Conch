@@ -8,7 +8,7 @@ interface IBioInfo {
 	relationship: string;
 	birthYear: number;
 	deathYear?: number;
-	marriages: string[];
+	marriages?: string[];
 	favThings?: MemberFavThings;
 	nicknames?: string[];
 	occupations?: string[];

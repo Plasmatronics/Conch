@@ -81,6 +81,9 @@ const familyTreeMemberSchema = new mongoose.Schema<FamilyTreeMemberDoc>(
 			type: mongoose.Schema.ObjectId,
 			ref: "Media",
 		},
+		keyPhotoCaption: {
+			type: String,
+		},
 		bestFriend: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "FamilyTreeMember",
@@ -107,6 +110,9 @@ const familyTreeMemberSchema = new mongoose.Schema<FamilyTreeMemberDoc>(
 			type: Date,
 			select: false,
 		},
+		summary: { type: String },
+		occupations: [{ type: String }],
+		formerResidences: [{ type: locationSchema }],
 	},
 	{
 		toJSON: { virtuals: true },

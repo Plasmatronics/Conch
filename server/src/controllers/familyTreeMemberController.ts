@@ -1,8 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { FamilyTreeMember, Story } from "../models";
 import { handlerFactory } from "./controllerFactory";
-import { AppError, catchError, QueryBuilder } from "../utils";
+import {
+	AppError,
+	catchError,
+	hasUserLikedStoryOrComments,
+	QueryBuilder,
+} from "../utils";
 import { Types } from "mongoose";
+import { StoryDoc } from "packages/shared/src";
 
 const getFamilyTreeMember = async (
 	req: Request,
@@ -45,6 +51,51 @@ const getFamilyTreeMember = async (
 			status: "success",
 			data: member,
 			...(storiesCount !== undefined ? { storiesCount } : {}),
+		});
+	} catch (err) {
+		catchError(err, next);
+	}
+};
+
+const getMemberStoriesAndComments = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const { id } = req.params;
+
+		if (!Types.ObjectId.isValid(id)) {
+			throw new AppError(400, "Invalid ID format");
+		}
+
+		const memberWithStories = await FamilyTreeMember.findById(id)
+			.populate({
+				path: "stories",
+				match: { deletedAt: { $exists: false } },
+				populate: {
+					path: "comments",
+					select: "content author likes createdAt",
+					match: { deletedAt: { $exists: false } },
+					populate: {
+						path: "replies",
+						match: { deletedAt: { $exists: false } },
+						select: "-__v",
+						options: { sort: { createdAt: 1 } },
+					},
+				},
+			})
+			.sort("-likes");
+
+		const stories = (memberWithStories?.stories || []) as StoryDoc[];
+
+		const currentUserId = req.user?.id;
+		const data = await hasUserLikedStoryOrComments(stories, currentUserId);
+
+		res.status(200).json({
+			status: "success",
+			numStories: stories.length || 0,
+			data,
 		});
 	} catch (err) {
 		catchError(err, next);
@@ -127,4 +178,5 @@ export const familyTreeMemberController = {
 	restoreFamilyTreeMember,
 	restoreAllFamilyTreeMembers,
 	getManyFamilyTreeMembers,
+	getMemberStoriesAndComments,
 };

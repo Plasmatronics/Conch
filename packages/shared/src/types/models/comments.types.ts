@@ -15,6 +15,7 @@ export interface IComment {
 	deletedAt?: Date;
 	replies?: IComment[];
 	likes: number;
+	isLikedByUser: boolean;
 }
 
 export type CommentDoc = IComment & Document;
@@ -30,7 +31,7 @@ export interface UnhydratedCommentDTO {
 	replies?: UnhydratedCommentDTO[];
 	likes: number;
 	//derived during get call
-	isLikedByUser?: boolean;
+	isLikedByUser: boolean;
 }
 
 export type HydratedCommentDTO = Omit<

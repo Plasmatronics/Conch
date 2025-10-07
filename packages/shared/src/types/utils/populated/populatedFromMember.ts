@@ -17,9 +17,7 @@ export type PopulateFamilyTreeMember<T> = Omit<T, "familyTreeMember"> & {
 };
 
 export type PopulateBestFriend<T> = Omit<T, "bestFriend"> & {
-	bestFriend?: {
-		name: HydrateWithMetadata<HydratedFamilyTreeMemberDTO["name"]>;
-	};
+	bestFriend?: HydrateWithMetadata<HydratedFamilyTreeMemberDTO["name"]>;
 };
 
 export type PopulateSpouses<T> = Omit<T, "spouses"> & {

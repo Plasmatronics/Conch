@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { Like, Story } from "../models";
 import { handlerFactory } from "./controllerFactory";
-import { AppError, catchError } from "../utils";
+import { AppError, catchError, hasUserLikedStoryOrComments } from "../utils";
 import { Types } from "mongoose";
-import { PopulatedStoryDTO } from "packages/shared";
+import { PopulatedCommentDTO, PopulatedStoryDTO } from "packages/shared";
 
 const createStory = handlerFactory.createOne(Story);
 
@@ -57,15 +57,16 @@ const getStoryWithComments = async (
 	try {
 		const { id } = req.params;
 
-		if (!Types.ObjectId.isValid(id)) {
+		if (id && !Types.ObjectId.isValid(id)) {
 			throw new AppError(400, "Invalid ID format");
 		}
 
-		const story = await Story.findById(id).populate({
+		const query = id ? Story.findById(id) : Story.find();
+
+		const stories = await query.populate({
 			path: "comments",
 			select: "content author likes createdAt deletedAt",
 			match: {
-				parentComment: { $exists: false },
 				deletedAt: { $exists: false },
 			},
 			populate: {
@@ -76,49 +77,19 @@ const getStoryWithComments = async (
 			},
 		});
 
-		if (!story) {
+		if (id && !stories) {
 			throw new AppError(404, "Could not find this document");
 		}
 
 		const currentUserId = req.user?.id;
-		let likedSet = new Set<string>();
-		if (currentUserId) {
-			const ids: Types.ObjectId[] = [story.id];
-
-			for (const comment of story.comments as any[]) {
-				if (comment && comment.id) ids.push(comment.id);
-
-				for (const reply of comment.replies) {
-					if (reply && reply.id) ids.push(reply.id);
-				}
-			}
-
-			const likes = await Like.find({
-				author: currentUserId,
-				target: { $in: ids },
-			}).select("target");
-
-			likedSet = new Set(likes.map((like) => like.target.id.toString()));
-		}
-
-		const storyObj = story.toObject() as unknown as PopulatedStoryDTO & {
-			isLikedByUser?: boolean;
-		};
-
-		storyObj.isLikedByUser = likedSet.has(storyObj.id.toString());
-
-		if (storyObj.comments) {
-			for (const comment of storyObj.comments || []) {
-				comment.isLikedByUser = likedSet.has(comment.id.toString());
-				for (const reply of comment.replies || []) {
-					reply.isLikedByUser = likedSet.has(reply.id.toString());
-				}
-			}
-		}
+		const data = await hasUserLikedStoryOrComments(
+			stories || [],
+			currentUserId,
+		);
 
 		res.status(200).json({
 			status: "success",
-			data: storyObj,
+			data,
 		});
 	} catch (err) {
 		catchError(err, next);

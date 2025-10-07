@@ -1,6 +1,7 @@
 import { http, HttpResponse, delay } from "msw";
 import { v4 as uuidv4 } from "uuid";
 import {
+	memberAndStoriesAndCommentsData,
 	mockAllMembers,
 	mockChildComment,
 	mockFileUrl,
@@ -33,6 +34,7 @@ export const handlers = [
 			const countParam = url.searchParams.get("count");
 
 			let data;
+			let numStories;
 
 			if (isGetAll) {
 				data = [...mockAllMembers];
@@ -56,6 +58,10 @@ export const handlers = [
 						stories: [mockMediaPopulatedStoryData],
 					}));
 				}
+			} else if (pathParts[4] === "stories") {
+				//means we are requesting all stories and comments attached to a member
+				data = memberAndStoriesAndCommentsData;
+				numStories = memberAndStoriesAndCommentsData.stories.length;
 			} else {
 				const id = pathParts[3];
 				data = mockAllMembers.find((member) => member.id === id) || null;
@@ -76,6 +82,7 @@ export const handlers = [
 			return HttpResponse.json({
 				status: "success",
 				length: Array.isArray(data) ? data.length : undefined,
+				numStories: pathParts[4] === "stories" ? numStories : undefined,
 				data,
 			});
 		},

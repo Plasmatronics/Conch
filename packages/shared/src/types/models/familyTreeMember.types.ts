@@ -24,12 +24,16 @@ export interface IFamilyTreeMember {
 	stories?: IStory[];
 	relationToRootMember: RelationToRootMember;
 	favThings?: MemberFavThings;
+	occupations?: string[];
 	claimedId?: mongoose.Types.ObjectId;
 	keyPhoto?: mongoose.Types.ObjectId;
+	keyPhotoCaption?: string;
 	bestFriend?: mongoose.Types.ObjectId;
 	spouses?: mongoose.Types.ObjectId[];
 	dated?: mongoose.Types.ObjectId[];
 	children?: mongoose.Types.ObjectId[];
+	summary?: string;
+	formerResidences?: ILocation[];
 }
 
 export type FamilyTreeMemberDoc = IFamilyTreeMember & Document;
@@ -46,12 +50,16 @@ export interface UnhydratedFamilyTreeMemberDTO {
 	stories?: UnhydratedStoryDTO[];
 	relationToRootMember: RelationToRootMember;
 	favThings?: MemberFavThings;
+	occupations?: string[];
 	claimedId?: string;
 	keyPhoto?: string;
+	keyPhotoCaption?: string;
 	bestFriend?: string;
 	spouses?: string[];
 	dated?: string[];
 	children?: string[];
+	summary?: string;
+	formerResidences?: ILocation[];
 }
 
 export type HydratedFamilyTreeMemberDTO =

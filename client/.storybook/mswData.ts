@@ -89,7 +89,12 @@ export const mockMemberData: HydratedFamilyTreeMemberDTO = {
 		song: "The Wheels on the Bus",
 	},
 	__v: 0,
-	keyPhoto: "68bdedc63c9768d183ad7839",
+	keyPhoto: {
+		_id: "68bdedc63c9768d183ad7839",
+		fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
+		type: "image",
+		id: "68bdedc63c9768d183ad7839",
+	},
 	id: "68bded593c9768d183ad7834",
 };
 
@@ -131,6 +136,7 @@ export const userData = {
 	email: "nicholaskgp@gmail.com",
 	__v: 0,
 	id: "68d198b963d016325c3c45dd",
+	familyTreeMember: mockMemberData,
 };
 
 export const postLikeData: HydratedLikeDTO = {
@@ -238,3 +244,73 @@ export const mockAllMembers: PopulatedFamilyTreeMemberDTOWithStoryCount[] = [
 		relationToRootMember: "son",
 	},
 ];
+
+export const memberAndStoriesAndCommentsData = {
+	...mockMemberData,
+	stories: [
+		{
+			media: [
+				{
+					_id: "68bdedc63c9768d183ad7839",
+					fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
+					type: "image",
+					id: "68bdedc63c9768d183ad7839",
+				},
+			],
+			_id: "68bf2a9895bde97c33918cef",
+			title: "French Fries",
+			content:
+				"Joey sat on the wooden bench at the edge of the park, his small hands clutching a warm paper tray. The smell of crispy French fries rose into the late afternoon air, drifting toward the children playing nearby. Joey loved fries—golden, salty, familiar. He lined them up carefully, one by one, the way he liked to make sense of things, then took a bite. Each crunch was steady, grounding him in a world that sometimes felt too loud. His mother watched from beside him, smiling as he looked up at the sun and popped another fry into his mouth. For Joey, this was more than just a snack—it was comfort, order, and a moment of joy.",
+			author: {
+				_id: "68bded593c9768d183ad7834",
+				name: "Joseph Bruno",
+				relationToRootMember: "Brother",
+				keyPhoto: {
+					_id: "68bdedc63c9768d183ad7839",
+					fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
+					type: "image",
+					id: "68bdedc63c9768d183ad7839",
+				},
+				id: "68bded593c9768d183ad7834",
+			},
+			involves: ["68bded593c9768d183ad7834"],
+			createdAt: "2025-09-08T18:56:30.673Z",
+			storyDate: "2025-09-08T00:00:00.000Z",
+			__v: 0,
+			id: "68bf2a9895bde97c33918cef",
+			comments: [{ ...mockParentComment, replies: [{ ...mockChildComment }] }],
+		},
+		{
+			media: [
+				{
+					_id: "68bdedc63c9768d183ad7839",
+					fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
+					type: "image",
+					id: "68bdedc63c9768d183ad7839",
+				},
+			],
+			_id: "68bf2a9895bde97c33918cef",
+			title: "French Fries",
+			content:
+				"Joey sat on the wooden bench at the edge of the park, his small hands clutching a warm paper tray. The smell of crispy French fries rose into the late afternoon air, drifting toward the children playing nearby. Joey loved fries—golden, salty, familiar. He lined them up carefully, one by one, the way he liked to make sense of things, then took a bite. Each crunch was steady, grounding him in a world that sometimes felt too loud. His mother watched from beside him, smiling as he looked up at the sun and popped another fry into his mouth. For Joey, this was more than just a snack—it was comfort, order, and a moment of joy.",
+			author: {
+				_id: "68bded593c9768d183ad7834",
+				name: "Joseph Bruno",
+				relationToRootMember: "Brother",
+				keyPhoto: {
+					_id: "68bdedc63c9768d183ad7839",
+					fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
+					type: "image",
+					id: "68bdedc63c9768d183ad7839",
+				},
+				id: "68bded593c9768d183ad7834",
+			},
+			involves: ["68bded593c9768d183ad7834"],
+			createdAt: "2025-09-08T18:56:30.673Z",
+			storyDate: "2025-09-08T00:00:00.000Z",
+			__v: 0,
+			id: "68bf2a9895bde97c33918cef",
+			comments: [{ ...mockParentComment, replies: [{ ...mockChildComment }] }],
+		},
+	],
+};

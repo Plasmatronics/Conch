@@ -14,6 +14,7 @@ router
 router.route("/trash/:id").patch(storyController.restoreStory);
 
 router.route("/:id/comments").get(storyController.getStoryWithComments);
+router.route("/comments").get(storyController.getStoryWithComments);
 
 router
 	.route("/:id")

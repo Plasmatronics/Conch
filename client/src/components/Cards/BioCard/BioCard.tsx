@@ -78,7 +78,7 @@ export const BioCard = ({
 								: `${birthYear} - present`,
 						)}
 						{renderDetail("Relation", relationship)}
-						{renderDetail("Spouses", marriages)}
+						{marriages && renderDetail("Spouses", marriages)}
 						{nicknames && renderDetail("Nicknames", nicknames)}
 						{occupations && renderDetail("Occupations", occupations)}
 						{favThings &&

@@ -9,7 +9,6 @@ const MotionFlex = motion.create(Flex);
 export const ConveyorBelt = ({
 	children,
 	speed = 20,
-	gap = "5rem",
 	onItemHover,
 	direction = "right",
 	onItemLeave,
@@ -19,7 +18,6 @@ export const ConveyorBelt = ({
 	const { scope, runBelt, pauseBelt } = useConveyorBelt({
 		speed,
 		direction,
-		gap,
 	});
 
 	const handleItemHover = () => {
@@ -32,20 +30,31 @@ export const ConveyorBelt = ({
 	};
 
 	return (
-		<Box bg="red.100" py="0.5rem" {...boxProps} width="100vw" overflow="hidden">
+		<Box
+			py="0.5rem"
+			minH="1rem"
+			{...boxProps}
+			width="100%"
+			overflow="hidden"
+			bg="white"
+			borderTop="1px solid black"
+			borderBottom="1px solid black"
+		>
 			<MotionFlex
 				align="center"
 				height="100%"
-				width={`calc(200vw + ${gap})`}
+				width="200%"
 				ref={scope}
 				willChange="transform"
+				justify="space-around"
 			>
 				{Array.from({ length: 2 }).map((_, index) => (
 					<Flex
-						gap={gap}
-						width={`calc(100vw + ${gap})`}
+						width="50%"
 						height="100%"
-						mx={`calc(${gap}/2)`}
+						justify="space-around"
+						flexShrink="0"
+						align="center"
 						key={`children-flex-${index}`}
 					>
 						{childrenArray.map((child, childIndex) => (

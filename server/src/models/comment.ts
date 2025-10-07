@@ -33,6 +33,10 @@ const commentSchema = new mongoose.Schema<CommentDoc>(
 			type: Date,
 			select: false,
 		},
+		isLikedByUser: {
+			type: Boolean,
+			defaault: false,
+		},
 	},
 	{
 		toJSON: { virtuals: true },

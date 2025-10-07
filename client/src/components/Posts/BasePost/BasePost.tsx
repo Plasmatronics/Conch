@@ -37,7 +37,7 @@ const BasePostWithoutComment = ({
 	const [hasMediaStartedLoading, setHasMediaStartedLoading] = useState(!media);
 
 	//fetching data, or at least represents the state in which we dont yet know what the layout looks like
-	const isFetchingContent = loading || !hasMediaStartedLoading;
+	const isFetchingContent = loading || (!media && !hasMediaStartedLoading);
 
 	const headerProps = {
 		avatar,
