@@ -30,7 +30,7 @@ export const DataConveyorBelt = ({
 	>();
 	for (const story of stories || []) {
 		for (const person of story.involves || []) {
-			if (person === memberId) return;
+			if (person === memberId) continue;
 			const numPrevAppearances = storyAppearancesMap.get(person);
 
 			storyAppearancesMap.set(
