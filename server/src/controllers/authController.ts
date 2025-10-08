@@ -5,6 +5,7 @@ import { AppError, catchError, Email } from "../utils";
 import mongoose from "mongoose";
 import crypto from "crypto";
 import { IUser, UserDoc } from "packages/shared";
+import { getUserRelations, initializeRelations } from "./relationsController";
 
 const signToken = async (id: mongoose.Types.ObjectId) => {
 	return await new Promise((resolve, reject) => {
@@ -85,6 +86,8 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
 			secure: process.env.NODE_ENV === "production",
 			expires: new Date(Date.now() + 60 * 60 * 1000),
 		});
+
+		initializeRelations(user);
 
 		res.status(201).json({
 			status: "success",

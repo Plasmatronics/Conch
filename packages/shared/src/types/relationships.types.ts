@@ -1,3 +1,5 @@
+import { HydratedFamilyTreeMemberDTO } from "./models";
+
 export type RelationToRootMember =
 	// Self
 	| "self"
@@ -125,3 +127,8 @@ export const RelationToRootMemberEnum = [
 	"distant",
 	"friend",
 ];
+
+export type Relations = Record<
+	HydratedFamilyTreeMemberDTO["id"],
+	RelationToRootMember
+>;

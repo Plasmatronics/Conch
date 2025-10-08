@@ -4,5 +4,7 @@ export { QueryBuilder } from "./QueryBuilder";
 export { catchError } from "./catchError";
 export { Email } from "./EmailService";
 export { S3Service } from "./S3";
+export { RedisServer } from "./RedisServer";
 export { sanitize } from "./sanitizer";
 export { hasUserLikedStoryOrComments } from "./isLikedByUser";
+export { calculateRelation } from "./calculateRelation";
