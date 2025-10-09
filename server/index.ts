@@ -9,6 +9,7 @@ import {
 	userRouter,
 	fileRouter,
 	commentRouter,
+	relationsRouter,
 } from "./src/routes";
 import { AppError } from "./src/utils";
 import { globalErrorHandler, sanitizeController } from "./src/controllers";
@@ -139,6 +140,7 @@ app.use("/api/v1/documents", documentRouter);
 app.use("/api/v1/stories", storyRouter);
 app.use("/api/v1/comments", commentRouter);
 app.use("/api/v1/files", fileRouter);
+app.use("/api/v1/relations", relationsRouter);
 
 //If app reaches this route it must be a 404 error
 app.use((req, _, next) => {

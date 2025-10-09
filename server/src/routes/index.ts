@@ -6,3 +6,4 @@ export { mediaRouter } from "./mediaRoutes";
 export { storyRouter } from "./storyRoutes";
 export { commentRouter } from "./commentRoutes";
 export { fileRouter } from "./fileRoutes";
+export { relationsRouter } from "./relationsRoutes";
