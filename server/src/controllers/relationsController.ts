@@ -53,7 +53,7 @@ export const getUserRelations = async (
 			relations = await initializeRelations(user);
 		}
 
-		res.status(201).json({
+		res.status(200).json({
 			status: "success",
 			data: relations,
 		});
