@@ -1,7 +1,7 @@
-import { StoryDoc } from "packages/shared";
+import { PopulatedStoryDTO } from "@conch/shared";
 import { Like } from "../models";
 
-const sortByLikes = (storyDocs: StoryDoc[]) => {
+const sortByLikes = (storyDocs: PopulatedStoryDTO[]) => {
 	return storyDocs.sort((a, b) => {
 		const likesA = a.likes || 0;
 		const likesB = b.likes || 0;
@@ -10,7 +10,7 @@ const sortByLikes = (storyDocs: StoryDoc[]) => {
 };
 
 export const hasUserLikedStoryOrComments = async (
-	docs: StoryDoc[] | StoryDoc,
+	docs: PopulatedStoryDTO | PopulatedStoryDTO[],
 	userId?: string,
 ) => {
 	const storyArr = Array.isArray(docs) ? docs : [docs];

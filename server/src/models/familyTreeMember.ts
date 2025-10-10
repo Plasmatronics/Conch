@@ -3,7 +3,7 @@ import {
 	FamilyTreeMemberDoc,
 	ILocation,
 	MemberFavThings,
-	RelationToRootMemberEnum,
+	RelationToMemberEnum,
 } from "@conch/shared";
 
 const memberFavoriteThingsSchema = new mongoose.Schema<MemberFavThings>(
@@ -69,9 +69,9 @@ const familyTreeMemberSchema = new mongoose.Schema<FamilyTreeMemberDoc>(
 			default: Date.now(),
 			select: false,
 		},
-		relationToRootMember: {
-			type: String,
-			enum: RelationToRootMemberEnum,
+		isRelated: {
+			type: Boolean,
+			required: [true, "Must state if member is related"],
 		},
 		favThings: {
 			type: memberFavoriteThingsSchema,
@@ -106,9 +106,19 @@ const familyTreeMemberSchema = new mongoose.Schema<FamilyTreeMemberDoc>(
 				ref: "FamilyTreeMember",
 			},
 		],
+		parents: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "FamilyTreeMember",
+			},
+		],
 		deletedAt: {
 			type: Date,
 			select: false,
+		},
+		gender: {
+			type: String,
+			enum: ["Male", "Female"],
 		},
 		summary: { type: String },
 		occupations: [{ type: String }],
@@ -127,15 +137,73 @@ familyTreeMemberSchema.virtual("stories", {
 	justOne: false,
 });
 
+//keepind bidirectional data in sync
+familyTreeMemberSchema.pre("save", async function (next) {
+	const member = this as FamilyTreeMemberDoc;
+
+	if (member.isModified("parents")) {
+		await Promise.all(
+			(member.parents || []).map(async (parentId) => {
+				await FamilyTreeMember.updateOne(
+					{ _id: parentId },
+					{ $addToSet: { children: member._id } },
+				);
+			}),
+		);
+	}
+
+	if (member.isModified("children")) {
+		await Promise.all(
+			(member.children || []).map(async (childId) => {
+				await FamilyTreeMember.updateOne(
+					{ _id: childId },
+					{ $addToSet: { parents: member._id } },
+				);
+			}),
+		);
+	}
+
+	if (member.isModified("dated")) {
+		await Promise.all(
+			(member.dated || []).map(async (partnerId) => {
+				await FamilyTreeMember.updateOne(
+					{ _id: partnerId },
+					{ $addToSet: { dated: member._id } },
+				);
+			}),
+		);
+	}
+
+	if (member.isModified("spouses")) {
+		await Promise.all(
+			(member.spouses || []).map(async (spouseId) => {
+				await FamilyTreeMember.updateOne(
+					{ _id: spouseId },
+					{ $addToSet: { spouses: member._id } },
+				);
+			}),
+		);
+	}
+
+	next();
+});
+
 familyTreeMemberSchema.pre(/^find/, function (next) {
 	const query = this as mongoose.Query<any, any>;
+	const filter = query.getQuery();
+
+	//preventing recursive population caused by bidirectional children/parent population
+	if (filter._id && Array.isArray(filter._id.$in)) {
+		return next();
+	}
 
 	query
 		.populate({ path: "keyPhoto", select: "type fileKey" })
 		.populate({ path: "bestFriend", select: "name" })
 		.populate({ path: "spouses", select: "name" })
 		.populate({ path: "dated", select: "name" })
-		.populate({ path: "children", select: "name" });
+		.populate({ path: "children", select: "name" })
+		.populate({ path: "parents", select: "name" });
 
 	next();
 });

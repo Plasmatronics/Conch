@@ -18,7 +18,7 @@ interface CommentDataProps {
 	replyingTo: HydratedUserDTO["id"];
 	author: HydratedUserDTO["name"];
 	userAvatar: string;
-	relationToRootMember: HydratedFamilyTreeMemberDTO["relationToRootMember"];
+	relationToMember: HydratedFamilyTreeMemberDTO["relationToMember"];
 }
 
 type ReactQueryOptions = Omit<
@@ -124,10 +124,12 @@ export const useDataPostComment = ({
 			const tempComment: PopulatedCommentDTO = {
 				id: uuidv4(),
 				author: {
-					id: userId,
-					name: data.author,
-					relationToRootMember: data.relationToRootMember,
-					keyPhoto: { fileKey: data.userAvatar, type: "image", id: uuidv4() },
+					familyTreeMember: {
+						id: userId,
+						name: data.author,
+						relationToMember: data.relationToMember,
+						keyPhoto: { fileKey: data.userAvatar, type: "image", id: uuidv4() },
+					},
 				} as PopulatedCommentDTO["author"],
 				content: data.comment,
 				createdAt: new Date(),

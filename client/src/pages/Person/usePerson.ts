@@ -65,10 +65,10 @@ export const usePerson = ({ personId, ...reactQueryProps }: usePersonProps) => {
 		for (const story of personQuery.data.stories) {
 			const storyComments = story.comments || [];
 			//collecting story poster key photo data
-			if (story.author.keyPhoto) {
+			if (story.author.familyTreeMember.keyPhoto) {
 				fileKeys.push({
-					fileKey: story.author.keyPhoto.fileKey,
-					type: story.author.keyPhoto.type,
+					fileKey: story.author.familyTreeMember.keyPhoto.fileKey,
+					type: story.author.familyTreeMember.keyPhoto.type,
 				});
 			}
 
@@ -83,28 +83,28 @@ export const usePerson = ({ personId, ...reactQueryProps }: usePersonProps) => {
 			for (const commentThread of storyComments) {
 				commentAuthorMap.set(commentThread.id, {
 					authorId: commentThread.author.id,
-					name: commentThread.author.name,
+					name: commentThread.author.familyTreeMember.name,
 				});
 
 				//collecting story commentThread parent key photos data
-				if (commentThread.author.keyPhoto) {
+				if (commentThread.author.familyTreeMember.keyPhoto) {
 					fileKeys.push({
-						fileKey: commentThread.author.keyPhoto.fileKey,
-						type: commentThread.author.keyPhoto.type,
+						fileKey: commentThread.author.familyTreeMember.keyPhoto.fileKey,
+						type: commentThread.author.familyTreeMember.keyPhoto.type,
 					});
 				}
 				const replies = commentThread.replies || [];
 				for (const reply of replies) {
 					commentAuthorMap.set(reply.id, {
 						authorId: reply.author.id,
-						name: reply.author.name,
+						name: reply.author.familyTreeMember.name,
 					});
 
 					//collecting story commentThread reply key photos data
 					if (reply.author) {
 						fileKeys.push({
-							fileKey: reply.author.keyPhoto.fileKey,
-							type: reply.author.keyPhoto.type,
+							fileKey: reply.author.familyTreeMember.keyPhoto.fileKey,
+							type: reply.author.familyTreeMember.keyPhoto.type,
 						});
 					}
 				}

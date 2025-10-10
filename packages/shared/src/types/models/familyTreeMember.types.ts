@@ -8,9 +8,10 @@ import {
 	PopulateKeyPhoto,
 	PopulateSpouses,
 	PopulateChildren,
+	PopulateParents,
 } from "types/utils";
 import { IStory, PopulatedStoryDTO, UnhydratedStoryDTO } from "./stories.types";
-import { RelationToRootMember } from "types/relationships.types";
+import { RelationToMember } from "types/relationships.types";
 
 export interface IFamilyTreeMember {
 	name: string;
@@ -22,7 +23,7 @@ export interface IFamilyTreeMember {
 	createdAt: Date;
 	deletedAt?: Date;
 	stories?: IStory[];
-	relationToRootMember: RelationToRootMember;
+	isRelated: boolean;
 	favThings?: MemberFavThings;
 	occupations?: string[];
 	claimedId?: mongoose.Types.ObjectId;
@@ -32,8 +33,10 @@ export interface IFamilyTreeMember {
 	spouses?: mongoose.Types.ObjectId[];
 	dated?: mongoose.Types.ObjectId[];
 	children?: mongoose.Types.ObjectId[];
+	parents?: mongoose.Types.ObjectId[];
 	summary?: string;
 	formerResidences?: ILocation[];
+	gender: "Male" | "Female";
 }
 
 export type FamilyTreeMemberDoc = IFamilyTreeMember & Document;
@@ -48,7 +51,8 @@ export interface UnhydratedFamilyTreeMemberDTO {
 	createdAt: Date;
 	deletedAt?: Date;
 	stories?: UnhydratedStoryDTO[];
-	relationToRootMember: RelationToRootMember;
+	isRelated: boolean;
+	relationToMember: RelationToMember;
 	favThings?: MemberFavThings;
 	occupations?: string[];
 	claimedId?: string;
@@ -58,17 +62,21 @@ export interface UnhydratedFamilyTreeMemberDTO {
 	spouses?: string[];
 	dated?: string[];
 	children?: string[];
+	parents?: string[];
 	summary?: string;
 	formerResidences?: ILocation[];
+	gender: "Male" | "Female";
 }
 
 export type HydratedFamilyTreeMemberDTO =
 	HydrateWithMetadata<UnhydratedFamilyTreeMemberDTO>;
 
-export type PopulatedFamilyTreeMemberDTO = PopulateChildren<
-	PopulateDated<
-		PopulateBestFriend<
-			PopulateSpouses<PopulateKeyPhoto<HydratedFamilyTreeMemberDTO>>
+export type PopulatedFamilyTreeMemberDTO = PopulateParents<
+	PopulateChildren<
+		PopulateDated<
+			PopulateBestFriend<
+				PopulateSpouses<PopulateKeyPhoto<HydratedFamilyTreeMemberDTO>>
+			>
 		>
 	>
 >;

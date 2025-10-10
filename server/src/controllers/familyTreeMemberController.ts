@@ -6,9 +6,11 @@ import {
 	catchError,
 	hasUserLikedStoryOrComments,
 	QueryBuilder,
+	attachRelationsToStoriesAndComments,
 } from "../utils";
 import { Types } from "mongoose";
-import { StoryDoc } from "packages/shared/src";
+import { PopulatedStoryDTO } from "packages/shared/src";
+import { getUserRelations } from "./relationsController";
 
 const getFamilyTreeMember = async (
 	req: Request,
@@ -46,10 +48,15 @@ const getFamilyTreeMember = async (
 				deletedAt: { $exists: false },
 			});
 		}
+		const relations = req.user ? await getUserRelations(req.user) : undefined;
+		const relationToMember = relations ? relations[id] : undefined;
 
 		res.status(200).json({
 			status: "success",
-			data: member,
+			data: {
+				member,
+				...(relationToMember ? { relationToMember } : {}),
+			},
 			...(storiesCount !== undefined ? { storiesCount } : {}),
 		});
 	} catch (err) {
@@ -69,7 +76,7 @@ const getMemberStoriesAndComments = async (
 			throw new AppError(400, "Invalid ID format");
 		}
 
-		const memberWithStories = await FamilyTreeMember.findById(id)
+		const memberDoc = await FamilyTreeMember.findById(id)
 			.populate({
 				path: "stories",
 				match: { deletedAt: { $exists: false } },
@@ -87,15 +94,32 @@ const getMemberStoriesAndComments = async (
 			})
 			.sort("-likes");
 
-		const stories = (memberWithStories?.stories || []) as StoryDoc[];
+		if (!memberDoc) throw new AppError(404, "Member not found");
+		const relations = req.user ? await getUserRelations(req.user) : undefined;
+		const relationToMember = relations ? relations[id] : undefined;
+
+		const stories = memberDoc.stories as unknown as PopulatedStoryDTO[];
+		const memberData = memberDoc;
+
+		const storyAndCommentDataWithAttachedRelations = relations
+			? attachRelationsToStoriesAndComments(stories, relations)
+			: stories;
 
 		const currentUserId = req.user?.id;
-		const data = await hasUserLikedStoryOrComments(stories, currentUserId);
+
+		const storyData = await hasUserLikedStoryOrComments(
+			storyAndCommentDataWithAttachedRelations || [],
+			currentUserId,
+		);
 
 		res.status(200).json({
 			status: "success",
 			numStories: stories.length || 0,
-			data,
+			data: {
+				memberData,
+				storyData,
+				...(relationToMember ? { relationToMember } : {}),
+			},
 		});
 	} catch (err) {
 		catchError(err, next);
@@ -117,8 +141,11 @@ const getManyFamilyTreeMembers = async (
 			.populate()
 			.limitFields();
 
-		let members = await memberQuery.query;
+		const members = await memberQuery.query;
 
+		const relations = req.user ? await getUserRelations(req.user) : undefined;
+
+		let countMap: Record<string, number> = {};
 		if (count && count.toString().split(",").includes("stories")) {
 			const ids = members.map((doc) => doc._id);
 
@@ -128,25 +155,31 @@ const getManyFamilyTreeMembers = async (
 				{ $group: { _id: "$involves", storiesCount: { $sum: 1 } } },
 			]);
 
-			const countMap = counts.reduce(
+			countMap = counts.reduce(
 				(acc, cur) => {
 					acc[cur._id.toString()] = cur.storiesCount;
 					return acc;
 				},
 				{} as Record<string, number>,
 			);
-
-			members = members.map((doc: any) => ({
-				...doc.toObject(),
-				storiesCount: countMap[doc._id.toString()] || 0,
-				stories: undefined,
-			}));
 		}
+
+		const formattedMembers = members.map((doc: any) => {
+			const { stories, ...rest } = doc.toObject();
+			return {
+				...rest,
+				storiesCount:
+					count && count.toString().split(",").includes("stories")
+						? countMap[doc._id.toString()]
+						: undefined,
+				relationToUser: relations ? relations[doc._id.toString()] : null,
+			};
+		});
 
 		res.status(200).json({
 			status: "success",
-			length: members.length,
-			data: members,
+			length: formattedMembers.length,
+			data: formattedMembers,
 		});
 	} catch (err) {
 		catchError(err, next);

@@ -1,6 +1,6 @@
 import { HydratedFamilyTreeMemberDTO } from "./models";
 
-export type RelationToRootMember =
+export type RelationToMember =
 	// Self
 	| "self"
 
@@ -74,7 +74,7 @@ export const nonDirectFamily = [
 	"friend",
 ];
 
-export const RelationToRootMemberEnum = [
+export const RelationToMemberEnum = [
 	// Self
 	"self",
 	// Direct ancestors
@@ -130,5 +130,5 @@ export const RelationToRootMemberEnum = [
 
 export type Relations = Record<
 	HydratedFamilyTreeMemberDTO["id"],
-	RelationToRootMember
+	RelationToMember
 >;

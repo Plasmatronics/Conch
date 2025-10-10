@@ -57,7 +57,7 @@ export const IFetchPeople = async ({
 			const relationToPerson = relationshipMap.get(person.id) as Relationships;
 			if (
 				relationToPerson === "Other" &&
-				person.relationToRootMember === "friend"
+				person.relationToMember === "friend"
 			) {
 				return { ...person, relationToPerson: "Friend" };
 			} else if (relationToPerson === "Other") {

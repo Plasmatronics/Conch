@@ -63,10 +63,14 @@ commentSchema.pre(/^find/, function (next) {
 	(this as mongoose.Query<any, any>)
 		.populate({
 			path: "author",
-			select: "relationToRootMember name keyPhoto",
+			select: "familyTreeMember",
 			populate: {
-				path: "keyPhoto",
-				select: "type fileKey",
+				path: "familyTreeMember",
+				select: "name keyPhoto relationToMember",
+				populate: {
+					path: "keyPhoto",
+					select: "type fileKey",
+				},
 			},
 		})
 		.populate({

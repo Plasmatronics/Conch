@@ -50,8 +50,10 @@ export const useDataPost = ({
 
 	const imgFiles: MediaTypeAndKey[] = [
 		{
-			fileKey: storyQuery?.data?.author?.keyPhoto?.fileKey ?? "",
-			type: storyQuery?.data?.author?.keyPhoto?.type ?? "image",
+			fileKey:
+				storyQuery?.data?.author?.familyTreeMember.keyPhoto?.fileKey ?? "",
+			type:
+				storyQuery?.data?.author?.familyTreeMember.keyPhoto?.type ?? "image",
 		},
 	];
 
@@ -62,8 +64,8 @@ export const useDataPost = ({
 
 	storyQuery?.data?.comments?.map((comment) => {
 		imgFiles.push({
-			fileKey: comment.author.keyPhoto.fileKey,
-			type: comment.author.keyPhoto.type,
+			fileKey: comment.author.familyTreeMember.keyPhoto.fileKey,
+			type: comment.author.familyTreeMember.keyPhoto.type,
 		});
 
 		commentAuthorMap.set(comment.id, {

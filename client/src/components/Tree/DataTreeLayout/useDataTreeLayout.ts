@@ -91,8 +91,8 @@ export const useDataTreeLayout = ({
 		if (
 			personData.spouses &&
 			personData?.spouses?.length > 0 &&
-			personData.relationToRootMember &&
-			!nonDirectFamily.includes(personData.relationToRootMember)
+			personData.relationToMember &&
+			!nonDirectFamily.includes(personData.relationToMember)
 		) {
 			marriages.push({
 				descendantId: personData.id,
