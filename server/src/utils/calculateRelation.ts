@@ -191,8 +191,8 @@ function isAncestorOf(
 	allMembers: Record<string, PopulatedFamilyTreeMemberDTO>,
 	visited = new Set<string>(),
 ): boolean {
-	if (visited.has(member.id)) return false;
-	visited.add(member.id);
+	if (visited.has(related.id)) return false;
+	visited.add(related.id);
 
 	if (related.parents?.some((parent) => parent.id === member.id)) return true;
 
