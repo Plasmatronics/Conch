@@ -4,49 +4,30 @@ import { authController } from "../controllers";
 
 const router = express.Router();
 
+router.use(authController.protect);
+
 router
 	.route("/trash")
-	.patch(
-		authController.protect,
-		familyTreeMemberController.restoreAllFamilyTreeMembers,
-	)
-	.delete(
-		authController.protect,
-		familyTreeMemberController.cleanupAllDeletedFamilyTreeMembers,
-	);
+	.patch(familyTreeMemberController.restoreAllFamilyTreeMembers)
+	.delete(familyTreeMemberController.cleanupAllDeletedFamilyTreeMembers);
 
 router
 	.route("/trash/:id")
-	.patch(
-		authController.protect,
-		familyTreeMemberController.restoreFamilyTreeMember,
-	);
+	.patch(familyTreeMemberController.restoreFamilyTreeMember);
 
 router
 	.route("/:id/stories")
-	.get(
-		authController.protect,
-		familyTreeMemberController.getMemberStoriesAndComments,
-	);
+	.get(familyTreeMemberController.getMemberStoriesAndComments);
 
 router
 	.route("/:id")
 	.get(familyTreeMemberController.getFamilyTreeMember)
-	.patch(
-		authController.protect,
-		familyTreeMemberController.updateFamilyTreeMember,
-	)
-	.delete(
-		authController.protect,
-		familyTreeMemberController.softDeleteFamilyTreeMember,
-	);
+	.patch(familyTreeMemberController.updateFamilyTreeMember)
+	.delete(familyTreeMemberController.softDeleteFamilyTreeMember);
 
 router
 	.route("/")
 	.get(familyTreeMemberController.getManyFamilyTreeMembers)
-	.post(
-		authController.protect,
-		familyTreeMemberController.createFamilyTreeMember,
-	);
+	.post(familyTreeMemberController.createFamilyTreeMember);
 
 export { router as familyTreeMemberRouter };

@@ -8,3 +8,4 @@ export { RedisServer } from "./RedisServer";
 export { sanitize } from "./sanitizer";
 export { hasUserLikedStoryOrComments } from "./isLikedByUser";
 export { calculateRelation } from "./calculateRelation";
+export { attachRelationsToStoriesAndComments } from "./attachRelations";
