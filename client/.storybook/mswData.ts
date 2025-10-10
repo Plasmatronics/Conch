@@ -24,16 +24,18 @@ export const mockParentComment: PopulatedCommentDTO = {
 	target: "68bf2a9895bde97c33918cef",
 	likes: 0,
 	author: {
-		_id: "68bded593c9768d183ad7834",
-		name: "Joseph Bruno",
-		relationToRootMember: "Brother",
-		keyPhoto: {
-			_id: "68bdedc63c9768d183ad7839",
-			fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
-			type: "image",
-			id: "68bdedc63c9768d183ad7839",
+		familyTreeMember: {
+			_id: "68bded593c9768d183ad7834",
+			name: "Joseph Bruno",
+			relationToMember: "Brother",
+			keyPhoto: {
+				_id: "68bdedc63c9768d183ad7839",
+				fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
+				type: "image",
+				id: "68bdedc63c9768d183ad7839",
+			},
+			id: "68bded593c9768d183ad7834",
 		},
-		id: "68bded593c9768d183ad7834",
 	},
 	createdAt: new Date("2025-09-11T21:43:11.882Z"),
 	__v: 0,
@@ -50,14 +52,16 @@ export const mockChildComment: PopulatedCommentDTO = {
 		name: "Joseph Bruno",
 	},
 	author: {
-		_id: "68bded593c9768d183ad7834",
-		name: "Joseph Bruno",
-		relationToRootMember: "Brother",
-		keyPhoto: {
-			_id: "68bdedc63c9768d183ad7839",
-			fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
-			type: "image",
-			id: "68bdedc63c9768d183ad7839",
+		familyTreeMember: {
+			_id: "68bded593c9768d183ad7834",
+			name: "Joseph Bruno",
+			relationToMember: "Brother",
+			keyPhoto: {
+				_id: "68bdedc63c9768d183ad7839",
+				fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
+				type: "image",
+				id: "68bdedc63c9768d183ad7839",
+			},
 		},
 		id: "68bded593c9768d183ad7834",
 	},
@@ -77,7 +81,7 @@ export const mockMemberData: HydratedFamilyTreeMemberDTO = {
 		description: "Born in the Bronx",
 	},
 	dateOfBirth: "2001-06-15T00:00:00.000Z",
-	relationToRootMember: "Brother",
+	relationToMember: "Brother",
 	favThings: {
 		movie: "Toy Story",
 		food: "Mac and Cheese",
@@ -112,14 +116,16 @@ export const mockMediaPopulatedStoryData: PopulatedStoryDTO = {
 	content:
 		"Joey sat on the wooden bench at the edge of the park, his small hands clutching a warm paper tray. The smell of crispy French fries rose into the late afternoon air, drifting toward the children playing nearby. Joey loved fries—golden, salty, familiar. He lined them up carefully, one by one, the way he liked to make sense of things, then took a bite. Each crunch was steady, grounding him in a world that sometimes felt too loud. His mother watched from beside him, smiling as he looked up at the sun and popped another fry into his mouth. For Joey, this was more than just a snack—it was comfort, order, and a moment of joy.",
 	author: {
-		_id: "68bded593c9768d183ad7834",
-		name: "Joseph Bruno",
-		relationToRootMember: "Brother",
-		keyPhoto: {
-			_id: "68bdedc63c9768d183ad7839",
-			fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
-			type: "image",
-			id: "68bdedc63c9768d183ad7839",
+		familyTreeMember: {
+			_id: "68bded593c9768d183ad7834",
+			name: "Joseph Bruno",
+			relationToMember: "Brother",
+			keyPhoto: {
+				_id: "68bdedc63c9768d183ad7839",
+				fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
+				type: "image",
+				id: "68bdedc63c9768d183ad7839",
+			},
 		},
 		id: "68bded593c9768d183ad7834",
 	},
@@ -181,7 +187,7 @@ export const mockAllMembers: PopulatedFamilyTreeMemberDTOWithStoryCount[] = [
 			id: "68bdedc63c9768d183ad7839",
 		},
 		bestFriend: null,
-		relationToRootMember: "self",
+		relationToMember: "self",
 	},
 	{
 		id: "2",
@@ -203,7 +209,7 @@ export const mockAllMembers: PopulatedFamilyTreeMemberDTOWithStoryCount[] = [
 			id: "68bdedc63c9768d183ad7839",
 		},
 		bestFriend: null,
-		relationToRootMember: "spouse",
+		relationToMember: "spouse",
 	},
 	{
 		id: "3",
@@ -222,7 +228,7 @@ export const mockAllMembers: PopulatedFamilyTreeMemberDTOWithStoryCount[] = [
 			id: "68bdedc63c9768d183ad7839",
 		},
 		bestFriend: null,
-		relationToRootMember: "daughter",
+		relationToMember: "daughter",
 	},
 	{
 		id: "4",
@@ -241,7 +247,7 @@ export const mockAllMembers: PopulatedFamilyTreeMemberDTOWithStoryCount[] = [
 			id: "68bdedc63c9768d183ad7839",
 		},
 		bestFriend: null,
-		relationToRootMember: "son",
+		relationToMember: "son",
 	},
 ];
 
@@ -262,14 +268,16 @@ export const memberAndStoriesAndCommentsData = {
 			content:
 				"Joey sat on the wooden bench at the edge of the park, his small hands clutching a warm paper tray. The smell of crispy French fries rose into the late afternoon air, drifting toward the children playing nearby. Joey loved fries—golden, salty, familiar. He lined them up carefully, one by one, the way he liked to make sense of things, then took a bite. Each crunch was steady, grounding him in a world that sometimes felt too loud. His mother watched from beside him, smiling as he looked up at the sun and popped another fry into his mouth. For Joey, this was more than just a snack—it was comfort, order, and a moment of joy.",
 			author: {
-				_id: "68bded593c9768d183ad7834",
-				name: "Joseph Bruno",
-				relationToRootMember: "Brother",
-				keyPhoto: {
-					_id: "68bdedc63c9768d183ad7839",
-					fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
-					type: "image",
-					id: "68bdedc63c9768d183ad7839",
+				familyTreeMember: {
+					_id: "68bded593c9768d183ad7834",
+					name: "Joseph Bruno",
+					relationToMember: "Brother",
+					keyPhoto: {
+						_id: "68bdedc63c9768d183ad7839",
+						fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
+						type: "image",
+						id: "68bdedc63c9768d183ad7839",
+					},
 				},
 				id: "68bded593c9768d183ad7834",
 			},
@@ -294,14 +302,16 @@ export const memberAndStoriesAndCommentsData = {
 			content:
 				"Joey sat on the wooden bench at the edge of the park, his small hands clutching a warm paper tray. The smell of crispy French fries rose into the late afternoon air, drifting toward the children playing nearby. Joey loved fries—golden, salty, familiar. He lined them up carefully, one by one, the way he liked to make sense of things, then took a bite. Each crunch was steady, grounding him in a world that sometimes felt too loud. His mother watched from beside him, smiling as he looked up at the sun and popped another fry into his mouth. For Joey, this was more than just a snack—it was comfort, order, and a moment of joy.",
 			author: {
-				_id: "68bded593c9768d183ad7834",
-				name: "Joseph Bruno",
-				relationToRootMember: "Brother",
-				keyPhoto: {
-					_id: "68bdedc63c9768d183ad7839",
-					fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
-					type: "image",
-					id: "68bdedc63c9768d183ad7839",
+				familyTreeMember: {
+					_id: "68bded593c9768d183ad7834",
+					name: "Joseph Bruno",
+					relationToMember: "Brother",
+					keyPhoto: {
+						_id: "68bdedc63c9768d183ad7839",
+						fileKey: "243e4552-c3ec-401f-88fa-bda7d9b5d81e",
+						type: "image",
+						id: "68bdedc63c9768d183ad7839",
+					},
 				},
 				id: "68bded593c9768d183ad7834",
 			},

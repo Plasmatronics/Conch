@@ -153,9 +153,9 @@ export const DataPost = ({
 			replyingTo: data.replyingToId,
 			userAvatar: userAvatar || "",
 			author: userFullName || "",
-			relationToRootMember: controlledProps
-				? controlledProps.user.familyTreeMember.relationToRootMember
-				: userQuery.data?.familyTreeMember.relationToRootMember || "friend",
+			relationToMember: controlledProps
+				? controlledProps.user.familyTreeMember.relationToMember
+				: userQuery.data?.familyTreeMember.relationToMember || "friend",
 		});
 	});
 
@@ -166,11 +166,13 @@ export const DataPost = ({
 
 	const {
 		author = {
-			name: "",
-			relationToRootMember: "",
-			keyPhoto: {
-				fileKey: "",
-				type: "image",
+			familyTreeMember: {
+				name: "",
+				relationToMember: "",
+				keyPhoto: {
+					fileKey: "",
+					type: "image",
+				},
 			},
 		},
 		title = "",
@@ -191,9 +193,10 @@ export const DataPost = ({
 							comment: {
 								isLiked: commentThread.isLikedByUser || false,
 								comment: commentThread.content,
-								user: commentThread.author.name,
-								avatar: mediaMap.get(commentThread.author.keyPhoto.fileKey)
-									?.downloadUrl,
+								user: commentThread.author.familyTreeMember.name,
+								avatar: mediaMap.get(
+									commentThread.author.familyTreeMember.keyPhoto.fileKey,
+								)?.downloadUrl,
 								onReplyClick: () => {
 									handleReplyClick(commentThread.id);
 								},
@@ -201,7 +204,8 @@ export const DataPost = ({
 									mutateLike({ commentId: commentThread.id, type: "Comment" });
 								},
 								datePosted: commentThread.createdAt,
-								relationship: commentThread.author.relationToRootMember,
+								relationship:
+									commentThread.author.familyTreeMember.relationToMember,
 								loading: avatarQuery.isLoading || storyQuery.isLoading,
 								numLikes: commentThread.likes,
 							},
@@ -211,12 +215,14 @@ export const DataPost = ({
 									comment: {
 										isLiked: reply.isLikedByUser || false,
 										comment: reply.content,
-										user: reply.author.name,
-										avatar: mediaMap.get(reply.author.keyPhoto.fileKey)
-											?.downloadUrl,
+										user: reply.author.familyTreeMember.name,
+										avatar: mediaMap.get(
+											reply.author.familyTreeMember.keyPhoto.fileKey,
+										)?.downloadUrl,
 										datePosted: reply.createdAt,
 										replyToName: reply?.replyingTo?.name,
-										relationship: reply.author.relationToRootMember,
+										relationship:
+											reply.author.familyTreeMember.relationToMember,
 										loading: avatarQuery.isLoading || storyQuery.isLoading,
 										numLikes: reply.likes,
 										onReplyClick: () => {
@@ -260,15 +266,17 @@ export const DataPost = ({
 		<BasePost
 			title={title}
 			text={content}
-			relationship={author.relationToRootMember}
+			relationship={author.familyTreeMember.relationToMember}
 			loading={isLoading}
-			user={author.name}
+			user={author.familyTreeMember.name}
 			isLiked={isLikedByUser || false}
 			media={typeSafeMedia}
 			setIsLiked={() => {
 				mutateLike({ type: "Story" });
 			}}
-			avatar={mediaMap.get(author.keyPhoto.fileKey)?.downloadUrl}
+			avatar={
+				mediaMap.get(author?.familyTreeMember.keyPhoto.fileKey)?.downloadUrl
+			}
 			storyDate={storyDate}
 			commentSectionProps={{
 				commentThreads: commentSectionData,
