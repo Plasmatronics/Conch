@@ -42,7 +42,6 @@ export const useGalleryMedia = (media: MediaItem[]) => {
 
 	return {
 		mediaNodeWithDimensions,
-		setMediaNodeWithDimensions,
 		gridLayoutStyles,
 		verticalMediaPrioArr,
 		isGalleryClamped,

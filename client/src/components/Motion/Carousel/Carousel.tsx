@@ -70,7 +70,7 @@ export const Carousel = ({
 	}
 
 	const shouldShowButton = () => {
-		return childArray.length !== 1 && loop;
+		return childArray.length > 1 && loop;
 	};
 
 	return (

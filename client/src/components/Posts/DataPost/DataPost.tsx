@@ -12,7 +12,7 @@ import { CommentSectionProps, IReply } from "../../Comments";
 import { useForm } from "react-hook-form";
 import { useFetchUserData } from "../../../api";
 import { useDataPostComment, useDataPost, useLike } from "./hooks";
-import { BoxProps, CardRootProps } from "@chakra-ui/react";
+import { CardRootProps } from "@chakra-ui/react";
 
 interface ControlledProps {
 	story: PopulatedStoryDTO;

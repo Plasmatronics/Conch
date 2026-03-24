@@ -11,6 +11,7 @@ import { CloseButton, FullscreenButton } from "../../Buttons";
 
 const renderCarouselChildren = (
 	media: Omit<MediaItem, "gridItemProps" | "colorPalette" | "aspectRatio">,
+	key: string,
 ) => {
 	const sharedStyles = {
 		w: "100%",
@@ -18,6 +19,7 @@ const renderCarouselChildren = (
 		maxW: "100vw",
 		maxH: "100vh",
 		objectFit: "scale-down",
+		key,
 	};
 	if (media.type === "image") {
 		//destructure to sanitize
@@ -97,8 +99,11 @@ export const PostGalleryModal = ({
 										setCurrentIndex={setCarouselIndex}
 										{...carouselProps}
 									>
-										{allMedia.map((mediaItem) =>
-											renderCarouselChildren(mediaItem),
+										{allMedia.map((mediaItem, idx) =>
+											renderCarouselChildren(
+												mediaItem,
+												`${mediaItem.src}-${idx}`,
+											),
 										)}
 									</Carousel>
 

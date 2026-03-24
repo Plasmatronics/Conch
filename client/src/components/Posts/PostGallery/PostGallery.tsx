@@ -102,75 +102,53 @@ export const PostGallery = ({
 			{...gridLayoutStyles}
 		>
 			{verticalMediaPrioArr.map((file, idx) => {
-				if (isGalleryClamped && idx === MAX_MEDIA - 1) {
-					return (
-						<Box
-							{...uniformGridItemProps}
-							{...file.gridItemProps}
+				const isOverflowCell = isGalleryClamped && idx === MAX_MEDIA - 1;
+				return (
+					<Box
+						{...uniformGridItemProps}
+						{...file.gridItemProps}
+						width="100%"
+						height="100%"
+						gridArea={`media${idx + 1}`}
+						onClick={() => onItemClick?.(idx)}
+						key={`${file.src}-${idx}`}
+						position={isOverflowCell ? "relative" : undefined}
+					>
+						<Skeleton
 							width="100%"
 							height="100%"
-							gridArea={`media${idx + 1}`}
-							onClick={() => onItemClick?.(idx)}
-							key={`${file.src}-${idx}`}
-							position="relative"
+							loading={loading || numLoaded < Math.min(MAX_MEDIA, media.length)}
 						>
-							<Skeleton
-								width="100%"
-								height="100%"
-								loading={
-									loading || numLoaded < Math.min(MAX_MEDIA, media.length)
-								}
-							>
-								{renderNode({ ...file })}
-								<Box
-									width="100%"
-									height="100%"
-									zIndex="overlay"
-									position="absolute"
-									bg="blackAlpha.600"
-									_hover={{
-										bg: "blackAlpha.700",
-									}}
-									left={0}
-									top={0}
-								/>
-								<Text
-									position="absolute"
-									left="50%"
-									top="50%"
-									zIndex="overlay"
-									pointerEvents="none"
-									fontSize="3xl"
-									color="white"
-									transform="translate(-50%, -50%)"
-								>{`+${media.length - MAX_MEDIA}`}</Text>
-							</Skeleton>
-						</Box>
-					);
-				} else {
-					return (
-						<Box
-							{...uniformGridItemProps}
-							{...file.gridItemProps}
-							width="100%"
-							height="100%"
-							gridArea={`media${idx + 1}`}
-							onClick={() => onItemClick?.(idx)}
-							key={`${file.src}-${idx}`}
-							asChild
-						>
-							<Skeleton
-								width="100%"
-								height="100%"
-								loading={
-									loading || numLoaded < Math.min(MAX_MEDIA, media.length)
-								}
-							>
-								{renderNode({ ...file })}
-							</Skeleton>
-						</Box>
-					);
-				}
+							{renderNode({ ...file })}
+							{isOverflowCell && (
+								<>
+									<Box
+										width="100%"
+										height="100%"
+										zIndex="overlay"
+										position="absolute"
+										bg="blackAlpha.600"
+										_hover={{
+											bg: "blackAlpha.700",
+										}}
+										left={0}
+										top={0}
+									/>
+									<Text
+										position="absolute"
+										left="50%"
+										top="50%"
+										zIndex="overlay"
+										pointerEvents="none"
+										fontSize="3xl"
+										color="white"
+										transform="translate(-50%, -50%)"
+									>{`+${media.length - MAX_MEDIA}`}</Text>
+								</>
+							)}
+						</Skeleton>
+					</Box>
+				);
 			})}
 		</Grid>
 	);

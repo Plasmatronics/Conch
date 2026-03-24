@@ -30,7 +30,7 @@ export interface BaseMediaItem {
 export interface ImageMediaItem
 	extends Omit<BaseMediaItem, "type">,
 		Omit<ImageProps, "src"> {
-	type?: "image";
+	type: "image";
 }
 
 export interface VideoMediaItem
