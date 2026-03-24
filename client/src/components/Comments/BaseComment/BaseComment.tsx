@@ -31,7 +31,7 @@ export const BaseComment = ({
 	}, [datePosted]);
 
 	const remaining = Math.max(0, numReplies - numRepliesRendered);
-	const isThreadFullyExpanded = numReplies > 0 && remaining === 0;
+	const isThreadFullyExpanded = remaining === 0;
 
 	const handleReplyClick = () => {
 		onReplyClick?.();

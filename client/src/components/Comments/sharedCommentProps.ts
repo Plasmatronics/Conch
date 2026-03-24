@@ -2,6 +2,7 @@ import { BaseCommentProps } from "./BaseComment";
 
 export const commentDefaults: Omit<BaseCommentProps, "comment"> = {
 	avatar: "https://images.unsplash.com/photo-1511806754518-53bada35f930",
+	isLiked: false,
 	user: "Nicholas Bruno",
 	relationship: "Brother",
 	numLikes: 12,
