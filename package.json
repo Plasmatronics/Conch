@@ -4,49 +4,6 @@
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
-	"workspaces": [
-		"client",
-		"server",
-		"packages/*"
-	],
-	"scripts": {
-		"dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-		"dev:server": "cd server && npm run dev",
-		"dev:client": "cd client && npm run dev",
-		"build": "cd client && npm run build",
-		"lint": "eslint .",
-		"lint:fix": "eslint . --fix",
-		"format": "prettier --write .",
-		"format:check": "prettier --check .",
-		"install:all": "npm install && cd client && npm install && cd ../server && npm install && cd ../packages/design-system && npm install && cd ../shared && npm install"
-	},
-	"devDependencies": {
-		"@chakra-ui/react": "^3.24.2",
-		"@emotion/react": "^11.11.1",
-		"@emotion/styled": "^11.11.0",
-		"@eslint/js": "^9.31.0",
-		"@types/node": "^20.0.0",
-		"concurrently": "^8.2.2",
-		"eslint": "^9.31.0",
-		"eslint-config-prettier": "^10.1.8",
-		"framer-motion": "^12.23.12",
-		"globals": "^16.3.0",
-		"prettier": "^3.6.2",
-		"react": "^19.1.1",
-		"react-dom": "^19.1.1",
-		"tsx": "^4.20.3",
-		"typescript": "~5.8.3",
-		"typescript-eslint": "^8.37.0",
-		"vitest": "^3.2.4"
-	},
-	"pnpm": {
-		"overrides": {
-			"react": "^19.1.1",
-			"react-dom": "^19.1.1",
-			"@chakra-ui/react": "^3.24.2"
-		}
-	},
-	"dependencies": {
-		"mongoose": "^8.18.1"
-	}
+	"scripts": {},
+	"devDependencies": {}
 }
