@@ -1,1 +1,0 @@
-export { getPrettyDate } from "./getPrettyDate";

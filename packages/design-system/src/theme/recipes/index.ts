@@ -1,1 +1,0 @@
-export { dialogRecipe } from "./dialog";
