@@ -5,9 +5,16 @@
 	"private": true,
 	"type": "module",
 	"scripts": {},
-	"dependencies": {},
-	"devDependencies": {},
+	"dependencies": {
+		"dotenv": "^17.4.2",
+		"express": "^5.2.1"
+	},
 	"author": "Nicholas Bruno",
 	"license": "ISC",
-	"description": ""
+	"description": "",
+	"devDependencies": {
+		"@types/express": "^5.0.6",
+		"@types/node": "^26.1.1",
+		"typescript": "^7.0.2"
+	}
 }
