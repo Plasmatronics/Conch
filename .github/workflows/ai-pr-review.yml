@@ -24,8 +24,8 @@ jobs:
 
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      AI_REVIEW_MODEL: ${{ secrets.AI_REVIEW_MODEL }}
-      AI_API_ENDPOINT: ${{ secrets.AI_API_ENDPOINT }}
+      AI_REVIEW_MODEL: ${{ vars.AI_REVIEW_MODEL }}
+      AI_API_ENDPOINT: ${{ vars.AI_API_ENDPOINT }}
 
     steps:
       - name: Conduct AI PR Review
@@ -37,17 +37,17 @@ jobs:
             const apiEndpoint = process.env.AI_API_ENDPOINT;
 
             if (!apiKey) {
-              core.setFailed("api key is not configured.");
+              core.setFailed("GEMINI_API_KEY is not configured in GitHub Repo Secrets.");
               return;
             }
 
             if (!model) {
-              core.setFailed("model is not configured.");
+              core.setFailed("AI_REVIEW_MODEL is not configured in GitHub Repo Variables.");
               return;
             }
 
             if (!apiEndpoint) {
-              core.setFailed("ai api endpoint is not configured.");
+              core.setFailed("AI_API_ENDPOINT is not configured in GitHub Repo Variables.");
               return;
             }
 
