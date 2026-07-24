@@ -24,8 +24,8 @@ jobs:
 
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      AI_REVIEW_MODEL: ${{ vars.AI_REVIEW_MODEL }}
-      AI_API_ENDPOINT: ${{ vars.AI_API_ENDPOINT }}
+      AI_REVIEW_MODEL: ${{ secrets.AI_REVIEW_MODEL }}
+      AI_API_ENDPOINT: ${{ secrets.AI_API_ENDPOINT }}
 
     steps:
       - name: Conduct AI PR Review
