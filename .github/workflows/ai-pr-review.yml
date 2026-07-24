@@ -90,7 +90,7 @@ jobs:
             if (diff.length > MAX_PATCH_LENGTH) {
               diff =
                 diff.slice(0, MAX_PATCH_LENGTH) +
-                `\n\n[Diff truncated because the pull request is large (over ${MAX_PATCH_LENGTH} files).]`;
+                `\n\n[Diff truncated because the pull request is large (over ${MAX_PATCH_LENGTH} chars).]`;
             }
 
             const pr = context.payload.pull_request;
