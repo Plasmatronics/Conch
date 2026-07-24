@@ -24,8 +24,8 @@ jobs:
 
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
-      GEMINI_API_ENDPOINT: ${{ vars.GEMINI_API_ENDPOINT }}
+      AI_REVIEW_MODEL: ${{ vars.AI_REVIEW_MODEL }}
+      AI_API_ENDPOINT: ${{ vars.AI_API_ENDPOINT }}
 
     steps:
       - name: Conduct AI PR Review
@@ -33,8 +33,8 @@ jobs:
         with:
           script: |
             const apiKey = process.env.GEMINI_API_KEY;
-            const model = process.env.GEMINI_MODEL;
-            const apiEndpoint = process.env.GEMINI_API_ENDPOINT;
+            const model = process.env.AI_REVIEW_MODEL;
+            const apiEndpoint = process.env.AI_API_ENDPOINT;
 
             if (!apiKey) {
               core.setFailed("api key is not configured.");
