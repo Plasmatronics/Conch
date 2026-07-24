@@ -1,0 +1,212 @@
+name: Gemini PR Review
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ai-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: Review pull request
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Review PR with Gemini
+        uses: actions/github-script@v7
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        with:
+          script: |
+            const apiKey = process.env.GEMINI_API_KEY;
+
+            if (!apiKey) {
+              core.setFailed("GEMINI_API_KEY is not configured.");
+              return;
+            }
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pullNumber = context.payload.pull_request.number;
+
+            // Retrieve every changed file in the PR.
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              {
+                owner,
+                repo,
+                pull_number: pullNumber,
+                per_page: 100
+              }
+            );
+
+            const MAX_PATCH_LENGTH = 60_000;
+
+            let diff = files
+              .filter(file => file.patch)
+              .map(file => {
+                return [
+                  `FILE: ${file.filename}`,
+                  `STATUS: ${file.status}`,
+                  `ADDITIONS: ${file.additions}`,
+                  `DELETIONS: ${file.deletions}`,
+                  "",
+                  file.patch
+                ].join("\n");
+              })
+              .join("\n\n---\n\n");
+
+            if (!diff) {
+              core.notice("No textual changes were available to review.");
+              return;
+            }
+
+            if (diff.length > MAX_PATCH_LENGTH) {
+              diff =
+                diff.slice(0, MAX_PATCH_LENGTH) +
+                "\n\n[Diff truncated because the pull request is large.]";
+            }
+
+            const pr = context.payload.pull_request;
+
+            const prompt = `
+            You are reviewing a GitHub pull request.
+
+            Review only the code shown in the diff. Do not invent surrounding
+            code or claim that something is broken unless the diff supports it.
+
+            Focus on:
+            - Actual bugs
+            - Incorrect assumptions
+            - Security vulnerabilities
+            - Missing error handling
+            - Race conditions
+            - TypeScript or JavaScript type issues
+            - React correctness issues
+            - Performance problems with meaningful impact
+            - Missing tests for important behavior
+
+            Ignore:
+            - Minor formatting
+            - Personal style preferences
+            - Compliments
+            - Vague suggestions
+            - Issues already enforced by ordinary formatters
+
+            Pull request title:
+            ${pr.title}
+
+            Pull request description:
+            ${pr.body || "No description provided."}
+
+            Respond in Markdown using this structure:
+
+            ## AI review
+
+            ### Summary
+            Briefly explain what the PR changes.
+
+            ### Findings
+            List only actionable findings.
+
+            For each finding, include:
+            - Severity: critical, high, medium, or low
+            - File
+            - Explanation
+            - Suggested correction
+
+            If there are no meaningful problems, say:
+            "No actionable issues found."
+
+            DIFF:
+
+            ${diff}
+            `;
+
+            const response = await fetch(
+              "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-goog-api-key": apiKey
+                },
+                body: JSON.stringify({
+                  contents: [
+                    {
+                      role: "user",
+                      parts: [{ text: prompt }]
+                    }
+                  ],
+                  generationConfig: {
+                    temperature: 0.2,
+                    maxOutputTokens: 4000
+                  }
+                })
+              }
+            );
+
+            if (!response.ok) {
+              const errorBody = await response.text();
+              core.setFailed(
+                `Gemini API returned ${response.status}: ${errorBody}`
+              );
+              return;
+            }
+
+            const data = await response.json();
+
+            const review =
+              data.candidates?.[0]?.content?.parts
+                ?.map(part => part.text || "")
+                .join("")
+                .trim();
+
+            if (!review) {
+              core.setFailed("Gemini returned an empty review.");
+              return;
+            }
+
+            const marker = "<!-- custom-ai-pr-review -->";
+            const body = `${marker}\n${review}\n\n---\n_Automated review generated by Gemini._`;
+
+            // Find a previous AI review so that subsequent pushes update it
+            // instead of creating a new comment every time.
+            const comments = await github.paginate(
+              github.rest.issues.listComments,
+              {
+                owner,
+                repo,
+                issue_number: pullNumber,
+                per_page: 100
+              }
+            );
+
+            const previousComment = comments.find(comment =>
+              comment.body?.includes(marker)
+            );
+
+            if (previousComment) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: previousComment.id,
+                body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pullNumber,
+                body
+              });
+            }
