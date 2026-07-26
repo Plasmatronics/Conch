@@ -23,6 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 *.env
+*.pem
 
 *storybook.log
 storybook-static
