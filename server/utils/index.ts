@@ -1,0 +1,1 @@
+export { loadEnvVariables } from "./loadEnvVariables";
