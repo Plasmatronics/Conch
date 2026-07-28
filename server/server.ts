@@ -39,7 +39,8 @@ const startServer = async (): Promise<void> => {
 		awsSecretStore,
 	);
 
-	const _client = await dbClient.getClient();
+	const client = await dbClient.getClient();
+	dbClient.releaseClient(client);
 	const app: Express = express();
 
 	app.get("/health", (_req: Request, res: Response) => {
