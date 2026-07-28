@@ -165,8 +165,12 @@ jobs:
                     }
                   ],
                   generationConfig: {
-                    temperature: 0.2,
-                    maxOutputTokens: 4000
+                      temperature: 0.1,
+                      maxOutputTokens: 12000,
+                      thinkingConfig: {
+                        thinkingBudget: 2048
+                      }
+                    }
                   }
                 })
               }
@@ -182,14 +186,31 @@ jobs:
 
             const data = await response.json();
 
-            const review =
-              data.candidates?.[0]?.content?.parts
-                ?.map(part => part.text || "")
-                .join("")
-                .trim();
-
+            const candidate = data.candidates?.[0];
+            const finishReason = candidate?.finishReason ?? "UNKNOWN";
+            
+            const review = candidate?.content?.parts
+              ?.filter(part => typeof part.text === "string")
+              .map(part => part.text)
+              .join("")
+              .trim();
+            
+            core.info(`Gemini finish reason: ${finishReason}`);
+            core.info(
+              `Gemini token usage: ${JSON.stringify(data.usageMetadata ?? {})}`
+            );
+            
             if (!review) {
-              core.setFailed("AI returned an empty review.");
+              core.setFailed(
+                `AI returned an empty review. Finish reason: ${finishReason}`
+              );
+              return;
+            }
+            
+            if (finishReason !== "STOP") {
+              core.setFailed(
+                `AI returned an incomplete review. Finish reason: ${finishReason}`
+              );
               return;
             }
 
