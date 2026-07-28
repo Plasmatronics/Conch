@@ -1,6 +1,6 @@
 import express, { type Express, type Request, type Response } from "express";
 import dotenv from "dotenv";
-import { AWSSecretStore, ConchDBClient } from "./index";
+import { AWSSecretStore, ConchDBPoolClient } from "./index";
 import { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 import { loadEnvVariables } from "./utils";
 
@@ -28,7 +28,7 @@ const startServer = async (): Promise<void> => {
 	});
 	const awsSecretStore = new AWSSecretStore(secretsClient, { secretId });
 
-	const dbClient = new ConchDBClient(
+	const dbPool = new ConchDBPoolClient(
 		{
 			db,
 			host,
@@ -39,12 +39,21 @@ const startServer = async (): Promise<void> => {
 		awsSecretStore,
 	);
 
-	const client = await dbClient.getClient();
-	dbClient.releaseClient(client);
 	const app: Express = express();
 
-	app.get("/health", (_req: Request, res: Response) => {
-		res.status(200).json({ status: "ok" });
+	app.get("/health", async (_req: Request, res: Response) => {
+		const dbClient = await dbPool.getClient();
+
+		try {
+			await dbClient.query(`SELECT 1`);
+			res.status(200).json({ status: "ok" });
+		} catch (error: unknown) {
+			res.status(503).json({
+				status: `${error instanceof Error ? error.message : "Unknown error has occurred."}`,
+			});
+		} finally {
+			dbPool.releaseClient(dbClient);
+		}
 	});
 
 	const server = app.listen(devPort, () => {
@@ -52,9 +61,17 @@ const startServer = async (): Promise<void> => {
 	});
 
 	const shutdown = async () => {
-		server.close();
-		await dbClient.releaseClientsAndClosePool();
-		process.exit(0);
+		try {
+			await dbPool.releaseClientsAndClosePool();
+			await new Promise<void>((resolve, reject) => {
+				server.close((err) => {
+					if (err) reject(err);
+					else resolve();
+				});
+			});
+		} finally {
+			process.exit(0);
+		}
 	};
 
 	process.on("SIGINT", shutdown);

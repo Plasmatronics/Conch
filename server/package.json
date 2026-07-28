@@ -6,10 +6,12 @@
 	"type": "module",
 	"scripts": {
 		"start": "tsx server.ts",
-		"dev": "tsx watch server.ts"
+		"dev": "tsx watch server.ts",
+		"db:init": "tsx ./scripts/init-db.ts"
 	},
 	"dependencies": {
 		"@aws-sdk/client-secrets-manager": "^3.1095.0",
+		"@types/geojson": "^7946.0.16",
 		"dotenv": "^17.4.2",
 		"express": "^5.2.1",
 		"pg": "^8.22.0"
