@@ -47,7 +47,7 @@ export class ConchDBPoolClient {
 
 	async getClient(): Promise<PoolClient> {
 		try {
-			await this.initializePool();
+			if (!this.pool) await this.initializePool();
 
 			const client = await this.pool!.connect();
 			console.log(

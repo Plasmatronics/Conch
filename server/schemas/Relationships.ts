@@ -5,7 +5,7 @@ export type Relationship = "spouse" | "child" | "pet" | "friend";
 export interface Relationships {
 	id: number;
 	type: Relationship;
-	createdAt?: Date;
+	createdAt: Date;
 	sourceMemberId: Members["id"];
 	targetMemberId: Members["id"];
 	deletedDate?: Date;
