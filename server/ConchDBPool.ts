@@ -1,45 +1,43 @@
 import fs from "fs";
-import { Pool } from "pg";
+import { Pool, PoolClient } from "pg";
 import type { SecretStoreStrategy } from "./index";
-
-interface DBPoolClient {
-	disconnect: () => Promise<void>;
-	connect: () => Promise<void>;
-}
-
-class PgDbPoolClientAdapter implements DBPoolClient {
-	constructor(private readonly client: Pool) {}
-
-	async connect(): Promise<void> {
-		await this.client.connect();
-	}
-
-	async disconnect(): Promise<void> {
-		await this.client.end();
-	}
-}
+import path from "path";
 
 interface ConchPostGreSQLDBConfig {
 	db: string;
 	host: string;
 	rdsPortStr: string;
 	region: string;
+	caCertPath: string;
 }
 
-export class ConchDBPool {
-	pool: DBPoolClient | null = null;
+interface DbPool {
+	connect(): Promise<PoolClient>;
+	end(): Promise<void>;
+}
+
+export class ConchDBClient {
+	pool: DbPool | null = null;
 
 	constructor(
 		public config: ConchPostGreSQLDBConfig,
 		private secretStore: SecretStoreStrategy,
 	) {}
 
-	async initializePool(): Promise<void> {
+	private async initializePool(): Promise<void> {
 		if (this.pool) return;
+		const caCert = fs.readFileSync(
+			path.resolve(process.cwd(), this.config.caCertPath),
+			"utf8",
+		);
+		if (!caCert)
+			throw new Error(
+				"Failed to initialize database pool due to CA certificate error.",
+			);
 
 		const { username, password } =
 			await this.secretStore.getSecretUsernameAndPassword();
-		const pool = new Pool({
+		this.pool = new Pool({
 			host: this.config.host,
 			port: Number(this.config.rdsPortStr),
 			database: this.config.db,
@@ -47,30 +45,33 @@ export class ConchDBPool {
 			password: password,
 			ssl: {
 				rejectUnauthorized: true,
-				ca: fs.readFileSync("./us-east-2-bundle.pem", "utf8"),
+				ca: caCert,
 			},
 		});
-
-		this.pool = new PgDbPoolClientAdapter(pool);
 	}
 
-	async borrowClientFromPool(): Promise<void> {
+	async getClient(): Promise<PoolClient> {
 		await this.initializePool();
 		if (!this.pool)
 			throw new Error(
 				"must initialize pool client before a client can be borrowed",
 			);
 
-		await this.pool.connect();
+		const client = await this.pool.connect();
 		console.log(
 			`successfully borrowed client from the db pool on port ${this.config.rdsPortStr}`,
 		);
+		return client;
+	}
+
+	releaseClient(client: PoolClient): void {
+		client.release();
 	}
 
 	async releaseClientsAndClosePool(): Promise<void> {
 		if (!this.pool) return;
 
-		await this.pool.disconnect();
+		await this.pool.end();
 		console.log("successfully disconnected from the db pool");
 	}
 }

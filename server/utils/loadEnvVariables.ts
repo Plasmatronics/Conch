@@ -7,6 +7,7 @@ interface ConchServerConfig {
 	host: string;
 	rdsPortStr: string;
 	region: string;
+	caCertPath: string;
 }
 
 export const loadEnvVariables = (): ConchServerConfig => {
@@ -19,6 +20,7 @@ export const loadEnvVariables = (): ConchServerConfig => {
 		RDS_HOST_ENDPOINT: host,
 		RDS_PORT: rdsPortStr,
 		AWS_REGION: region,
+		CA_CERT_PATH: caCertPath,
 	} = process.env;
 
 	if (!region) throw new Error("Missing AWS_REGION");
@@ -28,6 +30,7 @@ export const loadEnvVariables = (): ConchServerConfig => {
 		throw new Error("Missing SECRETS_MANAGER_SECRET_ACCESS_KEY");
 	if (!db) throw new Error("Missing DATABASE");
 	if (!host) throw new Error("Missing RDS_HOST_ENDPOINT");
+	if (!caCertPath) throw new Error("Missing CA_CERT_PATH");
 	if (!rdsPortStr || Number.isNaN(Number(rdsPortStr)))
 		throw new Error(`Invalid RDS_PORT: ${rdsPortStr}`);
 	if (!devPort || Number.isNaN(Number(devPort)))
@@ -42,5 +45,6 @@ export const loadEnvVariables = (): ConchServerConfig => {
 		host,
 		rdsPortStr,
 		region,
+		caCertPath,
 	};
 };

@@ -1,6 +1,6 @@
 import express, { type Express, type Request, type Response } from "express";
 import dotenv from "dotenv";
-import { AWSSecretStore, ConchDBPool } from "./index";
+import { AWSSecretStore, ConchDBClient } from "./index";
 import { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 import { loadEnvVariables } from "./utils";
 
@@ -16,6 +16,7 @@ const startServer = async (): Promise<void> => {
 		host,
 		rdsPortStr,
 		region,
+		caCertPath,
 	} = loadEnvVariables();
 
 	const secretsClient = new SecretsManagerClient({
@@ -27,16 +28,18 @@ const startServer = async (): Promise<void> => {
 	});
 	const awsSecretStore = new AWSSecretStore(secretsClient, { secretId });
 
-	const dbClient = new ConchDBPool(
+	const dbClient = new ConchDBClient(
 		{
 			db,
 			host,
 			rdsPortStr,
 			region,
+			caCertPath,
 		},
 		awsSecretStore,
 	);
-	await dbClient.borrowClientFromPool();
+
+	const _client = await dbClient.getClient();
 	const app: Express = express();
 
 	app.get("/health", (_req: Request, res: Response) => {

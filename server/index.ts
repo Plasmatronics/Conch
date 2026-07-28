@@ -1,2 +1,2 @@
-export { ConchDBPool } from "./ConchDBPool";
+export { ConchDBClient } from "./ConchDBPool";
 export { AWSSecretStore, type SecretStoreStrategy } from "./AWSSecretStore";
