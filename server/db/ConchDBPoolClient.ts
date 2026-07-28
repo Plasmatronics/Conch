@@ -1,6 +1,6 @@
 import fs from "fs";
 import { Pool, PoolClient } from "pg";
-import type { SecretStoreStrategy } from "./index";
+import type { SecretStoreStrategy } from "../index";
 import path from "path";
 
 interface ConchPostGreSQLDBConfig {
@@ -11,13 +11,8 @@ interface ConchPostGreSQLDBConfig {
 	caCertPath: string;
 }
 
-interface DbPool {
-	connect(): Promise<PoolClient>;
-	end(): Promise<void>;
-}
-
-export class ConchDBClient {
-	pool: DbPool | null = null;
+export class ConchDBPoolClient {
+	private pool: Pool | null = null;
 
 	constructor(
 		public config: ConchPostGreSQLDBConfig,
@@ -51,17 +46,19 @@ export class ConchDBClient {
 	}
 
 	async getClient(): Promise<PoolClient> {
-		await this.initializePool();
-		if (!this.pool)
-			throw new Error(
-				"must initialize pool client before a client can be borrowed",
-			);
+		try {
+			await this.initializePool();
 
-		const client = await this.pool.connect();
-		console.log(
-			`successfully borrowed client from the db pool on port ${this.config.rdsPortStr}`,
-		);
-		return client;
+			const client = await this.pool!.connect();
+			console.log(
+				`successfully borrowed client from the db pool on port ${this.config.rdsPortStr}`,
+			);
+			return client;
+		} catch (err: unknown) {
+			throw new Error(
+				`An error has occurred during client retrieval: ${err instanceof Error ? err.message : "An unknown error has occurred"}`,
+			);
+		}
 	}
 
 	releaseClient(client: PoolClient): void {
@@ -71,7 +68,14 @@ export class ConchDBClient {
 	async releaseClientsAndClosePool(): Promise<void> {
 		if (!this.pool) return;
 
-		await this.pool.end();
-		console.log("successfully disconnected from the db pool");
+		try {
+			await this.pool.end();
+			this.pool = null;
+			console.log("successfully disconnected from the db pool");
+		} catch (err: unknown) {
+			throw new Error(
+				`An error has occurred during pool closure: ${err instanceof Error ? err.message : "An unknown error has occurred"}`,
+			);
+		}
 	}
 }
