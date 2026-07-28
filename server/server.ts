@@ -1,20 +1,63 @@
 import express, { type Express, type Request, type Response } from "express";
 import dotenv from "dotenv";
-import { testDb } from "./index";
+import { AWSSecretStore, ConchDBClient } from "./index";
+import { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
+import { loadEnvVariables } from "./utils";
 
 dotenv.config({ path: "../config.env" });
 
-const devPort = Number(process.env.DEV_PORT);
-if (!devPort || Number.isNaN(devPort))
-	throw new Error(`Invalid DEV_PORT: ${devPort}`);
+const startServer = async (): Promise<void> => {
+	const {
+		devPort,
+		secretId,
+		accessKeyId,
+		secretAccessKey,
+		db,
+		host,
+		rdsPortStr,
+		region,
+		caCertPath,
+	} = loadEnvVariables();
 
-const app: Express = express();
+	const secretsClient = new SecretsManagerClient({
+		region,
+		credentials: {
+			accessKeyId,
+			secretAccessKey,
+		},
+	});
+	const awsSecretStore = new AWSSecretStore(secretsClient, { secretId });
 
-app.get("/health", (_req: Request, res: Response) => {
-	res.status(200).json({ status: "ok" });
-});
+	const dbClient = new ConchDBClient(
+		{
+			db,
+			host,
+			rdsPortStr,
+			region,
+			caCertPath,
+		},
+		awsSecretStore,
+	);
 
-app.listen(devPort, async () => {
-	await testDb();
-	console.log(`Listening on port ${devPort}`);
-});
+	const client = await dbClient.getClient();
+	dbClient.releaseClient(client);
+	const app: Express = express();
+
+	app.get("/health", (_req: Request, res: Response) => {
+		res.status(200).json({ status: "ok" });
+	});
+
+	const server = app.listen(devPort, () => {
+		console.log(`Listening on port ${devPort}`);
+	});
+
+	const shutdown = async () => {
+		server.close();
+		await dbClient.releaseClientsAndClosePool();
+		process.exit(0);
+	};
+
+	process.on("SIGINT", shutdown);
+	process.on("SIGTERM", shutdown);
+};
+startServer();
