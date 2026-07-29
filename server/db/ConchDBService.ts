@@ -4,21 +4,21 @@ import type { SecretStoreStrategy } from "../index";
 import path from "path";
 import { HealthCheck, ConchService } from "../types";
 
-interface ConchPostGreSQLDBConfig extends PoolConfig {
+interface ConchDBServiceConfig extends PoolConfig {
 	db: string;
 	host: string;
 	rdsPortStr: string;
 	caCertPath: string;
 }
 
-export class ConchDBPoolClient implements ConchService {
+export class ConchDBService implements ConchService {
 	private serviceName: string = "ConchDBPoolClient";
 	private pool: Pool | null = null;
 	private openPoolPromise: Promise<Pool> | null = null;
 	private closePoolPromise: Promise<void> | null = null;
 
 	constructor(
-		public config: ConchPostGreSQLDBConfig,
+		public config: ConchDBServiceConfig,
 		private secretStore: SecretStoreStrategy,
 	) {}
 
@@ -53,7 +53,7 @@ export class ConchDBPoolClient implements ConchService {
 				await this.secretStore.getSecretUsernameAndPassword();
 
 			const { host, rdsPortStr, db, caCertPath, ...poolConfig } = this.config;
-			const caCert = fs.readFileSync(
+			const caCert = await fs.promises.readFile(
 				path.resolve(process.cwd(), caCertPath),
 				"utf8",
 			);

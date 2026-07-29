@@ -1,6 +1,6 @@
 import express, { type Express, type Request, type Response } from "express";
 import dotenv from "dotenv";
-import { AWSSecretStore, ConchDBPoolClient } from "./index";
+import { AWSSecretStore, ConchDBService } from "./index";
 import { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 import { loadEnvVariables } from "./utils";
 import { Pool } from "pg";
@@ -34,7 +34,7 @@ const startServer = async (): Promise<AppContext> => {
 		},
 	});
 	const awsSecretStore = new AWSSecretStore(secretsClient, { secretId });
-	const dbPoolClient = new ConchDBPoolClient(
+	const dbPoolClient = new ConchDBService(
 		{
 			db,
 			host,

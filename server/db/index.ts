@@ -1,1 +1,1 @@
-export { ConchDBPoolClient } from "./ConchDBPoolClient";
+export { ConchDBService } from "./ConchDBService";
