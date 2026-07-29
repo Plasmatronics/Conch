@@ -44,16 +44,17 @@ const startServer = async (): Promise<AppContext> => {
 		},
 		awsSecretStore,
 	);
-	const vitalServices: ConchService[] = [dbPoolClient];
-	const dbPool = await dbPoolClient.initializePool();
-	const areVitalServicesHealthy = await healthCheck(vitalServices);
 
+	const vitalServices: ConchService[] = [awsSecretStore, dbPoolClient];
+	const areVitalServicesHealthy = await healthCheck(vitalServices);
 	const errors: string[] = [];
 	for (const { isHealthy, message, service } of areVitalServicesHealthy) {
 		if (isHealthy) continue;
 		errors.push(message ?? `An unknown error occurred in ${service}`);
 	}
 	if (errors.length) throw new Error(errors.join("\n"));
+
+	const dbPool = await dbPoolClient.initializePool();
 
 	const app: Express = express();
 	app.get("/health", async (_req: Request, res: Response) => {
@@ -64,7 +65,7 @@ const startServer = async (): Promise<AppContext> => {
 				if (isHealthy) continue;
 				errors.push(message ?? `An unknown error occurred in ${service}`);
 			}
-			if (errors.length) console.error(errors.join("\n"));
+			if (errors.length) throw new Error(errors.join("\n"));
 
 			res.status(200).json({ status: "ok" });
 		} catch (error: unknown) {
