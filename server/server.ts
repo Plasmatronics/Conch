@@ -1,12 +1,19 @@
 import express, { type Express, type Request, type Response } from "express";
 import dotenv from "dotenv";
-import { AWSSecretStore, ConchDBPoolClient } from "./index";
+import { AWSSecretStore, ConchDBService } from "./index";
 import { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 import { loadEnvVariables } from "./utils";
+import { Pool } from "pg";
+import { ConchService, HealthCheck } from "./types";
+import { healthCheck } from "./utils/healthCheck";
 
 dotenv.config({ path: "../config.env" });
 
-const startServer = async (): Promise<void> => {
+interface AppContext {
+	dbPool: Pool;
+}
+
+const startServer = async (): Promise<AppContext> => {
 	const {
 		devPort,
 		secretId,
@@ -27,32 +34,44 @@ const startServer = async (): Promise<void> => {
 		},
 	});
 	const awsSecretStore = new AWSSecretStore(secretsClient, { secretId });
-
-	const dbPool = new ConchDBPoolClient(
+	const dbPoolClient = new ConchDBService(
 		{
 			db,
 			host,
 			rdsPortStr,
-			region,
 			caCertPath,
+			connectionTimeoutMillis: 5000,
 		},
 		awsSecretStore,
 	);
 
+	const vitalServices: ConchService[] = [awsSecretStore, dbPoolClient];
+	const areVitalServicesHealthy = await healthCheck(vitalServices);
+	const errors: string[] = [];
+	for (const { isHealthy, message, service } of areVitalServicesHealthy) {
+		if (isHealthy) continue;
+		errors.push(message ?? `An unknown error occurred in ${service}`);
+	}
+	if (errors.length) throw new Error(errors.join("\n"));
+
+	const dbPool = await dbPoolClient.initializePool();
+
 	const app: Express = express();
-
 	app.get("/health", async (_req: Request, res: Response) => {
-		const dbClient = await dbPool.getClient();
-
 		try {
-			await dbClient.query(`SELECT 1`);
+			const healthChecks = await healthCheck([dbPoolClient]);
+			const errors: string[] = [];
+			for (const { isHealthy, message, service } of healthChecks) {
+				if (isHealthy) continue;
+				errors.push(message ?? `An unknown error occurred in ${service}`);
+			}
+			if (errors.length) throw new Error(errors.join("\n"));
+
 			res.status(200).json({ status: "ok" });
 		} catch (error: unknown) {
 			res.status(503).json({
 				status: `${error instanceof Error ? error.message : "Unknown error has occurred."}`,
 			});
-		} finally {
-			dbPool.releaseClient(dbClient);
 		}
 	});
 
@@ -62,7 +81,7 @@ const startServer = async (): Promise<void> => {
 
 	const shutdown = async () => {
 		try {
-			await dbPool.releaseClientsAndClosePool();
+			await dbPoolClient.releaseClientsAndClosePool();
 			await new Promise<void>((resolve, reject) => {
 				server.close((err) => {
 					if (err) reject(err);
@@ -73,8 +92,10 @@ const startServer = async (): Promise<void> => {
 			process.exit(0);
 		}
 	};
-
 	process.on("SIGINT", shutdown);
 	process.on("SIGTERM", shutdown);
+
+	return { dbPool };
 };
-startServer();
+
+export const appContext = await startServer();
