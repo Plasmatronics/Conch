@@ -3,20 +3,13 @@ import { Pool } from "pg";
 import { ConchService } from "./types";
 import { healthCheck } from "./utils/healthCheck";
 import { createConchDBService } from "./db";
-import { fileURLToPath } from "node:url";
-import path from "node:path";
-import dotenv from "dotenv";
 
 interface AppContext {
 	dbPool: Pool;
 }
 
-const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({
-	path: path.resolve(currentDirectory, "../../config.env"),
-});
-
 const startServer = async (): Promise<AppContext> => {
+	console.log("hi from inside");
 	const dbPoolClient = createConchDBService({ connectionTimeoutMillis: 5000 });
 
 	const vitalServices: ConchService[] = [dbPoolClient];
