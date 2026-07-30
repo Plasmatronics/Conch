@@ -1,16 +1,20 @@
+export const usersTableName = "users" as const;
+
 export interface Users {
-	id: number;
-	firstName: string;
-	lastName: string;
+	user_id: number;
+	first_name: string;
+	last_name: string;
 	email: string;
-	phoneNumber: string;
-	passwordHash: string;
-	createdAt: Date;
-	deletedDate?: Date;
+	phone_number: string;
+	password_hash: string;
+	created_at: Date;
+	deleted_date?: Date;
 }
 
+export const usersDependencyEdges: Array<[string, string]> = [];
+
 export const createUsersTableQuery = `
-CREATE TABLE users (
+CREATE TABLE ${usersTableName} (
 	user_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	first_name text NOT NULL,
 	last_name text NOT NULL,

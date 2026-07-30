@@ -1,6 +1,7 @@
 import express, { type Express, type Request, type Response } from "express";
 import dotenv from "dotenv";
-import { AWSSecretStore, ConchDBService } from "./index";
+import { AWSSecretStore } from "./secrets";
+import { ConchDBService } from "./db";
 import { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 import { loadEnvVariables } from "./utils";
 import { Pool } from "pg";

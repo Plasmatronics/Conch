@@ -1,31 +1,39 @@
 import type { Point } from "geojson";
-import type { Conches, Media } from "./index";
+import { type Conches, conchesTableName } from "./Conches";
+import { type Media, mediaTableName } from "./Media";
+
+export const membersTableName = "members" as const;
 
 export interface Members {
-	id: number;
-	createdAt: Date;
-	firstName: string;
-	lastName: string;
-	conch: Conches["id"];
-	primaryPhoto?: Media["id"];
-	DOB?: Date;
+	member_id: number;
+	created_at: Date;
+	first_name: string;
+	last_name: string;
+	conch_id: Conches["conch_id"];
+	photo_id?: Media["media_id"];
+	date_of_birth?: Date;
 	biography?: string;
-	DOD?: Date;
+	date_of_death?: Date;
 	addresses?: Point[];
-	birthLocation?: Point;
-	deathLocation?: Point;
-	burialLocation?: Point;
-	deletedDate?: Date;
+	birth_location?: Point;
+	death_location?: Point;
+	burial_location?: Point;
+	deleted_date?: Date;
 }
 
+export const membersDependencyEdges: Array<[string, string]> = [
+	[membersTableName, conchesTableName],
+	[membersTableName, mediaTableName],
+];
+
 export const createMembersTableQuery = `
-CREATE TABLE members (
+CREATE TABLE ${membersTableName} (
     member_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	first_name text NOT NULL,
 	last_name text NOT NULL,
-	conch_id integer NOT NULL REFERENCES conches,
-	photo_id integer REFERENCES media,
+	conch_id integer NOT NULL REFERENCES ${conchesTableName},
+	photo_id integer REFERENCES ${mediaTableName},
 	date_of_birth timestamp,
 	biography text,
 	date_of_death timestamp,
