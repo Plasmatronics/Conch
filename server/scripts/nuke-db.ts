@@ -4,7 +4,9 @@ import { RecordedError } from "../types";
 
 const nukeDb = async (): Promise<void> => {
 	const errors: RecordedError[] = [];
-	const dbPoolClient = createConchDBService();
+	const dbPoolClient = createConchDBService({
+		connectionTimeoutMillis: 5000,
+	});
 	try {
 		const dbPool = await dbPoolClient.initializePool();
 		await dbPool.query(`

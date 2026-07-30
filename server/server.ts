@@ -17,7 +17,7 @@ dotenv.config({
 });
 
 const startServer = async (): Promise<AppContext> => {
-	const dbPoolClient = createConchDBService();
+	const dbPoolClient = createConchDBService({ connectionTimeoutMillis: 5000 });
 
 	const vitalServices: ConchService[] = [dbPoolClient];
 	const areVitalServicesHealthy = await healthCheck(vitalServices);

@@ -5,7 +5,7 @@ import type { RecordedError } from "../types";
 import { createConchDBService } from "../db";
 
 const injectTablesIntoDB = async (): Promise<void> => {
-	const dbPoolClient = createConchDBService();
+	const dbPoolClient = createConchDBService({ connectionTimeoutMillis: 5000 });
 
 	let client: PoolClient | null = null;
 	let transactionInitialized = false;
