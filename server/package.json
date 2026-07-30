@@ -7,7 +7,8 @@
 	"scripts": {
 		"start": "tsx server.ts",
 		"dev": "tsx watch server.ts",
-		"db:init": "tsx ./scripts/init-db.ts"
+		"db:init": "tsx ./scripts/init-db.ts",
+		"db:nuke": "tsx ./scripts/nuke-db.ts"
 	},
 	"dependencies": {
 		"@aws-sdk/client-secrets-manager": "^3.1095.0",
@@ -15,7 +16,8 @@
 		"dotenv": "^17.4.2",
 		"express": "^5.2.1",
 		"mnemonist": "^0.40.4",
-		"pg": "^8.22.0"
+		"pg": "^8.22.0",
+		"pg-format": "^1.0.4"
 	},
 	"author": "Nicholas Bruno",
 	"license": "ISC",
@@ -24,6 +26,7 @@
 		"@types/express": "^5.0.6",
 		"@types/node": "^26.1.1",
 		"@types/pg": "^8.20.0",
+		"@types/pg-format": "^1.0.5",
 		"tsx": "^4.23.1",
 		"typescript": "^7.0.2"
 	}
