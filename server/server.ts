@@ -5,14 +5,19 @@ import { ConchDBService } from "./db";
 import { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 import { loadEnvVariables } from "./utils";
 import { Pool } from "pg";
-import { ConchService, HealthCheck } from "./types";
+import { ConchService } from "./types";
 import { healthCheck } from "./utils/healthCheck";
-
-dotenv.config({ path: "../config.env" });
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 interface AppContext {
 	dbPool: Pool;
 }
+
+const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({
+	path: path.resolve(currentDirectory, "../config.env"),
+});
 
 const startServer = async (): Promise<AppContext> => {
 	const {

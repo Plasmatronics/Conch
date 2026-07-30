@@ -27,6 +27,7 @@ import {
 	postsDependencyEdges,
 	postsTableName,
 	createPostsTableQuery,
+	createSeasonEnum,
 } from "./Posts";
 import {
 	postMediaDependencyEdges,
@@ -42,6 +43,7 @@ import {
 	relationshipsDependencyEdges,
 	relationshipsTableName,
 	createRelationshipsTableQuery,
+	createRelationshipTypeEnumQuery,
 } from "./Relationships";
 import {
 	userReferralsDependencyEdges,
@@ -66,6 +68,11 @@ export const dependencyEdges: Array<[string, string]> = [
 	...relationshipsDependencyEdges,
 	...userReferralsDependencyEdges,
 	...usersDependencyEdges,
+];
+
+export const enumCreationQueries: string[] = [
+	createRelationshipTypeEnumQuery,
+	createSeasonEnum,
 ];
 
 export const nodeToCreationQueryMap: Record<string, string> = {
