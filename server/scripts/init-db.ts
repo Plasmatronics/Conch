@@ -1,53 +1,16 @@
 import { enumCreationQueries, nodeToCreationQueryMap } from "../schemas";
-import dotenv from "dotenv";
-import { AWSSecretStore } from "../secrets";
-import { ConchDBService } from "../db";
-import { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
-import { loadEnvVariables } from "../utils";
 import type { PoolClient } from "pg";
 import { determineTopologicalOrderingOfTableCreation } from "./utils";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({
-	path: path.resolve(currentDirectory, "../../config.env"),
-});
+import type { RecordedError } from "../types";
+import { createConchDBService } from "../db";
 
 const injectTablesIntoDB = async (): Promise<void> => {
-	const {
-		secretId,
-		accessKeyId,
-		secretAccessKey,
-		db,
-		host,
-		rdsPortStr,
-		region,
-		caCertPath,
-	} = loadEnvVariables();
-
-	const secretsClient = new SecretsManagerClient({
-		region,
-		credentials: {
-			accessKeyId,
-			secretAccessKey,
-		},
-	});
-	const awsSecretStore = new AWSSecretStore(secretsClient, { secretId });
-	const dbPoolClient = new ConchDBService(
-		{
-			db,
-			host,
-			rdsPortStr,
-			caCertPath,
-			connectionTimeoutMillis: 5000,
-		},
-		awsSecretStore,
-	);
+	const dbPoolClient = createConchDBService();
 
 	let client: PoolClient | null = null;
 	let transactionInitialized = false;
-	let error: unknown = null;
+	let transactionCommitted = false;
+	const errors: Array<RecordedError> = [];
 	try {
 		const creationOrder = determineTopologicalOrderingOfTableCreation();
 		if (!creationOrder.length)
@@ -67,63 +30,56 @@ const injectTablesIntoDB = async (): Promise<void> => {
 
 		await client.query("COMMIT");
 		transactionInitialized = false;
+		transactionCommitted = true;
 		console.log(
 			`The following tables were added to the db:\n ${creationOrder.join("\n")}`,
 		);
 	} catch (originalError: unknown) {
-		error = originalError;
+		errors.push({
+			cause: originalError,
+			message: "An error occurred during table injection",
+		});
 		try {
 			if (client && transactionInitialized) await client.query("ROLLBACK");
+			transactionInitialized = false;
 		} catch (rollbackError: unknown) {
-			throw new AggregateError(
-				[originalError, rollbackError],
-				"Table injection failed and rollback also failed",
-			);
+			errors.push({
+				cause: rollbackError,
+				message: "An error occurred during transaction rollback",
+			});
 		}
-
-		throw new Error("An error occurred during table injection", {
-			cause: originalError,
-		});
 	} finally {
-		const cleanupErrors: unknown[] = [];
-
 		if (client) {
 			try {
 				client.release();
 			} catch (releaseError: unknown) {
-				cleanupErrors.push(releaseError);
+				errors.push({
+					cause: releaseError,
+					message: "An error occurred during client release",
+				});
 			}
 		}
 
 		try {
 			await dbPoolClient.releaseClientsAndClosePool();
 		} catch (poolClosureError: unknown) {
-			cleanupErrors.push(poolClosureError);
-		}
-
-		if (error && cleanupErrors.length) {
-			throw new AggregateError(
-				[error, ...cleanupErrors],
-				"Table injection failed and cleanup also failed",
-			);
-		}
-
-		if (error) {
-			throw new Error("An error occurred during table injection", {
-				cause: error,
+			errors.push({
+				cause: poolClosureError,
+				message: "An error occurred during pool closure",
 			});
 		}
 
-		if (cleanupErrors.length === 1) {
-			throw new Error("An error occurred during database cleanup", {
-				cause: cleanupErrors[0],
+		if (errors.length === 1) {
+			const firstError = errors[0];
+			throw new Error(firstError.message, {
+				cause: firstError.cause,
 			});
-		}
-
-		if (cleanupErrors.length > 1) {
+		} else if (errors.length > 1) {
 			throw new AggregateError(
-				cleanupErrors,
-				"Multiple errors occurred during database cleanup",
+				errors.map(({ cause, message }) => new Error(message, { cause })),
+				transactionCommitted
+					? "Table injection succeeded, but multiple cleanup errors occurred"
+					: "Multiple errors occurred during table injection process",
 			);
 		}
 	}
