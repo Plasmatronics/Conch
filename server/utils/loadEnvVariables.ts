@@ -1,3 +1,7 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import dotenv from "dotenv";
+
 interface ConchServerConfig {
 	devPort: string;
 	secretId: string;
@@ -9,6 +13,11 @@ interface ConchServerConfig {
 	region: string;
 	caCertPath: string;
 }
+
+const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({
+	path: path.resolve(currentDirectory, "../../config.env"),
+});
 
 export const loadEnvVariables = (): ConchServerConfig => {
 	const {

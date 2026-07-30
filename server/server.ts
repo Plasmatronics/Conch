@@ -1,14 +1,11 @@
 import express, { type Express, type Request, type Response } from "express";
-import dotenv from "dotenv";
-import { AWSSecretStore } from "./secrets";
-import { ConchDBService } from "./db";
-import { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
-import { loadEnvVariables } from "./utils";
 import { Pool } from "pg";
 import { ConchService } from "./types";
 import { healthCheck } from "./utils/healthCheck";
-import path from "node:path";
+import { createConchDBService } from "./db";
 import { fileURLToPath } from "node:url";
+import path from "node:path";
+import dotenv from "dotenv";
 
 interface AppContext {
 	dbPool: Pool;
@@ -16,42 +13,13 @@ interface AppContext {
 
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({
-	path: path.resolve(currentDirectory, "../config.env"),
+	path: path.resolve(currentDirectory, "../../config.env"),
 });
 
 const startServer = async (): Promise<AppContext> => {
-	const {
-		devPort,
-		secretId,
-		accessKeyId,
-		secretAccessKey,
-		db,
-		host,
-		rdsPortStr,
-		region,
-		caCertPath,
-	} = loadEnvVariables();
+	const dbPoolClient = createConchDBService();
 
-	const secretsClient = new SecretsManagerClient({
-		region,
-		credentials: {
-			accessKeyId,
-			secretAccessKey,
-		},
-	});
-	const awsSecretStore = new AWSSecretStore(secretsClient, { secretId });
-	const dbPoolClient = new ConchDBService(
-		{
-			db,
-			host,
-			rdsPortStr,
-			caCertPath,
-			connectionTimeoutMillis: 5000,
-		},
-		awsSecretStore,
-	);
-
-	const vitalServices: ConchService[] = [awsSecretStore, dbPoolClient];
+	const vitalServices: ConchService[] = [dbPoolClient];
 	const areVitalServicesHealthy = await healthCheck(vitalServices);
 	const errors: string[] = [];
 	for (const { isHealthy, message, service } of areVitalServicesHealthy) {
@@ -81,8 +49,8 @@ const startServer = async (): Promise<AppContext> => {
 		}
 	});
 
-	const server = app.listen(devPort, () => {
-		console.log(`Listening on port ${devPort}`);
+	const server = app.listen(process.env.DEV_PORT ?? 4000, () => {
+		console.log(`Listening on port ${process.env.DEV_PORT ?? 4000}`);
 	});
 
 	const shutdown = async () => {
