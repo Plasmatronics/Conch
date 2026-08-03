@@ -1,23 +1,37 @@
+import { z } from "zod";
 import { type Members, membersTableName } from "./Members";
 import { type Users, usersTableName } from "./Users";
 import { type Conches, conchesTableName } from "./Conches";
 
 export const memberReferralsTableName = "member_referrals" as const;
+export const memberReferralsIdColumnName = "member_referral_id" as const;
 
-export interface MemberReferrals {
-	member_referral_id: number;
-	created_at: Date;
-	referred_first_name: string;
-	referred_last_name: string;
-	referrer_id: Users["user_id"];
-	conch_id: Conches["conch_id"];
-	parent_one_id?: Members["member_id"];
-	parent_two_id?: Members["member_id"];
-	child_id?: Members["member_id"];
-	spouse_id?: Members["member_id"];
-	count: number;
-	deleted_date?: Date;
-}
+export const memberReferralsSchema = z.object({
+	[memberReferralsIdColumnName]: z.number(),
+	created_at: z.date(),
+	referred_first_name: z.string(),
+	referred_last_name: z.string(),
+	referrer_id: z.number(),
+	conch_id: z.number(),
+	parent_one_id: z.number().optional(),
+	parent_two_id: z.number().optional(),
+	child_id: z.number().optional(),
+	spouse_id: z.number().optional(),
+	count: z.number(),
+	deleted_date: z.date().optional(),
+});
+
+export const memberReferralsCreateSchema = memberReferralsSchema
+	.omit({
+		[memberReferralsIdColumnName]: true,
+		created_at: true,
+	})
+	.partial({ count: true });
+
+export const memberReferralsUpdateSchema =
+	memberReferralsCreateSchema.partial();
+
+export type MemberReferrals = z.infer<typeof memberReferralsSchema>;
 
 export const memberReferralsDependencyEdges: Array<[string, string]> = [
 	[memberReferralsTableName, usersTableName],

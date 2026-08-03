@@ -1,17 +1,28 @@
+import { z } from "zod";
 import { Members, membersTableName } from "./Members";
 
 export const relationshipsTableName = "relationships" as const;
+export const relationshipsIdColumnName = "relationship_id" as const;
 
 export type Relationship = "spouse" | "child" | "pet" | "friend";
 
-export interface Relationships {
-	relationship_id: number;
-	relationship_type: Relationship;
-	created_at: Date;
-	source_member_id: Members["member_id"];
-	target_member_id: Members["member_id"];
-	deleted_date?: Date;
-}
+export const relationshipsSchema = z.object({
+	[relationshipsIdColumnName]: z.number(),
+	relationship_type: z.enum(["spouse", "child", "pet", "friend"]),
+	created_at: z.date(),
+	source_member_id: z.number(),
+	target_member_id: z.number(),
+	deleted_date: z.date().optional(),
+});
+
+export const relationshipsCreateSchema = relationshipsSchema.omit({
+	[relationshipsIdColumnName]: true,
+	created_at: true,
+});
+
+export const relationshipsUpdateSchema = relationshipsCreateSchema.partial();
+
+export type Relationships = z.infer<typeof relationshipsSchema>;
 
 export const relationshipsDependencyEdges: Array<[string, string]> = [
 	[relationshipsTableName, membersTableName],

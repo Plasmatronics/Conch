@@ -17,7 +17,8 @@
 		"express": "^5.2.1",
 		"mnemonist": "^0.40.4",
 		"pg": "^8.22.0",
-		"pg-format": "^1.0.4"
+		"pg-format": "^1.0.4",
+		"zod": "^4.4.3"
 	},
 	"author": "Nicholas Bruno",
 	"license": "ISC",
