@@ -1,7 +1,7 @@
 import { z } from "zod";
-import type { Point } from "geojson";
-import { type Conches, conchesTableName } from "./Conches";
-import { type Media, mediaTableName } from "./Media";
+import { conchesTableName } from "./Conches";
+import { mediaTableName } from "./Media";
+import { apiDateSchema } from "./shared";
 
 export const membersTableName = "members" as const;
 export const membersIdColumnName = "member_id" as const;
@@ -13,7 +13,7 @@ const pointSchema = z.object({
 
 export const membersSchema = z.object({
 	[membersIdColumnName]: z.number(),
-	created_at: z.date(),
+	created_at: apiDateSchema,
 	first_name: z.string(),
 	last_name: z.string(),
 	conch_id: z.number(),
@@ -25,7 +25,7 @@ export const membersSchema = z.object({
 	birth_location: pointSchema.optional(),
 	death_location: pointSchema.optional(),
 	burial_location: pointSchema.optional(),
-	deleted_date: z.date().optional(),
+	deleted_date: apiDateSchema.optional(),
 });
 
 export const membersCreateSchema = membersSchema.omit({

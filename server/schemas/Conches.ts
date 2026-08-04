@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { type Media, mediaTableName } from "./Media";
-import { type Users, usersTableName } from "./Users";
+import { mediaTableName } from "./Media";
+import { usersTableName } from "./Users";
+import { apiDateSchema } from "./shared";
 
 export const conchesTableName = "conches" as const;
 export const conchesIdColumnName = "conch_id" as const;
@@ -11,8 +12,8 @@ export const conchesSchema = z.object({
 	media_id: z.number(),
 	confirmations_needed_for_referrals: z.number(),
 	admin_id: z.number(),
-	created_at: z.date(),
-	deleted_date: z.date().optional(),
+	created_at: apiDateSchema,
+	deleted_date: apiDateSchema.optional(),
 });
 
 export const conchesCreateSchema = conchesSchema.omit({

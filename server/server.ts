@@ -57,6 +57,8 @@ const startServer = async (): Promise<AppContext> => {
 		}
 	});
 
+	app.use(express.json());
+
 	const claimRoutes = createClaimRoutes(dbPool);
 	app.use(`${apiPrefix}/claims`, claimRoutes);
 

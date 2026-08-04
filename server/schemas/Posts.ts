@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { Point } from "geojson";
-import { type Users, usersTableName } from "./Users";
+import { usersTableName } from "./Users";
+import { apiDateSchema } from "./shared";
 
 export const postsTableName = "posts" as const;
 export const postsIdColumnName = "post_id" as const;
@@ -18,7 +18,7 @@ export const postsSchema = z.object({
 	[postsIdColumnName]: z.number(),
 	author_id: z.number(),
 	title: z.string(),
-	created_at: z.date(),
+	created_at: apiDateSchema,
 	body_text: z.string().optional(),
 	location: z
 		.object({
@@ -27,7 +27,7 @@ export const postsSchema = z.object({
 		})
 		.optional(),
 	date: storyDateSchema.optional(),
-	deleted_date: z.date().optional(),
+	deleted_date: apiDateSchema.optional(),
 });
 
 export const postsCreateSchema = postsSchema.omit({

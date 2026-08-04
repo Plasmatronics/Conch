@@ -1,18 +1,19 @@
 import { z } from "zod";
-import { type Members, membersTableName } from "./Members";
-import { type Users, usersTableName } from "./Users";
-import { type Conches, conchesTableName } from "./Conches";
+import { membersTableName } from "./Members";
+import { usersTableName } from "./Users";
+import { conchesTableName } from "./Conches";
+import { apiDateSchema } from "./shared";
 
 export const claimsTableName = "claims" as const;
 export const claimsIdColumnName = "claim_id" as const;
 
 export const claimsSchema = z.object({
 	[claimsIdColumnName]: z.number(),
-	created_at: z.date(),
+	created_at: apiDateSchema,
 	conch_id: z.number(),
 	user_id: z.number(),
 	member_id: z.number(),
-	deleted_date: z.date().optional(),
+	deleted_date: apiDateSchema.optional(),
 });
 
 export const claimsCreateSchema = claimsSchema.omit({

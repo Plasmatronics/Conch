@@ -1,21 +1,22 @@
 import { z } from "zod";
-import { type Users, usersTableName } from "./Users";
-import { type Conches, conchesTableName } from "./Conches";
-import { type Members, membersTableName } from "./Members";
+import { usersTableName } from "./Users";
+import { conchesTableName } from "./Conches";
+import { membersTableName } from "./Members";
+import { apiDateSchema } from "./shared";
 
 export const userReferralsTableName = "user_referrals" as const;
 export const userReferralsIdColumnName = "user_referral_id" as const;
 
 export const userReferralsSchema = z.object({
 	[userReferralsIdColumnName]: z.number(),
-	created_at: z.date(),
+	created_at: apiDateSchema,
 	referred_phone_number: z.string(),
-	referred_email: z.string().optional(),
+	referred_email: z.email().optional(),
 	referred_member_id: z.number(),
 	referrer_id: z.number(),
 	conch_id: z.number(),
 	count: z.number(),
-	deleted_date: z.date().optional(),
+	deleted_date: apiDateSchema.optional(),
 });
 
 export const userReferralsCreateSchema = userReferralsSchema
@@ -23,7 +24,9 @@ export const userReferralsCreateSchema = userReferralsSchema
 		[userReferralsIdColumnName]: true,
 		created_at: true,
 	})
-	.partial({ count: true });
+	.extend({
+		count: z.number().default(0), // Make optional and provide default
+	});
 
 export const userReferralsUpdateSchema = userReferralsCreateSchema.partial();
 

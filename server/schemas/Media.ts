@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { apiDateSchema } from "./shared";
 
 export const mediaTableName = "media" as const;
 export const mediaIdColumnName = "media_id" as const;
@@ -6,8 +7,8 @@ export const mediaIdColumnName = "media_id" as const;
 export const mediaSchema = z.object({
 	[mediaIdColumnName]: z.number(),
 	storage_key: z.string(),
-	created_at: z.date(),
-	deleted_date: z.date().optional(),
+	created_at: apiDateSchema,
+	deleted_date: apiDateSchema.optional(),
 });
 
 export const mediaCreateSchema = mediaSchema.omit({

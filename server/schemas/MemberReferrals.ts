@@ -1,14 +1,15 @@
 import { z } from "zod";
-import { type Members, membersTableName } from "./Members";
-import { type Users, usersTableName } from "./Users";
-import { type Conches, conchesTableName } from "./Conches";
+import { membersTableName } from "./Members";
+import { usersTableName } from "./Users";
+import { conchesTableName } from "./Conches";
+import { apiDateSchema } from "./shared";
 
 export const memberReferralsTableName = "member_referrals" as const;
 export const memberReferralsIdColumnName = "member_referral_id" as const;
 
 export const memberReferralsSchema = z.object({
 	[memberReferralsIdColumnName]: z.number(),
-	created_at: z.date(),
+	created_at: apiDateSchema,
 	referred_first_name: z.string(),
 	referred_last_name: z.string(),
 	referrer_id: z.number(),
@@ -18,7 +19,7 @@ export const memberReferralsSchema = z.object({
 	child_id: z.number().optional(),
 	spouse_id: z.number().optional(),
 	count: z.number(),
-	deleted_date: z.date().optional(),
+	deleted_date: apiDateSchema.optional(),
 });
 
 export const memberReferralsCreateSchema = memberReferralsSchema
@@ -26,7 +27,9 @@ export const memberReferralsCreateSchema = memberReferralsSchema
 		[memberReferralsIdColumnName]: true,
 		created_at: true,
 	})
-	.partial({ count: true });
+	.extend({
+		count: z.number().default(0),
+	});
 
 export const memberReferralsUpdateSchema =
 	memberReferralsCreateSchema.partial();

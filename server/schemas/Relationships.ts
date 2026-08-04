@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { Members, membersTableName } from "./Members";
+import { membersTableName } from "./Members";
+import { apiDateSchema } from "./shared";
 
 export const relationshipsTableName = "relationships" as const;
 export const relationshipsIdColumnName = "relationship_id" as const;
@@ -9,10 +10,10 @@ export type Relationship = "spouse" | "child" | "pet" | "friend";
 export const relationshipsSchema = z.object({
 	[relationshipsIdColumnName]: z.number(),
 	relationship_type: z.enum(["spouse", "child", "pet", "friend"]),
-	created_at: z.date(),
+	created_at: apiDateSchema,
 	source_member_id: z.number(),
 	target_member_id: z.number(),
-	deleted_date: z.date().optional(),
+	deleted_date: apiDateSchema.optional(),
 });
 
 export const relationshipsCreateSchema = relationshipsSchema.omit({

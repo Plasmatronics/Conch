@@ -1,16 +1,17 @@
 import { z } from "zod";
-import { type Members, membersTableName } from "./Members";
-import { type Posts, postsTableName } from "./Posts";
+import { membersTableName } from "./Members";
+import { postsTableName } from "./Posts";
+import { apiDateSchema } from "./shared";
 
 export const postMembersTableName = "post_members" as const;
 export const postMembersIdColumnName = "post_member_id" as const;
 
 export const postMembersSchema = z.object({
 	[postMembersIdColumnName]: z.number(),
-	created_at: z.date(),
+	created_at: apiDateSchema,
 	member_id: z.number(),
 	post_id: z.number(),
-	deleted_date: z.date().optional(),
+	deleted_date: apiDateSchema.optional(),
 });
 
 export const postMembersCreateSchema = postMembersSchema.omit({

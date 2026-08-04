@@ -1,9 +1,9 @@
 import { Router } from "express";
 import {
-	claimsTableName,
-	claimsIdColumnName,
-	claimsUpdateSchema,
-	claimsCreateSchema,
+	conchesTableName,
+	conchesIdColumnName,
+	conchesUpdateSchema,
+	conchesCreateSchema,
 } from "../schemas";
 import { RouteFactory } from "./RouteFactory";
 import { Pool } from "pg";
@@ -11,12 +11,12 @@ import { crudFactory } from "./CRUDFactory";
 
 export const createConchRoutes = (dbPool: Pool): Router => {
 	const conchRouteFactory = new RouteFactory(
-		claimsTableName,
+		conchesTableName,
 		dbPool,
-		claimsIdColumnName,
+		conchesIdColumnName,
 		crudFactory,
-		claimsCreateSchema,
-		claimsUpdateSchema,
+		conchesCreateSchema,
+		conchesUpdateSchema,
 	);
 
 	return conchRouteFactory.createRoutes();

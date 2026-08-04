@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { apiDateSchema } from "./shared";
 
 export const usersTableName = "users" as const;
 export const usersIdColumnName = "user_id" as const;
@@ -7,11 +8,11 @@ export const usersSchema = z.object({
 	[usersIdColumnName]: z.number(),
 	first_name: z.string(),
 	last_name: z.string(),
-	email: z.string().email(),
+	email: z.email(),
 	phone_number: z.string(),
 	password_hash: z.string(),
-	created_at: z.date(),
-	deleted_date: z.date().optional(),
+	created_at: apiDateSchema,
+	deleted_date: apiDateSchema.optional(),
 });
 
 export const usersCreateSchema = usersSchema.omit({
