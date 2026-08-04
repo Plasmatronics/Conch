@@ -43,7 +43,7 @@ class PrivateCRUDFactory {
 
 	generateDeleteOne(table: string, idColumn: string, id: string): QueryConfig {
 		const paramterizedQuery = format(
-			`DELETE FROM %I WHERE %I = $1 `,
+			`DELETE FROM %I WHERE %I = $1 RETURNING *`,
 			table,
 			idColumn,
 		);
