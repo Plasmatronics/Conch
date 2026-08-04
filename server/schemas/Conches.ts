@@ -1,17 +1,29 @@
-import { type Media, mediaTableName } from "./Media";
-import { type Users, usersTableName } from "./Users";
+import { z } from "zod";
+import { mediaTableName } from "./Media";
+import { usersTableName } from "./Users";
+import { apiDateSchema } from "./shared";
 
 export const conchesTableName = "conches" as const;
+export const conchesIdColumnName = "conch_id" as const;
 
-export interface Conches {
-	conch_id: number;
-	conch_name: string;
-	media_id: Media["media_id"];
-	confirmations_needed_for_referrals: number;
-	admin_id: Users["user_id"];
-	created_at: Date;
-	deleted_date?: Date;
-}
+export const conchesSchema = z.object({
+	[conchesIdColumnName]: z.number(),
+	conch_name: z.string(),
+	media_id: z.number(),
+	confirmations_needed_for_referrals: z.number(),
+	admin_id: z.number(),
+	created_at: apiDateSchema,
+	deleted_date: apiDateSchema.optional(),
+});
+
+export const conchesCreateSchema = conchesSchema.omit({
+	[conchesIdColumnName]: true,
+	created_at: true,
+});
+
+export const conchesUpdateSchema = conchesCreateSchema.partial();
+
+export type Conches = z.infer<typeof conchesSchema>;
 
 export const conchesDependencyEdges: Array<[string, string]> = [
 	[conchesTableName, mediaTableName],

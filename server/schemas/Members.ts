@@ -1,25 +1,41 @@
-import type { Point } from "geojson";
-import { type Conches, conchesTableName } from "./Conches";
-import { type Media, mediaTableName } from "./Media";
+import { z } from "zod";
+import { conchesTableName } from "./Conches";
+import { mediaTableName } from "./Media";
+import { apiDateSchema } from "./shared";
 
 export const membersTableName = "members" as const;
+export const membersIdColumnName = "member_id" as const;
 
-export interface Members {
-	member_id: number;
-	created_at: Date;
-	first_name: string;
-	last_name: string;
-	conch_id: Conches["conch_id"];
-	photo_id?: Media["media_id"];
-	date_of_birth?: Date;
-	biography?: string;
-	date_of_death?: Date;
-	addresses?: Point[];
-	birth_location?: Point;
-	death_location?: Point;
-	burial_location?: Point;
-	deleted_date?: Date;
-}
+const pointSchema = z.object({
+	type: z.literal("Point"),
+	coordinates: z.tuple([z.number(), z.number()]),
+});
+
+export const membersSchema = z.object({
+	[membersIdColumnName]: z.number(),
+	created_at: apiDateSchema,
+	first_name: z.string(),
+	last_name: z.string(),
+	conch_id: z.number(),
+	photo_id: z.number().optional(),
+	date_of_birth: apiDateSchema.optional(),
+	biography: z.string().optional(),
+	date_of_death: apiDateSchema.optional(),
+	addresses: z.array(pointSchema).optional(),
+	birth_location: pointSchema.optional(),
+	death_location: pointSchema.optional(),
+	burial_location: pointSchema.optional(),
+	deleted_date: apiDateSchema.optional(),
+});
+
+export const membersCreateSchema = membersSchema.omit({
+	[membersIdColumnName]: true,
+	created_at: true,
+});
+
+export const membersUpdateSchema = membersCreateSchema.partial();
+
+export type Members = z.infer<typeof membersSchema>;
 
 export const membersDependencyEdges: Array<[string, string]> = [
 	[membersTableName, conchesTableName],

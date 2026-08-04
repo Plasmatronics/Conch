@@ -1,20 +1,36 @@
-import { type Users, usersTableName } from "./Users";
-import { type Conches, conchesTableName } from "./Conches";
-import { type Members, membersTableName } from "./Members";
+import { z } from "zod";
+import { usersTableName } from "./Users";
+import { conchesTableName } from "./Conches";
+import { membersTableName } from "./Members";
+import { apiDateSchema } from "./shared";
 
 export const userReferralsTableName = "user_referrals" as const;
+export const userReferralsIdColumnName = "user_referral_id" as const;
 
-export interface UserReferrals {
-	user_referral_id: number;
-	created_at: Date;
-	referred_phone_number: string;
-	referred_email?: string;
-	referred_member_id: Members["member_id"];
-	referrer_id: Users["user_id"];
-	conch_id: Conches["conch_id"];
-	count: number;
-	deleted_date?: Date;
-}
+export const userReferralsSchema = z.object({
+	[userReferralsIdColumnName]: z.number(),
+	created_at: apiDateSchema,
+	referred_phone_number: z.string(),
+	referred_email: z.email().optional(),
+	referred_member_id: z.number(),
+	referrer_id: z.number(),
+	conch_id: z.number(),
+	count: z.number(),
+	deleted_date: apiDateSchema.optional(),
+});
+
+export const userReferralsCreateSchema = userReferralsSchema
+	.omit({
+		[userReferralsIdColumnName]: true,
+		created_at: true,
+	})
+	.extend({
+		count: z.number().default(0), // Make optional and provide default
+	});
+
+export const userReferralsUpdateSchema = userReferralsCreateSchema.partial();
+
+export type UserReferrals = z.infer<typeof userReferralsSchema>;
 
 export const userReferralsDependencyEdges: Array<[string, string]> = [
 	[userReferralsTableName, membersTableName],

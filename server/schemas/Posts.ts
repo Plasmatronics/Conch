@@ -1,25 +1,43 @@
-import { Point } from "geojson";
-import { type Users, usersTableName } from "./Users";
+import { z } from "zod";
+import { usersTableName } from "./Users";
+import { apiDateSchema } from "./shared";
 
 export const postsTableName = "posts" as const;
+export const postsIdColumnName = "post_id" as const;
 
 export type Season = "winter" | "spring" | "summer" | "fall";
 
-export interface StoryDate {
-	season?: Season;
-	year: number;
-}
+export const storyDateSchema = z.object({
+	season: z.enum(["winter", "spring", "summer", "fall"]).optional(),
+	year: z.number(),
+});
 
-export interface Posts {
-	post_id: number;
-	author_id: Users["user_id"];
-	title: string;
-	created_at: Date;
-	body_text?: string;
-	location?: Point;
-	date?: StoryDate;
-	deleted_date?: Date;
-}
+export type StoryDate = z.infer<typeof storyDateSchema>;
+
+export const postsSchema = z.object({
+	[postsIdColumnName]: z.number(),
+	author_id: z.number(),
+	title: z.string(),
+	created_at: apiDateSchema,
+	body_text: z.string().optional(),
+	location: z
+		.object({
+			type: z.literal("Point"),
+			coordinates: z.tuple([z.number(), z.number()]),
+		})
+		.optional(),
+	date: storyDateSchema.optional(),
+	deleted_date: apiDateSchema.optional(),
+});
+
+export const postsCreateSchema = postsSchema.omit({
+	[postsIdColumnName]: true,
+	created_at: true,
+});
+
+export const postsUpdateSchema = postsCreateSchema.partial();
+
+export type Posts = z.infer<typeof postsSchema>;
 
 export const postsDependencyEdges: Array<[string, string]> = [
 	[postsTableName, usersTableName],

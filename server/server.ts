@@ -1,15 +1,30 @@
 import express, { type Express, type Request, type Response } from "express";
 import { Pool } from "pg";
 import { ConchService } from "./types";
-import { healthCheck } from "./utils/healthCheck";
+import { healthCheck } from "./utils";
 import { createConchDBService } from "./db";
+import {
+	createClaimRoutes,
+	createConchRoutes,
+	createMediaRoutes,
+	createMemberReferralRoutes,
+	createMemberRoutes,
+	createPostMediaRoutes,
+	createPostMemberRoutes,
+	createPostRoutes,
+	createRelationshipRoutes,
+	createUserReferralRoutes,
+	createUserRoutes,
+} from "./routes";
 
 interface AppContext {
 	dbPool: Pool;
 }
 
 const startServer = async (): Promise<AppContext> => {
-	console.log("hi from inside");
+	const apiPrefix = process.env.API_PREFIX;
+	if (!apiPrefix) throw new Error("Could not load API_PREFIX from config file");
+
 	const dbPoolClient = createConchDBService({ connectionTimeoutMillis: 5000 });
 
 	const vitalServices: ConchService[] = [dbPoolClient];
@@ -24,7 +39,7 @@ const startServer = async (): Promise<AppContext> => {
 	const dbPool = await dbPoolClient.initializePool();
 
 	const app: Express = express();
-	app.get("/health", async (_req: Request, res: Response) => {
+	app.get(`${apiPrefix}/health`, async (_req: Request, res: Response) => {
 		try {
 			const healthChecks = await healthCheck([dbPoolClient]);
 			const errors: string[] = [];
@@ -41,6 +56,41 @@ const startServer = async (): Promise<AppContext> => {
 			});
 		}
 	});
+
+	app.use(express.json());
+
+	const claimRoutes = createClaimRoutes(dbPool);
+	app.use(`${apiPrefix}/claims`, claimRoutes);
+
+	const conchRoutes = createConchRoutes(dbPool);
+	app.use(`${apiPrefix}/conches`, conchRoutes);
+
+	const mediaRoutes = createMediaRoutes(dbPool);
+	app.use(`${apiPrefix}/media`, mediaRoutes);
+
+	const memberReferralRoutes = createMemberReferralRoutes(dbPool);
+	app.use(`${apiPrefix}/memberReferrals`, memberReferralRoutes);
+
+	const memberRoutes = createMemberRoutes(dbPool);
+	app.use(`${apiPrefix}/members`, memberRoutes);
+
+	const postMediaRoutes = createPostMediaRoutes(dbPool);
+	app.use(`${apiPrefix}/postMedia`, postMediaRoutes);
+
+	const postMemberRoutes = createPostMemberRoutes(dbPool);
+	app.use(`${apiPrefix}/postMembers`, postMemberRoutes);
+
+	const postRoutes = createPostRoutes(dbPool);
+	app.use(`${apiPrefix}/posts`, postRoutes);
+
+	const relationshipRoutes = createRelationshipRoutes(dbPool);
+	app.use(`${apiPrefix}/relationships`, relationshipRoutes);
+
+	const userReferralRoutes = createUserReferralRoutes(dbPool);
+	app.use(`${apiPrefix}/userReferrals`, userReferralRoutes);
+
+	const userRoutes = createUserRoutes(dbPool);
+	app.use(`${apiPrefix}/users`, userRoutes);
 
 	const server = app.listen(process.env.DEV_PORT ?? 4000, () => {
 		console.log(`Listening on port ${process.env.DEV_PORT ?? 4000}`);

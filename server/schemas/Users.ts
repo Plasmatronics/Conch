@@ -1,15 +1,28 @@
-export const usersTableName = "users" as const;
+import { z } from "zod";
+import { apiDateSchema } from "./shared";
 
-export interface Users {
-	user_id: number;
-	first_name: string;
-	last_name: string;
-	email: string;
-	phone_number: string;
-	password_hash: string;
-	created_at: Date;
-	deleted_date?: Date;
-}
+export const usersTableName = "users" as const;
+export const usersIdColumnName = "user_id" as const;
+
+export const usersSchema = z.object({
+	[usersIdColumnName]: z.number(),
+	first_name: z.string(),
+	last_name: z.string(),
+	email: z.email(),
+	phone_number: z.string(),
+	password_hash: z.string(),
+	created_at: apiDateSchema,
+	deleted_date: apiDateSchema.optional(),
+});
+
+export const usersCreateSchema = usersSchema.omit({
+	[usersIdColumnName]: true,
+	created_at: true,
+});
+
+export const usersUpdateSchema = usersCreateSchema.partial();
+
+export type Users = z.infer<typeof usersSchema>;
 
 export const usersDependencyEdges: Array<[string, string]> = [];
 

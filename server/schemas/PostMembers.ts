@@ -1,15 +1,27 @@
-import { type Members, membersTableName } from "./Members";
-import { type Posts, postsTableName } from "./Posts";
+import { z } from "zod";
+import { membersTableName } from "./Members";
+import { postsTableName } from "./Posts";
+import { apiDateSchema } from "./shared";
 
 export const postMembersTableName = "post_members" as const;
+export const postMembersIdColumnName = "post_member_id" as const;
 
-export interface PostMember {
-	post_member_id: number;
-	created_at: Date;
-	member_id: Members["member_id"];
-	post_id: Posts["post_id"];
-	deleted_date?: Date;
-}
+export const postMembersSchema = z.object({
+	[postMembersIdColumnName]: z.number(),
+	created_at: apiDateSchema,
+	member_id: z.number(),
+	post_id: z.number(),
+	deleted_date: apiDateSchema.optional(),
+});
+
+export const postMembersCreateSchema = postMembersSchema.omit({
+	[postMembersIdColumnName]: true,
+	created_at: true,
+});
+
+export const postMembersUpdateSchema = postMembersCreateSchema.partial();
+
+export type PostMember = z.infer<typeof postMembersSchema>;
 
 export const postMembersDependencyEdges: Array<[string, string]> = [
 	[postMembersTableName, membersTableName],

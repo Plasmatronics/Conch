@@ -1,11 +1,24 @@
-export const mediaTableName = "media" as const;
+import { z } from "zod";
+import { apiDateSchema } from "./shared";
 
-export interface Media {
-	media_id: number;
-	storage_key: string;
-	created_at: Date;
-	deleted_date?: Date;
-}
+export const mediaTableName = "media" as const;
+export const mediaIdColumnName = "media_id" as const;
+
+export const mediaSchema = z.object({
+	[mediaIdColumnName]: z.number(),
+	storage_key: z.string(),
+	created_at: apiDateSchema,
+	deleted_date: apiDateSchema.optional(),
+});
+
+export const mediaCreateSchema = mediaSchema.omit({
+	[mediaIdColumnName]: true,
+	created_at: true,
+});
+
+export const mediaUpdateSchema = mediaCreateSchema.partial();
+
+export type Media = z.infer<typeof mediaSchema>;
 
 export const mediaDependencyEdges: Array<[string, string]> = [];
 

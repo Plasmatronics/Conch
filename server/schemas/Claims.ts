@@ -1,17 +1,28 @@
-import { type Members, membersTableName } from "./Members";
-import { type Users, usersTableName } from "./Users";
-import { type Conches, conchesTableName } from "./Conches";
+import { z } from "zod";
+import { membersTableName } from "./Members";
+import { usersTableName } from "./Users";
+import { conchesTableName } from "./Conches";
+import { apiDateSchema } from "./shared";
 
 export const claimsTableName = "claims" as const;
+export const claimsIdColumnName = "claim_id" as const;
 
-export interface Claims {
-	claim_id: number;
-	created_at: Date;
-	conch_id: Conches["conch_id"];
-	user_id: Users["user_id"];
-	member_id: Members["member_id"];
-	deleted_date?: Date;
-}
+export const claimsSchema = z.object({
+	[claimsIdColumnName]: z.number(),
+	created_at: apiDateSchema,
+	conch_id: z.number(),
+	user_id: z.number(),
+	member_id: z.number(),
+	deleted_date: apiDateSchema.optional(),
+});
+
+export const claimsCreateSchema = claimsSchema.omit({
+	[claimsIdColumnName]: true,
+	created_at: true,
+});
+
+export const claimsUpdateSchema = claimsCreateSchema.partial();
+export type Claims = z.infer<typeof claimsSchema>;
 
 export const claimsDependencyEdges: Array<[string, string]> = [
 	[claimsTableName, membersTableName],

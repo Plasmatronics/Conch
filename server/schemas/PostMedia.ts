@@ -1,15 +1,27 @@
-import { type Members, membersTableName } from "./Members";
-import { type Media, mediaTableName } from "./Media";
+import { z } from "zod";
+import { membersTableName } from "./Members";
+import { mediaTableName } from "./Media";
+import { apiDateSchema } from "./shared";
 
 export const postMediaTableName = "post_media" as const;
+export const postMediaIdColumnName = "post_media_id" as const;
 
-export interface PostMedia {
-	post_media_id: number;
-	created_at: Date;
-	member_id: Members["member_id"];
-	media_id: Media["media_id"];
-	deleted_date?: Date;
-}
+export const postMediaSchema = z.object({
+	[postMediaIdColumnName]: z.number(),
+	created_at: apiDateSchema,
+	member_id: z.number(),
+	media_id: z.number(),
+	deleted_date: apiDateSchema.optional(),
+});
+
+export const postMediaCreateSchema = postMediaSchema.omit({
+	[postMediaIdColumnName]: true,
+	created_at: true,
+});
+
+export const postMediaUpdateSchema = postMediaCreateSchema.partial();
+
+export type PostMedia = z.infer<typeof postMediaSchema>;
 
 export const postMediaDependencyEdges: Array<[string, string]> = [
 	[postMediaTableName, membersTableName],
