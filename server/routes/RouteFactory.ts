@@ -38,7 +38,7 @@ export class RouteFactory {
 				);
 
 				const queryResponse = await this.dbPool.query(text, values);
-				res.status(201).json(queryResponse.rows[0] ?? null);
+				res.status(201).json(queryResponse.rows[0] ?? []);
 			} catch (err: unknown) {
 				next(err);
 			}
@@ -65,6 +65,13 @@ export class RouteFactory {
 				);
 
 				const queryResponse = await this.dbPool.query(text, values);
+
+				if (!queryResponse.rows.length) {
+					return res
+						.status(404)
+						.json({ message: `${this.tableName} with ID ${id} not found.` });
+				}
+
 				res.status(200).json(queryResponse.rows[0] ?? null);
 			} catch (err: unknown) {
 				next(err);
@@ -84,6 +91,12 @@ export class RouteFactory {
 				);
 
 				const queryResponse = await this.dbPool.query(text, values);
+				if (!queryResponse.rows.length) {
+					return res
+						.status(404)
+						.json({ message: `${this.tableName} with ID ${id} not found.` });
+				}
+
 				res.status(200).json(queryResponse.rows[0] ?? null);
 			} catch (err: unknown) {
 				next(err);
