@@ -40,7 +40,7 @@ export const userReferralsDependencyEdges: Array<[string, string]> = [
 
 export const createUserReferralsQuery = `
 CREATE TABLE ${userReferralsTableName} (
-	user_referral_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	${userReferralsIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	created_at timestampz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	referred_phone_number text NOT NULL,
 	referred_email text,

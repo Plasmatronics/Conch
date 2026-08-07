@@ -30,7 +30,7 @@ export const postMediaDependencyEdges: Array<[string, string]> = [
 
 export const createPostMediaTableQuery = `
 CREATE TABLE ${postMediaTableName} (
-	post_media_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	${postMediaIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	created_at timestampz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	member_id integer NOT NULL REFERENCES ${membersTableName},
 	media_id integer NOT NULL REFERENCES ${mediaTableName},

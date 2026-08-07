@@ -47,7 +47,7 @@ export const createSeasonEnum = `CREATE TYPE season AS ENUM ('winter', 'spring',
 
 export const createPostsTableQuery = `
 CREATE TABLE ${postsTableName} (
-	post_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	${postsIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	author_id integer NOT NULL REFERENCES ${usersTableName},
 	title text NOT NULL,
 	created_at timestampz NOT NULL DEFAULT CURRENT_TIMESTAMP,

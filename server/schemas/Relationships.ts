@@ -34,7 +34,7 @@ CREATE TYPE relationship AS ENUM ('spouse', 'child', 'friend', 'pet');
 `;
 export const createRelationshipsTableQuery = `
 CREATE TABLE ${relationshipsTableName} (
-	relationship_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	${relationshipsIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	relationship_type relationship NOT NULL,
 	created_at timestampz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	source_member_id integer NOT NULL REFERENCES ${membersTableName},

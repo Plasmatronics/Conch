@@ -32,7 +32,7 @@ export const claimsDependencyEdges: Array<[string, string]> = [
 
 export const createClaimsTableQuery = `
 CREATE TABLE ${claimsTableName} (
-    claim_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    ${claimsIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	created_at timestampz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	conch_id integer NOT NULL REFERENCES ${conchesTableName},
 	user_id integer NOT NULL REFERENCES ${usersTableName},
