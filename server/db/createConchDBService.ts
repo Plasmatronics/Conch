@@ -1,10 +1,27 @@
 import { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
-import { loadEnvVariables } from "../utils";
 import { ConchDBService } from "./ConchDBService";
 import { AWSSecretStore } from "../secrets";
 import { PoolConfig } from "pg";
+import { ConchServerEnvConfig } from "../types";
 
-export const createConchDBService = (config?: PoolConfig): ConchDBService => {
+interface ConchDBServiceCreationConfig
+	extends
+		Pick<
+			ConchServerEnvConfig,
+			| "secretId"
+			| "accessKeyId"
+			| "secretAccessKey"
+			| "db"
+			| "host"
+			| "rdsPortStr"
+			| "region"
+			| "caCertPath"
+		>,
+		Omit<PoolConfig, "host"> {}
+
+export const createConchDBService = (
+	config: ConchDBServiceCreationConfig,
+): ConchDBService => {
 	const {
 		secretId,
 		accessKeyId,
@@ -14,7 +31,8 @@ export const createConchDBService = (config?: PoolConfig): ConchDBService => {
 		rdsPortStr,
 		region,
 		caCertPath,
-	} = loadEnvVariables();
+		...poolConfig
+	} = config;
 
 	const secretsClient = new SecretsManagerClient({
 		region,
@@ -32,7 +50,7 @@ export const createConchDBService = (config?: PoolConfig): ConchDBService => {
 			host,
 			rdsPortStr,
 			caCertPath,
-			...config,
+			...poolConfig,
 		},
 		secretStore,
 	);

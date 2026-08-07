@@ -1,7 +1,6 @@
 import express, { type Express, type Request, type Response } from "express";
-import { Pool } from "pg";
 import { ConchService } from "./types";
-import { healthCheck } from "./utils";
+import { healthCheck, appEnvVariables } from "./utils";
 import { createConchDBService } from "./db";
 import {
 	createClaimRoutes,
@@ -17,15 +16,31 @@ import {
 	createUserRoutes,
 } from "./routes";
 
-interface AppContext {
-	dbPool: Pool;
-}
+const startServer = async (): Promise<void> => {
+	const {
+		secretId,
+		accessKeyId,
+		secretAccessKey,
+		db,
+		host,
+		rdsPortStr,
+		region,
+		caCertPath,
+		apiPrefix,
+		devPort,
+	} = appEnvVariables;
 
-const startServer = async (): Promise<AppContext> => {
-	const apiPrefix = process.env.API_PREFIX;
-	if (!apiPrefix) throw new Error("Could not load API_PREFIX from config file");
-
-	const dbPoolClient = createConchDBService({ connectionTimeoutMillis: 5000 });
+	const dbPoolClient = createConchDBService({
+		secretId,
+		accessKeyId,
+		secretAccessKey,
+		db,
+		host,
+		rdsPortStr,
+		region,
+		caCertPath,
+		connectionTimeoutMillis: 5000,
+	});
 
 	const vitalServices: ConchService[] = [dbPoolClient];
 	const areVitalServicesHealthy = await healthCheck(vitalServices);
@@ -92,8 +107,8 @@ const startServer = async (): Promise<AppContext> => {
 	const userRoutes = createUserRoutes(dbPool);
 	app.use(`${apiPrefix}/users`, userRoutes);
 
-	const server = app.listen(process.env.DEV_PORT ?? 4000, () => {
-		console.log(`Listening on port ${process.env.DEV_PORT ?? 4000}`);
+	const server = app.listen(devPort ?? 4000, () => {
+		console.log(`Listening on port ${devPort ?? 4000}`);
 	});
 
 	const shutdown = async () => {
@@ -111,8 +126,6 @@ const startServer = async (): Promise<AppContext> => {
 	};
 	process.on("SIGINT", shutdown);
 	process.on("SIGTERM", shutdown);
-
-	return { dbPool };
 };
 
-export const appContext = await startServer();
+await startServer();

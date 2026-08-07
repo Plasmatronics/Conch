@@ -1,2 +1,2 @@
-export { loadEnvVariables } from "./loadEnvVariables";
+export { appEnvVariables } from "./appEnvVariables";
 export { healthCheck } from "./healthCheck";

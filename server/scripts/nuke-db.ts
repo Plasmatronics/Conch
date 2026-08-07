@@ -1,12 +1,34 @@
 import { createConchDBService } from "../db";
 import readline from "node:readline";
 import { RecordedError } from "../types";
+import { appEnvVariables } from "../utils";
 
 const nukeDb = async (): Promise<void> => {
 	const errors: RecordedError[] = [];
+
+	const {
+		secretId,
+		accessKeyId,
+		secretAccessKey,
+		db,
+		host,
+		rdsPortStr,
+		region,
+		caCertPath,
+	} = appEnvVariables;
+
 	const dbPoolClient = createConchDBService({
+		secretId,
+		accessKeyId,
+		secretAccessKey,
+		db,
+		host,
+		rdsPortStr,
+		region,
+		caCertPath,
 		connectionTimeoutMillis: 5000,
 	});
+
 	try {
 		const dbPool = await dbPoolClient.initializePool();
 		await dbPool.query(`

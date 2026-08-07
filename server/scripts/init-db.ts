@@ -3,9 +3,31 @@ import type { PoolClient } from "pg";
 import { determineTopologicalOrderingOfTableCreation } from "./utils";
 import type { RecordedError } from "../types";
 import { createConchDBService } from "../db";
+import { appEnvVariables } from "../utils";
 
 const injectTablesIntoDB = async (): Promise<void> => {
-	const dbPoolClient = createConchDBService({ connectionTimeoutMillis: 5000 });
+	const {
+		secretId,
+		accessKeyId,
+		secretAccessKey,
+		db,
+		host,
+		rdsPortStr,
+		region,
+		caCertPath,
+	} = appEnvVariables;
+
+	const dbPoolClient = createConchDBService({
+		secretId,
+		accessKeyId,
+		secretAccessKey,
+		db,
+		host,
+		rdsPortStr,
+		region,
+		caCertPath,
+		connectionTimeoutMillis: 5000,
+	});
 
 	let client: PoolClient | null = null;
 	let transactionInitialized = false;
