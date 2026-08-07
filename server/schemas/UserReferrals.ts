@@ -41,12 +41,12 @@ export const userReferralsDependencyEdges: Array<[string, string]> = [
 export const createUserReferralsQuery = `
 CREATE TABLE ${userReferralsTableName} (
 	user_referral_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	created_at timestampz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	referred_phone_number text NOT NULL,
 	referred_email text,
 	referred_member_id integer NOT NULL REFERENCES ${membersTableName},
 	referrer_id integer NOT NULL REFERENCES ${usersTableName},
 	conch_id integer NOT NULL REFERENCES ${conchesTableName},
 	count smallint NOT NULL DEFAULT 1,
-    deleted_date timestamp
+    deleted_date timestampz
 );`;

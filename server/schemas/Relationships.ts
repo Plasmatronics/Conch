@@ -36,8 +36,8 @@ export const createRelationshipsTableQuery = `
 CREATE TABLE ${relationshipsTableName} (
 	relationship_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	relationship_type relationship NOT NULL,
-	created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	created_at timestampz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	source_member_id integer NOT NULL REFERENCES ${membersTableName},
 	target_member_id integer NOT NULL REFERENCES ${membersTableName},
-    deleted_date timestamp
+    deleted_date timestampz
 );`;

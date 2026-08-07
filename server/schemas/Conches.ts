@@ -37,6 +37,6 @@ CREATE TABLE ${conchesTableName} (
 	media_id integer NOT NULL REFERENCES ${mediaTableName},
 	confirmations_needed_for_referrals smallint NOT NULL,
 	admin_id integer NOT NULL REFERENCES ${usersTableName},
-	created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	deleted_date timestamp
+	created_at timestampz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	deleted_date timestampz
 );`;
