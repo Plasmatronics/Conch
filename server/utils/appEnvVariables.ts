@@ -20,7 +20,6 @@ const loadEnvVariables = (): ConchServerEnvConfig => {
 		AWS_REGION: region,
 		CA_CERT_PATH: caCertPath,
 		API_PREFIX: apiPrefix,
-		JWT_SECRET: jwtSecret,
 	} = process.env;
 
 	if (!region) throw new Error("Missing AWS_REGION");
@@ -32,7 +31,6 @@ const loadEnvVariables = (): ConchServerEnvConfig => {
 	if (!host) throw new Error("Missing RDS_HOST_ENDPOINT");
 	if (!caCertPath) throw new Error("Missing CA_CERT_PATH");
 	if (!apiPrefix) throw new Error("Missing API_PREFIX");
-	if (!jwtSecret) throw new Error("Missing JWT_SECRET");
 	if (!rdsPortStr || Number.isNaN(Number(rdsPortStr)))
 		throw new Error(`Invalid RDS_PORT: ${rdsPortStr}`);
 	if (!devPort || Number.isNaN(Number(devPort)))
@@ -49,7 +47,6 @@ const loadEnvVariables = (): ConchServerEnvConfig => {
 		region,
 		caCertPath,
 		apiPrefix,
-		jwtSecret,
 	};
 };
 
