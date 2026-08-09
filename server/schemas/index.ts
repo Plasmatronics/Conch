@@ -55,6 +55,11 @@ import {
 	usersTableName,
 	createUsersTableQuery,
 } from "./Users";
+import {
+	createSessionsTableQuery,
+	sessionsDependencyEdges,
+	sessionsTableName,
+} from "./Sessions";
 
 export const dependencyEdges: Array<[string, string]> = [
 	...claimsDependencyEdges,
@@ -68,6 +73,7 @@ export const dependencyEdges: Array<[string, string]> = [
 	...relationshipsDependencyEdges,
 	...userReferralsDependencyEdges,
 	...usersDependencyEdges,
+	...sessionsDependencyEdges,
 ];
 
 export const enumCreationQueries: string[] = [
@@ -76,6 +82,7 @@ export const enumCreationQueries: string[] = [
 ];
 
 export const nodeToCreationQueryMap: Record<string, string> = {
+	[sessionsTableName]: createSessionsTableQuery,
 	[claimsTableName]: createClaimsTableQuery,
 	[conchesTableName]: createConchesTableQuery,
 	[mediaTableName]: createMediaTableQuery,
@@ -100,3 +107,4 @@ export * from "./PostMembers";
 export * from "./Relationships";
 export * from "./UserReferrals";
 export * from "./Users";
+export * from "./Sessions";

@@ -15,4 +15,5 @@ export interface ConchServerEnvConfig {
 	region: string;
 	caCertPath: string;
 	apiPrefix: string;
+	nodeEnv: string;
 }

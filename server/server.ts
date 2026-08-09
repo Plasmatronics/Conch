@@ -1,4 +1,5 @@
 import express, { type Express, type Request, type Response } from "express";
+import cookieParser from "cookie-parser";
 import { ConchService } from "./types";
 import { healthCheck, appEnvVariables } from "./utils";
 import { createConchDBService } from "./db";
@@ -73,6 +74,7 @@ const startServer = async (): Promise<void> => {
 	});
 
 	app.use(express.json());
+	app.use(cookieParser());
 
 	const claimRoutes = createClaimRoutes(dbPool);
 	app.use(`${apiPrefix}/claims`, claimRoutes);
