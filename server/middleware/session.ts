@@ -29,7 +29,7 @@ const SESSION_COOKIE_CONFIG: CookieOptions = {
 const hashSessionToken = (token: string) =>
 	createHash("sha256").update(token).digest("hex");
 
-const createSession = async (
+export const createSession = async (
 	req: Request,
 	res: Response,
 	next: NextFunction,
@@ -72,7 +72,7 @@ const createSession = async (
 	}
 };
 
-const verifySession = async (
+export const verifySession = async (
 	req: Request,
 	res: Response,
 	next: NextFunction,
@@ -135,7 +135,7 @@ const verifySession = async (
 	}
 };
 
-const revokeSession = async (
+export const revokeSession = async (
 	req: Request,
 	res: Response,
 	next: NextFunction,
