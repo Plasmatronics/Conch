@@ -45,17 +45,17 @@ export const membersDependencyEdges: Array<[string, string]> = [
 export const createMembersTableQuery = `
 CREATE TABLE ${membersTableName} (
     ${membersIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	created_at timestampz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	first_name text NOT NULL,
 	last_name text NOT NULL,
 	conch_id integer NOT NULL REFERENCES ${conchesTableName},
 	photo_id integer REFERENCES ${mediaTableName},
-	date_of_birth timestampz,
+	date_of_birth timestamptz,
 	biography text,
-	date_of_death timestampz,
+	date_of_death timestamptz,
 	addresses point[],
 	birth_location point,
 	death_location point,
 	burial_location point,
-	deleted_date timestampz
+	deleted_date timestamptz
 );`;

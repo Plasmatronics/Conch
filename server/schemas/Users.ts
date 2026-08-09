@@ -34,6 +34,6 @@ CREATE TABLE ${usersTableName} (
 	email text NOT NULL,
 	phone_number text NOT NULL,
 	password_hash text NOT NULL,
-	created_at timestampz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	deleted_date timestampz
+	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	deleted_date timestamptz
 );`;

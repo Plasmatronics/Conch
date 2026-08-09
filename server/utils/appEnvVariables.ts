@@ -31,8 +31,8 @@ const loadEnvVariables = (): ConchServerEnvConfig => {
 	if (!db) throw new Error("Missing DATABASE");
 	if (!host) throw new Error("Missing RDS_HOST_ENDPOINT");
 	if (!caCertPath) throw new Error("Missing CA_CERT_PATH");
-	if (!nodeEnv) throw new Error("Missing CA_CERT_PATH");
-	if (!apiPrefix) throw new Error("Missing NODE_ENV");
+	if (!nodeEnv) throw new Error("Missing NODE_ENV");
+	if (!apiPrefix) throw new Error("Missing API_PREFIX");
 	if (!rdsPortStr || Number.isNaN(Number(rdsPortStr)))
 		throw new Error(`Invalid RDS_PORT: ${rdsPortStr}`);
 	if (!devPort || Number.isNaN(Number(devPort)))
