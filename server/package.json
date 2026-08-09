@@ -13,6 +13,7 @@
 	"dependencies": {
 		"@aws-sdk/client-secrets-manager": "^3.1095.0",
 		"@types/geojson": "^7946.0.16",
+		"cookie-parser": "^1.4.7",
 		"dotenv": "^17.4.2",
 		"express": "^5.2.1",
 		"mnemonist": "^0.40.4",
@@ -24,6 +25,7 @@
 	"license": "ISC",
 	"description": "",
 	"devDependencies": {
+		"@types/cookie-parser": "^1.4.10",
 		"@types/express": "^5.0.6",
 		"@types/node": "^26.1.1",
 		"@types/pg": "^8.20.0",

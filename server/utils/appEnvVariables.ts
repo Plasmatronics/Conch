@@ -1,25 +1,14 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
-
-interface ConchServerConfig {
-	devPort: string;
-	secretId: string;
-	accessKeyId: string;
-	secretAccessKey: string;
-	db: string;
-	host: string;
-	rdsPortStr: string;
-	region: string;
-	caCertPath: string;
-}
+import { ConchServerEnvConfig } from "../types";
 
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({
 	path: path.resolve(currentDirectory, "../../config.env"),
 });
 
-export const loadEnvVariables = (): ConchServerConfig => {
+const loadEnvVariables = (): ConchServerEnvConfig => {
 	const {
 		DEV_PORT: devPort,
 		SECRETS_MANAGER_SECRET_ID: secretId,
@@ -30,6 +19,8 @@ export const loadEnvVariables = (): ConchServerConfig => {
 		RDS_PORT: rdsPortStr,
 		AWS_REGION: region,
 		CA_CERT_PATH: caCertPath,
+		API_PREFIX: apiPrefix,
+		NODE_ENV: nodeEnv,
 	} = process.env;
 
 	if (!region) throw new Error("Missing AWS_REGION");
@@ -40,6 +31,8 @@ export const loadEnvVariables = (): ConchServerConfig => {
 	if (!db) throw new Error("Missing DATABASE");
 	if (!host) throw new Error("Missing RDS_HOST_ENDPOINT");
 	if (!caCertPath) throw new Error("Missing CA_CERT_PATH");
+	if (!nodeEnv) throw new Error("Missing CA_CERT_PATH");
+	if (!apiPrefix) throw new Error("Missing NODE_ENV");
 	if (!rdsPortStr || Number.isNaN(Number(rdsPortStr)))
 		throw new Error(`Invalid RDS_PORT: ${rdsPortStr}`);
 	if (!devPort || Number.isNaN(Number(devPort)))
@@ -55,5 +48,9 @@ export const loadEnvVariables = (): ConchServerConfig => {
 		rdsPortStr,
 		region,
 		caCertPath,
+		apiPrefix,
+		nodeEnv,
 	};
 };
+
+export const appEnvVariables = Object.freeze(loadEnvVariables());

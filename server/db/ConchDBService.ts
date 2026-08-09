@@ -1,15 +1,13 @@
 import fs from "fs";
 import { Pool, PoolConfig } from "pg";
-import type { SecretStoreStrategy } from "../index";
+import type { ConchServerEnvConfig, SecretStoreStrategy } from "../index";
 import path from "path";
 import { HealthCheck, ConchService } from "../types";
 
-interface ConchDBServiceConfig extends PoolConfig {
-	db: string;
-	host: string;
-	rdsPortStr: string;
-	caCertPath: string;
-}
+interface ConchDBServiceConfig
+	extends
+		Pick<ConchServerEnvConfig, "db" | "host" | "rdsPortStr" | "caCertPath">,
+		Omit<PoolConfig, "host"> {}
 
 export class ConchDBService implements ConchService {
 	private serviceName: string = "ConchDBPoolClient";

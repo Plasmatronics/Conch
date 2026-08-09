@@ -47,15 +47,15 @@ export const createSeasonEnum = `CREATE TYPE season AS ENUM ('winter', 'spring',
 
 export const createPostsTableQuery = `
 CREATE TABLE ${postsTableName} (
-	post_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	${postsIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	author_id integer NOT NULL REFERENCES ${usersTableName},
 	title text NOT NULL,
-	created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	created_at timestampz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	body_text text,
 	location point,
 	year integer,
 	season season,
-	deleted_date timestamp
+	deleted_date timestampz
 	CHECK (year IS NULL OR year BETWEEN 1900 AND 2100),
 	CHECK (year IS NOT NULL OR season IS NULL)
 );`;

@@ -44,8 +44,8 @@ export const memberReferralsDependencyEdges: Array<[string, string]> = [
 
 export const createMemberReferralsQuery = `
 CREATE TABLE ${memberReferralsTableName} (
-	member_referral_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	${memberReferralsIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	created_at timestampz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	referred_first_name text NOT NULL,
 	referred_last_name text NOT NULL,
 	referrer_id integer NOT NULL REFERENCES ${usersTableName},
@@ -55,5 +55,5 @@ CREATE TABLE ${memberReferralsTableName} (
 	child_id integer REFERENCES ${membersTableName},
 	spouse_id integer REFERENCES ${membersTableName},
 	count smallint NOT NULL DEFAULT 1,
-    deleted_date timestamp
+    deleted_date timestampz
 );`;

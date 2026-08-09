@@ -28,12 +28,12 @@ export const usersDependencyEdges: Array<[string, string]> = [];
 
 export const createUsersTableQuery = `
 CREATE TABLE ${usersTableName} (
-	user_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	${usersIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	first_name text NOT NULL,
 	last_name text NOT NULL,
 	email text NOT NULL,
 	phone_number text NOT NULL,
 	password_hash text NOT NULL,
-	created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	deleted_date timestamp
+	created_at timestampz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	deleted_date timestampz
 );`;

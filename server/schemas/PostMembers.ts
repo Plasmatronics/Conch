@@ -30,9 +30,9 @@ export const postMembersDependencyEdges: Array<[string, string]> = [
 
 export const createPostMembersTableQuery = `
 CREATE TABLE ${postMembersTableName} (
-	post_member_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	${postMembersIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	created_at timestampz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	member_id integer NOT NULL REFERENCES ${membersTableName},
 	post_id integer NOT NULL REFERENCES ${postsTableName},
-    deleted_date timestamp
+    deleted_date timestampz
 );`;
