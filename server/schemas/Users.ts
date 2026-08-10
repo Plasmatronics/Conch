@@ -4,10 +4,6 @@ import { apiDateSchema } from "./shared";
 export const usersTableName = "users" as const;
 export const usersIdColumnName = "user_id" as const;
 
-export const ceateAppRoleEnumQuery = `
-CREATE TYPE relationship AS ENUM ('spouse', 'child', 'friend', 'pet');
-`;
-
 export const createAppRoleEnumQuery = `
 CREATE TYPE app_role AS ENUM ('standard', 'admin');
 `;
