@@ -9,6 +9,8 @@ import { RouteFactory } from "./RouteFactory";
 import { Pool } from "pg";
 import { crudFactory } from "./CRUDFactory";
 
+//TODO: handle conches distinclty
+
 export const createConchRoutes = (dbPool: Pool): Router => {
 	const conchRouteFactory = new RouteFactory(
 		conchesTableName,
