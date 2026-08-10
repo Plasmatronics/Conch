@@ -19,5 +19,11 @@ export const createMemberRoutes = (dbPool: Pool): Router => {
 		membersUpdateSchema,
 	);
 
-	return memberRouteFactory.createRoutes();
+	return memberRouteFactory.createRoutes({
+		getAllRoute: "member",
+		getRoute: "member",
+		postRoute: "admin",
+		patchRoute: "member",
+		deleteRoute: "admin",
+	});
 };

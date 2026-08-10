@@ -18,6 +18,12 @@ export const createUserRoutes = (dbPool: Pool): Router => {
 		usersCreateSchema,
 		usersUpdateSchema,
 	);
-
-	return userRouteFactory.createRoutes();
+	//TODO: handle users distinclty, set routes to admin for now
+	return userRouteFactory.createRoutes({
+		getAllRoute: "admin",
+		getRoute: "admin",
+		postRoute: "admin",
+		patchRoute: "admin",
+		deleteRoute: "admin",
+	});
 };

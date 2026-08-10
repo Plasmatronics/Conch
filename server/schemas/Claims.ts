@@ -33,9 +33,9 @@ export const claimsDependencyEdges: Array<[string, string]> = [
 export const createClaimsTableQuery = `
 CREATE TABLE ${claimsTableName} (
     ${claimsIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	created_at timestampz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	conch_id integer NOT NULL REFERENCES ${conchesTableName},
 	user_id integer NOT NULL REFERENCES ${usersTableName},
 	member_id integer NOT NULL REFERENCES ${membersTableName},
-	deleted_date timestampz
+	deleted_date timestamptz
 );`;

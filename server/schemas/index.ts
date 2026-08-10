@@ -54,6 +54,7 @@ import {
 	usersDependencyEdges,
 	usersTableName,
 	createUsersTableQuery,
+	createAppRoleEnumQuery,
 } from "./Users";
 import {
 	createSessionsTableQuery,
@@ -77,6 +78,7 @@ export const dependencyEdges: Array<[string, string]> = [
 ];
 
 export const enumCreationQueries: string[] = [
+	createAppRoleEnumQuery,
 	createRelationshipTypeEnumQuery,
 	createSeasonEnum,
 ];

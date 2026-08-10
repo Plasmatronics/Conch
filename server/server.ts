@@ -9,8 +9,6 @@ import {
 	createMediaRoutes,
 	createMemberReferralRoutes,
 	createMemberRoutes,
-	createPostMediaRoutes,
-	createPostMemberRoutes,
 	createPostRoutes,
 	createRelationshipRoutes,
 	createUserReferralRoutes,
@@ -77,34 +75,31 @@ const startServer = async (): Promise<void> => {
 	app.use(cookieParser());
 
 	const claimRoutes = createClaimRoutes(dbPool);
-	app.use(`${apiPrefix}/claims`, claimRoutes);
+	app.use(`${apiPrefix}/conches/:conchId/claims`, claimRoutes);
 
 	const conchRoutes = createConchRoutes(dbPool);
 	app.use(`${apiPrefix}/conches`, conchRoutes);
 
 	const mediaRoutes = createMediaRoutes(dbPool);
-	app.use(`${apiPrefix}/media`, mediaRoutes);
+	app.use(`${apiPrefix}/conches/:conchId/media`, mediaRoutes);
 
 	const memberReferralRoutes = createMemberReferralRoutes(dbPool);
-	app.use(`${apiPrefix}/memberReferrals`, memberReferralRoutes);
+	app.use(
+		`${apiPrefix}/conches/:conchId/memberReferrals`,
+		memberReferralRoutes,
+	);
 
 	const memberRoutes = createMemberRoutes(dbPool);
-	app.use(`${apiPrefix}/members`, memberRoutes);
-
-	const postMediaRoutes = createPostMediaRoutes(dbPool);
-	app.use(`${apiPrefix}/postMedia`, postMediaRoutes);
-
-	const postMemberRoutes = createPostMemberRoutes(dbPool);
-	app.use(`${apiPrefix}/postMembers`, postMemberRoutes);
+	app.use(`${apiPrefix}/conches/:conchId/members`, memberRoutes);
 
 	const postRoutes = createPostRoutes(dbPool);
-	app.use(`${apiPrefix}/posts`, postRoutes);
+	app.use(`${apiPrefix}/conches/:conchId/posts`, postRoutes);
 
 	const relationshipRoutes = createRelationshipRoutes(dbPool);
-	app.use(`${apiPrefix}/relationships`, relationshipRoutes);
+	app.use(`${apiPrefix}/conches/:conchId/relationships`, relationshipRoutes);
 
 	const userReferralRoutes = createUserReferralRoutes(dbPool);
-	app.use(`${apiPrefix}/userReferrals`, userReferralRoutes);
+	app.use(`${apiPrefix}/conches/:conchId/userReferrals`, userReferralRoutes);
 
 	const userRoutes = createUserRoutes(dbPool);
 	app.use(`${apiPrefix}/users`, userRoutes);

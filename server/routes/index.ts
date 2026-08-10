@@ -3,8 +3,6 @@ export * from "./conchRoutes";
 export * from "./mediaRoutes";
 export * from "./memberReferralRoutes";
 export * from "./memberRoutes";
-export * from "./postMediaRoutes";
-export * from "./postMemberRoutes";
 export * from "./postRoutes";
 export * from "./relationshipRoutes";
 export * from "./userReferralRoutes";

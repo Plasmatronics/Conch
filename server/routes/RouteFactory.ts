@@ -2,6 +2,8 @@ import { Router } from "express";
 import { Pool } from "pg";
 import { CRUDFactory } from "./CRUDFactory";
 import z, { ZodObject } from "zod";
+import { RouteAccessConfig } from "../types";
+import { auth } from "../middleware";
 
 export class RouteFactory {
 	constructor(
@@ -13,10 +15,26 @@ export class RouteFactory {
 		private updateSchema: ZodObject,
 	) {}
 
-	createRoutes(): Router {
+	createRoutes({
+		getRoute = "member",
+		getAllRoute = "member",
+		postRoute = "member",
+		patchRoute = "member",
+		deleteRoute = "member",
+	}: RouteAccessConfig): Router {
 		const router = Router();
 
-		router.get("", async (_req, res, next) => {
+		router.param("conchId", (_req, res, next, conchId) => {
+			try {
+				const parsedConchId = z.string().regex(/^\d+$/).parse(conchId);
+				res.locals.conchId = Number(parsedConchId);
+				next();
+			} catch (err) {
+				next(err);
+			}
+		});
+
+		router.get("", auth(getAllRoute), async (_req, res, next) => {
 			try {
 				const { text, values } = this.crudFactory.generateGetAll(
 					this.tableName,
@@ -29,7 +47,7 @@ export class RouteFactory {
 			}
 		});
 
-		router.post("", async (req, res, next) => {
+		router.post("", auth(postRoute), async (req, res, next) => {
 			try {
 				const tableUpdates = this.createSchema.parse(req.body);
 				const { text, values } = this.crudFactory.generateCreateOne(
@@ -46,30 +64,30 @@ export class RouteFactory {
 
 		router.param("id", (_req, res, next, id) => {
 			try {
-				const parsedId = z.string().regex(/^\d+$/).parse(id);
-				res.locals.parsedId = parsedId;
+				const parsedResourceId = z.string().regex(/^\d+$/).parse(id);
+				res.locals.resourceId = Number(parsedResourceId);
 				next();
 			} catch (err) {
 				next(err);
 			}
 		});
 
-		router.get("/:id", async (_req, res, next) => {
+		router.get("/:id", auth(getRoute), async (_req, res, next) => {
 			try {
-				const id = res.locals.parsedId as string;
+				const resourceId = res.locals.resourceId as number;
 
 				const { text, values } = this.crudFactory.generateGetOne(
 					this.tableName,
 					this.idColumnName,
-					id,
+					String(resourceId),
 				);
 
 				const queryResponse = await this.dbPool.query(text, values);
 
 				if (!queryResponse.rows.length) {
-					return res
-						.status(404)
-						.json({ message: `${this.tableName} with ID ${id} not found.` });
+					return res.status(404).json({
+						message: `${this.tableName} with ID ${resourceId} not found.`,
+					});
 				}
 
 				res.status(200).json(queryResponse.rows[0] ?? null);
@@ -78,23 +96,23 @@ export class RouteFactory {
 			}
 		});
 
-		router.patch("/:id", async (req, res, next) => {
+		router.patch("/:id", auth(patchRoute), async (req, res, next) => {
 			try {
-				const id = res.locals.parsedId as string;
+				const resourceId = res.locals.resourceId as number;
 
 				const tableUpdates = this.updateSchema.parse(req.body);
 				const { text, values } = this.crudFactory.generateUpdateOne(
 					this.tableName,
 					tableUpdates,
 					this.idColumnName,
-					id,
+					String(resourceId),
 				);
 
 				const queryResponse = await this.dbPool.query(text, values);
 				if (!queryResponse.rows.length) {
-					return res
-						.status(404)
-						.json({ message: `${this.tableName} with ID ${id} not found.` });
+					return res.status(404).json({
+						message: `${this.tableName} with ID ${resourceId} not found.`,
+					});
 				}
 
 				res.status(200).json(queryResponse.rows[0] ?? null);
@@ -103,22 +121,22 @@ export class RouteFactory {
 			}
 		});
 
-		router.delete("/:id", async (req, res, next) => {
+		router.delete("/:id", auth(deleteRoute), async (_req, res, next) => {
 			try {
-				const id = res.locals.parsedId as string;
+				const resourceId = res.locals.resourceId as number;
 
 				const { text, values } = this.crudFactory.generateDeleteOne(
 					this.tableName,
 					this.idColumnName,
-					id,
+					String(resourceId),
 				);
 
 				const queryResponse = await this.dbPool.query(text, values);
 
 				if (!queryResponse.rows.length) {
-					return res
-						.status(404)
-						.json({ message: `${this.tableName} with ID ${id} not found.` });
+					return res.status(404).json({
+						message: `${this.tableName} with ID ${resourceId} not found.`,
+					});
 				}
 
 				res.status(200).json(queryResponse.rows[0] ?? null);

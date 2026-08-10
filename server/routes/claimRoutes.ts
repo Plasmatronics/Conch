@@ -19,5 +19,11 @@ export const createClaimRoutes = (dbPool: Pool): Router => {
 		claimsUpdateSchema,
 	);
 
-	return claimRouteFactory.createRoutes();
+	return claimRouteFactory.createRoutes({
+		getAllRoute: "member",
+		getRoute: "member",
+		postRoute: "admin",
+		patchRoute: "admin",
+		deleteRoute: "admin",
+	});
 };

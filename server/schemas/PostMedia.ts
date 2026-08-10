@@ -31,8 +31,8 @@ export const postMediaDependencyEdges: Array<[string, string]> = [
 export const createPostMediaTableQuery = `
 CREATE TABLE ${postMediaTableName} (
 	${postMediaIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	created_at timestampz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	member_id integer NOT NULL REFERENCES ${membersTableName},
 	media_id integer NOT NULL REFERENCES ${mediaTableName},
-    deleted_date timestampz
+    deleted_date timestamptz
 );`;

@@ -1,9 +1,9 @@
-import type { Users } from "../../schemas";
+import type { AuthenticatedUser } from "../../schemas";
 
 declare global {
 	namespace Express {
 		interface Request {
-			user?: Users;
+			user?: AuthenticatedUser;
 		}
 	}
 }
