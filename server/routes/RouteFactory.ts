@@ -74,22 +74,20 @@ export class RouteFactory {
 
 		router.get("/:id", auth(getRoute), async (_req, res, next) => {
 			try {
-				const resourceId = res.locals.resourceId as string;
+				const resourceId = res.locals.resourceId as number;
 
 				const { text, values } = this.crudFactory.generateGetOne(
 					this.tableName,
 					this.idColumnName,
-					resourceId,
+					String(resourceId),
 				);
 
 				const queryResponse = await this.dbPool.query(text, values);
 
 				if (!queryResponse.rows.length) {
-					return res
-						.status(404)
-						.json({
-							message: `${this.tableName} with ID ${resourceId} not found.`,
-						});
+					return res.status(404).json({
+						message: `${this.tableName} with ID ${resourceId} not found.`,
+					});
 				}
 
 				res.status(200).json(queryResponse.rows[0] ?? null);
@@ -100,23 +98,21 @@ export class RouteFactory {
 
 		router.patch("/:id", auth(patchRoute), async (req, res, next) => {
 			try {
-				const resourceId = res.locals.resourceId as string;
+				const resourceId = res.locals.resourceId as number;
 
 				const tableUpdates = this.updateSchema.parse(req.body);
 				const { text, values } = this.crudFactory.generateUpdateOne(
 					this.tableName,
 					tableUpdates,
 					this.idColumnName,
-					resourceId,
+					String(resourceId),
 				);
 
 				const queryResponse = await this.dbPool.query(text, values);
 				if (!queryResponse.rows.length) {
-					return res
-						.status(404)
-						.json({
-							message: `${this.tableName} with ID ${resourceId} not found.`,
-						});
+					return res.status(404).json({
+						message: `${this.tableName} with ID ${resourceId} not found.`,
+					});
 				}
 
 				res.status(200).json(queryResponse.rows[0] ?? null);
@@ -127,22 +123,20 @@ export class RouteFactory {
 
 		router.delete("/:id", auth(deleteRoute), async (_req, res, next) => {
 			try {
-				const resourceId = res.locals.resourceId as string;
+				const resourceId = res.locals.resourceId as number;
 
 				const { text, values } = this.crudFactory.generateDeleteOne(
 					this.tableName,
 					this.idColumnName,
-					resourceId,
+					String(resourceId),
 				);
 
 				const queryResponse = await this.dbPool.query(text, values);
 
 				if (!queryResponse.rows.length) {
-					return res
-						.status(404)
-						.json({
-							message: `${this.tableName} with ID ${resourceId} not found.`,
-						});
+					return res.status(404).json({
+						message: `${this.tableName} with ID ${resourceId} not found.`,
+					});
 				}
 
 				res.status(200).json(queryResponse.rows[0] ?? null);
