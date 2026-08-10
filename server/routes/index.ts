@@ -7,3 +7,4 @@ export * from "./postRoutes";
 export * from "./relationshipRoutes";
 export * from "./userReferralRoutes";
 export * from "./userRoutes";
+export * from "./authRoutes";

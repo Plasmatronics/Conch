@@ -19,8 +19,30 @@ export const usersSchema = z.object({
 	password_hash: z.string(),
 	created_at: apiDateSchema,
 	app_role: z.enum(["standard", "admin"]),
-	deleted_date: apiDateSchema.optional(),
+	deleted_date: apiDateSchema.nullable(),
 });
+
+const passwordSchema = z.string().min(8);
+
+export const usersSignupSchema = usersSchema
+	.omit({
+		[usersIdColumnName]: true,
+		created_at: true,
+		app_role: true,
+		password_hash: true,
+		deleted_date: true,
+	})
+	.extend({
+		password: passwordSchema,
+	});
+
+export const usersLoginSchema = usersSchema
+	.pick({
+		email: true,
+	})
+	.extend({
+		password: passwordSchema,
+	});
 
 export const usersCreateSchema = usersSchema.omit({
 	[usersIdColumnName]: true,
@@ -28,7 +50,9 @@ export const usersCreateSchema = usersSchema.omit({
 	app_role: true,
 });
 
-export const usersUpdateSchema = usersCreateSchema.partial();
+export const usersUpdateSchema = usersSignupSchema
+	.omit({ password: true })
+	.partial();
 
 export type Users = z.infer<typeof usersSchema>;
 
@@ -50,7 +74,7 @@ CREATE TABLE ${usersTableName} (
 	${usersIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	first_name text NOT NULL,
 	last_name text NOT NULL,
-	email text NOT NULL,
+	email text NOT NULL UNIQUE,
 	phone_number text NOT NULL,
 	password_hash text NOT NULL,
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
