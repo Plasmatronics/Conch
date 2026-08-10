@@ -11,12 +11,13 @@ export const postMembersSchema = z.object({
 	created_at: apiDateSchema,
 	member_id: z.number(),
 	post_id: z.number(),
-	deleted_date: apiDateSchema.optional(),
+	deleted_date: apiDateSchema.nullable(),
 });
 
 export const postMembersCreateSchema = postMembersSchema.omit({
 	[postMembersIdColumnName]: true,
 	created_at: true,
+	deleted_date: true,
 });
 
 export const postMembersUpdateSchema = postMembersCreateSchema.partial();

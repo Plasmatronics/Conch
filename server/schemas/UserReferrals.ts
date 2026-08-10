@@ -11,21 +11,22 @@ export const userReferralsSchema = z.object({
 	[userReferralsIdColumnName]: z.number(),
 	created_at: apiDateSchema,
 	referred_phone_number: z.string(),
-	referred_email: z.email().optional(),
+	referred_email: z.email().nullable(),
 	referred_member_id: z.number(),
 	referrer_id: z.number(),
 	conch_id: z.number(),
 	count: z.number(),
-	deleted_date: apiDateSchema.optional(),
+	deleted_date: apiDateSchema.nullable(),
 });
 
 export const userReferralsCreateSchema = userReferralsSchema
 	.omit({
 		[userReferralsIdColumnName]: true,
 		created_at: true,
+		deleted_date: true,
 	})
 	.extend({
-		count: z.number().default(0), // Make optional and provide default
+		count: z.number().default(0),
 	});
 
 export const userReferralsUpdateSchema = userReferralsCreateSchema.partial();

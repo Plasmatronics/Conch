@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Pool } from "pg";
 import { RouteFactory } from "./RouteFactory";
-import { crudFactory } from "./CRUDFactory";
+import { crudFactory } from "../queries";
 import {
 	usersTableName,
 	usersIdColumnName,
@@ -18,7 +18,7 @@ export const createUserRoutes = (dbPool: Pool): Router => {
 		usersCreateSchema,
 		usersUpdateSchema,
 	);
-	//TODO: handle users distinclty, set routes to admin for now
+
 	return userRouteFactory.createRoutes({
 		getAllRoute: "admin",
 		getRoute: "admin",

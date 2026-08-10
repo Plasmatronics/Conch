@@ -13,12 +13,13 @@ export const relationshipsSchema = z.object({
 	created_at: apiDateSchema,
 	source_member_id: z.number(),
 	target_member_id: z.number(),
-	deleted_date: apiDateSchema.optional(),
+	deleted_date: apiDateSchema.nullable(),
 });
 
 export const relationshipsCreateSchema = relationshipsSchema.omit({
 	[relationshipsIdColumnName]: true,
 	created_at: true,
+	deleted_date: true,
 });
 
 export const relationshipsUpdateSchema = relationshipsCreateSchema.partial();

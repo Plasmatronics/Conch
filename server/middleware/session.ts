@@ -63,7 +63,7 @@ export const createSession =
 				maxAge: daysToMs(EXPIRE_TIME_NUM_DAYS),
 			});
 
-			return res.status(200).json({ message: "Session successfully created" });
+			return next();
 		} catch (err: unknown) {
 			next(err);
 		}
@@ -86,7 +86,7 @@ export const verifySession =
      		row_to_json(users) AS user
    			FROM sessions
    			JOIN users
-     		ON sessions.user_id = users.id
+     		ON sessions.user_id = users.${usersIdColumnName}
    			WHERE sessions.session_token_hash = $1`,
 				[tokenHash],
 			);
@@ -131,7 +131,7 @@ export const verifySession =
 				serverIds: usersConches,
 			};
 
-			next();
+			return next();
 		} catch (err: unknown) {
 			next(err);
 		}
@@ -154,9 +154,7 @@ export const revokeSession =
 				...SESSION_COOKIE_CONFIG,
 			});
 
-			return res.status(200).json({
-				message: "Session successfully revoked",
-			});
+			return next();
 		} catch (err: unknown) {
 			next(err);
 		}

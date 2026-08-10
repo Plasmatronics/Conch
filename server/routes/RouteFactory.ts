@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Pool } from "pg";
-import { CRUDFactory } from "./CRUDFactory";
+import { CRUDFactory } from "../queries";
 import z, { ZodObject } from "zod";
 import { RouteAccessConfig } from "../types";
 import { auth } from "../middleware";
@@ -41,7 +41,7 @@ export class RouteFactory {
 				);
 
 				const queryResponse = await this.dbPool.query(text, values);
-				res.status(200).json(queryResponse.rows ?? null);
+				return res.status(200).json(queryResponse.rows ?? null);
 			} catch (err: unknown) {
 				next(err);
 			}
@@ -56,7 +56,7 @@ export class RouteFactory {
 				);
 
 				const queryResponse = await this.dbPool.query(text, values);
-				res.status(201).json(queryResponse.rows[0] ?? []);
+				return res.status(201).json(queryResponse.rows[0] ?? []);
 			} catch (err: unknown) {
 				next(err);
 			}
@@ -90,7 +90,7 @@ export class RouteFactory {
 					});
 				}
 
-				res.status(200).json(queryResponse.rows[0] ?? null);
+				return res.status(200).json(queryResponse.rows[0] ?? null);
 			} catch (err: unknown) {
 				next(err);
 			}
@@ -115,7 +115,7 @@ export class RouteFactory {
 					});
 				}
 
-				res.status(200).json(queryResponse.rows[0] ?? null);
+				return res.status(200).json(queryResponse.rows[0] ?? null);
 			} catch (err: unknown) {
 				next(err);
 			}
@@ -139,7 +139,7 @@ export class RouteFactory {
 					});
 				}
 
-				res.status(200).json(queryResponse.rows[0] ?? null);
+				return res.status(200).json(queryResponse.rows[0] ?? null);
 			} catch (err: unknown) {
 				next(err);
 			}
