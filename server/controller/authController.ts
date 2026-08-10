@@ -111,9 +111,7 @@ export const retrieveUser =
 			if (!userRes.rowCount)
 				return res.status(404).json({ message: "Could not retrieve user" });
 
-			const { password_hash, app_role, ...user } = usersSchema.parse(
-				userRes.rows[0],
-			);
+			const { password_hash, ...user } = usersSchema.parse(userRes.rows[0]);
 
 			return res.status(200).json(user);
 		} catch (err) {
@@ -149,7 +147,7 @@ export const patchUser =
 
 			const patchRes = await dbPool.query(formattedQuery);
 			const updatedUser = usersSchema.parse(patchRes.rows[0]);
-			const { password_hash, app_role, ...patchedUser } = updatedUser;
+			const { password_hash, ...patchedUser } = updatedUser;
 
 			return res.status(200).json(patchedUser);
 		} catch (err) {
