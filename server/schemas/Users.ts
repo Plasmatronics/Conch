@@ -4,6 +4,16 @@ import { apiDateSchema } from "./shared";
 export const usersTableName = "users" as const;
 export const usersIdColumnName = "user_id" as const;
 
+export const ceateAppRoleEnumQuery = `
+CREATE TYPE relationship AS ENUM ('spouse', 'child', 'friend', 'pet');
+`;
+
+export const createAppRoleEnumQuery = `
+CREATE TYPE app_role AS ENUM ('standard', 'admin');
+`;
+
+export type AppRole = "standard" | "admin";
+
 export const usersSchema = z.object({
 	[usersIdColumnName]: z.number(),
 	first_name: z.string(),
@@ -12,17 +22,30 @@ export const usersSchema = z.object({
 	phone_number: z.string(),
 	password_hash: z.string(),
 	created_at: apiDateSchema,
+	app_role: z.enum(["standard", "admin"]),
 	deleted_date: apiDateSchema.optional(),
 });
 
 export const usersCreateSchema = usersSchema.omit({
 	[usersIdColumnName]: true,
 	created_at: true,
+	app_role: true,
 });
 
 export const usersUpdateSchema = usersCreateSchema.partial();
 
 export type Users = z.infer<typeof usersSchema>;
+
+export const authenticatedUsersSchema = usersSchema
+	.pick({
+		[usersIdColumnName]: true,
+		app_role: true,
+	})
+	.extend({
+		serverIds: z.array(z.number()),
+	});
+
+export type AuthenticatedUser = z.infer<typeof authenticatedUsersSchema>;
 
 export const usersDependencyEdges: Array<[string, string]> = [];
 
@@ -35,5 +58,6 @@ CREATE TABLE ${usersTableName} (
 	phone_number text NOT NULL,
 	password_hash text NOT NULL,
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	app_role app_role NOT NULL DEFAULT 'standard',
 	deleted_date timestamptz
 );`;

@@ -19,5 +19,11 @@ export const createMediaRoutes = (dbPool: Pool): Router => {
 		mediaUpdateSchema,
 	);
 
-	return mediaRouteFactory.createRoutes();
+	return mediaRouteFactory.createRoutes({
+		getAllRoute: "member",
+		getRoute: "member",
+		postRoute: "member",
+		patchRoute: "member",
+		deleteRoute: "admin",
+	});
 };

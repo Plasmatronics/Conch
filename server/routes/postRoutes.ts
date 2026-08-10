@@ -19,5 +19,11 @@ export const createPostRoutes = (dbPool: Pool): Router => {
 		postsUpdateSchema,
 	);
 
-	return postRouteFactory.createRoutes();
+	return postRouteFactory.createRoutes({
+		getAllRoute: "member",
+		getRoute: "member",
+		postRoute: "member",
+		patchRoute: "member",
+		deleteRoute: "admin",
+	});
 };

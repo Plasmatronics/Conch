@@ -19,5 +19,11 @@ export const createConchRoutes = (dbPool: Pool): Router => {
 		conchesUpdateSchema,
 	);
 
-	return conchRouteFactory.createRoutes();
+	return conchRouteFactory.createRoutes({
+		getAllRoute: "authenticated",
+		getRoute: "member",
+		postRoute: "authenticated",
+		patchRoute: "admin",
+		deleteRoute: "admin",
+	});
 };

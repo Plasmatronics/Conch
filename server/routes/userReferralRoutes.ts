@@ -19,5 +19,11 @@ export const createUserReferralRoutes = (dbPool: Pool): Router => {
 		userReferralsUpdateSchema,
 	);
 
-	return userReferralRouteFactory.createRoutes();
+	return userReferralRouteFactory.createRoutes({
+		getAllRoute: "member",
+		getRoute: "member",
+		postRoute: "member",
+		patchRoute: "admin",
+		deleteRoute: "admin",
+	});
 };

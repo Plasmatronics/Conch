@@ -2,6 +2,8 @@ import { Router } from "express";
 import { Pool } from "pg";
 import { CRUDFactory } from "./CRUDFactory";
 import z, { ZodObject } from "zod";
+import { RouteAccessConfig } from "../types";
+import { auth } from "../middleware";
 
 export class RouteFactory {
 	constructor(
@@ -13,10 +15,26 @@ export class RouteFactory {
 		private updateSchema: ZodObject,
 	) {}
 
-	createRoutes(): Router {
+	createRoutes({
+		getRoute = "member",
+		getAllRoute = "member",
+		postRoute = "member",
+		patchRoute = "member",
+		deleteRoute = "member",
+	}: RouteAccessConfig): Router {
 		const router = Router();
 
-		router.get("", async (_req, res, next) => {
+		router.param("conchId", (_req, res, next, conchId) => {
+			try {
+				const parsedId = z.string().regex(/^\d+$/).parse(conchId);
+				res.locals.conchId = parsedId;
+				next();
+			} catch (err) {
+				next(err);
+			}
+		});
+
+		router.get("", auth(getAllRoute), async (_req, res, next) => {
 			try {
 				const { text, values } = this.crudFactory.generateGetAll(
 					this.tableName,
@@ -29,7 +47,7 @@ export class RouteFactory {
 			}
 		});
 
-		router.post("", async (req, res, next) => {
+		router.post("", auth(postRoute), async (req, res, next) => {
 			try {
 				const tableUpdates = this.createSchema.parse(req.body);
 				const { text, values } = this.crudFactory.generateCreateOne(
@@ -54,7 +72,7 @@ export class RouteFactory {
 			}
 		});
 
-		router.get("/:id", async (_req, res, next) => {
+		router.get("/:id", auth(getRoute), async (_req, res, next) => {
 			try {
 				const id = res.locals.parsedId as string;
 
@@ -78,7 +96,7 @@ export class RouteFactory {
 			}
 		});
 
-		router.patch("/:id", async (req, res, next) => {
+		router.patch("/:id", auth(patchRoute), async (req, res, next) => {
 			try {
 				const id = res.locals.parsedId as string;
 
@@ -103,7 +121,7 @@ export class RouteFactory {
 			}
 		});
 
-		router.delete("/:id", async (req, res, next) => {
+		router.delete("/:id", auth(deleteRoute), async (_req, res, next) => {
 			try {
 				const id = res.locals.parsedId as string;
 

@@ -19,5 +19,11 @@ export const createRelationshipRoutes = (dbPool: Pool): Router => {
 		relationshipsUpdateSchema,
 	);
 
-	return relationshipRouteFactory.createRoutes();
+	return relationshipRouteFactory.createRoutes({
+		getAllRoute: "member",
+		getRoute: "member",
+		postRoute: "member",
+		patchRoute: "member",
+		deleteRoute: "member",
+	});
 };
