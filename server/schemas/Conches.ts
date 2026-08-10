@@ -19,6 +19,7 @@ export const conchesSchema = z.object({
 export const conchesCreateSchema = conchesSchema.omit({
 	[conchesIdColumnName]: true,
 	created_at: true,
+	deleted_date: true,
 });
 
 export const conchesUpdateSchema = conchesCreateSchema.partial();

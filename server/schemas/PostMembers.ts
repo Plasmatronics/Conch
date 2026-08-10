@@ -17,6 +17,7 @@ export const postMembersSchema = z.object({
 export const postMembersCreateSchema = postMembersSchema.omit({
 	[postMembersIdColumnName]: true,
 	created_at: true,
+	deleted_date: true,
 });
 
 export const postMembersUpdateSchema = postMembersCreateSchema.partial();

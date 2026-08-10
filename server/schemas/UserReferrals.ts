@@ -23,9 +23,10 @@ export const userReferralsCreateSchema = userReferralsSchema
 	.omit({
 		[userReferralsIdColumnName]: true,
 		created_at: true,
+		deleted_date: true,
 	})
 	.extend({
-		count: z.number().default(0), // Make optional and provide default
+		count: z.number().default(0),
 	});
 
 export const userReferralsUpdateSchema = userReferralsCreateSchema.partial();

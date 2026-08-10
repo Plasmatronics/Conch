@@ -31,6 +31,7 @@ export const membersSchema = z.object({
 export const membersCreateSchema = membersSchema.omit({
 	[membersIdColumnName]: true,
 	created_at: true,
+	deleted_date: true,
 });
 
 export const membersUpdateSchema = membersCreateSchema.partial();

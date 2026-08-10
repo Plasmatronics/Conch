@@ -33,6 +33,7 @@ export const postsSchema = z.object({
 export const postsCreateSchema = postsSchema.omit({
 	[postsIdColumnName]: true,
 	created_at: true,
+	deleted_date: true,
 });
 
 export const postsUpdateSchema = postsCreateSchema.partial();

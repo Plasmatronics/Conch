@@ -19,6 +19,7 @@ export const claimsSchema = z.object({
 export const claimsCreateSchema = claimsSchema.omit({
 	[claimsIdColumnName]: true,
 	created_at: true,
+	deleted_date: true,
 });
 
 export const claimsUpdateSchema = claimsCreateSchema.partial();

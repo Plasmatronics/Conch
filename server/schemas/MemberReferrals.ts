@@ -26,6 +26,7 @@ export const memberReferralsCreateSchema = memberReferralsSchema
 	.omit({
 		[memberReferralsIdColumnName]: true,
 		created_at: true,
+		deleted_date: true,
 	})
 	.extend({
 		count: z.number().default(0),

@@ -19,6 +19,7 @@ export const relationshipsSchema = z.object({
 export const relationshipsCreateSchema = relationshipsSchema.omit({
 	[relationshipsIdColumnName]: true,
 	created_at: true,
+	deleted_date: true,
 });
 
 export const relationshipsUpdateSchema = relationshipsCreateSchema.partial();

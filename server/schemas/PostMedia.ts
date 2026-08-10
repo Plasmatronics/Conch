@@ -17,6 +17,7 @@ export const postMediaSchema = z.object({
 export const postMediaCreateSchema = postMediaSchema.omit({
 	[postMediaIdColumnName]: true,
 	created_at: true,
+	deleted_date: true,
 });
 
 export const postMediaUpdateSchema = postMediaCreateSchema.partial();

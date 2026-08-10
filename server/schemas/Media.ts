@@ -14,6 +14,7 @@ export const mediaSchema = z.object({
 export const mediaCreateSchema = mediaSchema.omit({
 	[mediaIdColumnName]: true,
 	created_at: true,
+	deleted_date: true,
 });
 
 export const mediaUpdateSchema = mediaCreateSchema.partial();
