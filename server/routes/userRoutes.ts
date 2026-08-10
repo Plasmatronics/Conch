@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Pool } from "pg";
 import { RouteFactory } from "./RouteFactory";
-import { crudFactory } from "./CRUDFactory";
+import { crudFactory } from "../queries";
 import {
 	usersTableName,
 	usersIdColumnName,

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Pool } from "pg";
-import { CRUDFactory } from "./CRUDFactory";
+import { CRUDFactory } from "../queries";
 import z, { ZodObject } from "zod";
 import { RouteAccessConfig } from "../types";
 import { auth } from "../middleware";

@@ -7,7 +7,7 @@ import {
 } from "../schemas";
 import { RouteFactory } from "./RouteFactory";
 import { Pool } from "pg";
-import { crudFactory } from "./CRUDFactory";
+import { crudFactory } from "../queries";
 
 //TODO: handle conches distinclty
 
