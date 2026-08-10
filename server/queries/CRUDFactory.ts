@@ -27,11 +27,11 @@ class PrivateCRUDFactory {
 			throw new Error("No colunbs for updates were entered.");
 
 		const setClause = entries
-			.map(([key], i) => format("%I = $%s", key, i + 1))
+			.map(([key], i) => format("%I = $%L", key, i + 1))
 			.join(", ");
 
 		const query = format(
-			"UPDATE %I SET %s WHERE %I = $%s RETURNING *",
+			"UPDATE %I SET %L WHERE %I = $%L RETURNING *",
 			table,
 			setClause,
 			idColumn,
@@ -62,7 +62,7 @@ class PrivateCRUDFactory {
 		const placeholders = entries.map((_, i) => `$${i + 1}`).join(", ");
 
 		const text = format(
-			"INSERT INTO %I (%s) VALUES (%s) RETURNING *",
+			"INSERT INTO %I (%L) VALUES (%L) RETURNING *",
 			table,
 			columns,
 			placeholders,
