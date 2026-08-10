@@ -9,8 +9,6 @@ import {
 	createMediaRoutes,
 	createMemberReferralRoutes,
 	createMemberRoutes,
-	createPostMediaRoutes,
-	createPostMemberRoutes,
 	createPostRoutes,
 	createRelationshipRoutes,
 	createUserReferralRoutes,
@@ -90,12 +88,6 @@ const startServer = async (): Promise<void> => {
 
 	const memberRoutes = createMemberRoutes(dbPool);
 	app.use(`${apiPrefix}/members`, memberRoutes);
-
-	const postMediaRoutes = createPostMediaRoutes(dbPool);
-	app.use(`${apiPrefix}/postMedia`, postMediaRoutes);
-
-	const postMemberRoutes = createPostMemberRoutes(dbPool);
-	app.use(`${apiPrefix}/postMembers`, postMemberRoutes);
 
 	const postRoutes = createPostRoutes(dbPool);
 	app.use(`${apiPrefix}/posts`, postRoutes);
