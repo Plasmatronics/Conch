@@ -11,12 +11,12 @@ export const userReferralsSchema = z.object({
 	[userReferralsIdColumnName]: z.number(),
 	created_at: apiDateSchema,
 	referred_phone_number: z.string(),
-	referred_email: z.email().optional(),
+	referred_email: z.email().nullable(),
 	referred_member_id: z.number(),
 	referrer_id: z.number(),
 	conch_id: z.number(),
 	count: z.number(),
-	deleted_date: apiDateSchema.optional(),
+	deleted_date: apiDateSchema.nullable(),
 });
 
 export const userReferralsCreateSchema = userReferralsSchema

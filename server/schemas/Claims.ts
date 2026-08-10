@@ -13,7 +13,7 @@ export const claimsSchema = z.object({
 	conch_id: z.number(),
 	user_id: z.number(),
 	member_id: z.number(),
-	deleted_date: apiDateSchema.optional(),
+	deleted_date: apiDateSchema.nullable(),
 });
 
 export const claimsCreateSchema = claimsSchema.omit({

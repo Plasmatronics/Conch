@@ -14,12 +14,12 @@ export const memberReferralsSchema = z.object({
 	referred_last_name: z.string(),
 	referrer_id: z.number(),
 	conch_id: z.number(),
-	parent_one_id: z.number().optional(),
-	parent_two_id: z.number().optional(),
-	child_id: z.number().optional(),
-	spouse_id: z.number().optional(),
+	parent_one_id: z.number().nullable(),
+	parent_two_id: z.number().nullable(),
+	child_id: z.number().nullable(),
+	spouse_id: z.number().nullable(),
 	count: z.number(),
-	deleted_date: apiDateSchema.optional(),
+	deleted_date: apiDateSchema.nullable(),
 });
 
 export const memberReferralsCreateSchema = memberReferralsSchema

@@ -11,7 +11,7 @@ export const postMediaSchema = z.object({
 	created_at: apiDateSchema,
 	member_id: z.number(),
 	media_id: z.number(),
-	deleted_date: apiDateSchema.optional(),
+	deleted_date: apiDateSchema.nullable(),
 });
 
 export const postMediaCreateSchema = postMediaSchema.omit({

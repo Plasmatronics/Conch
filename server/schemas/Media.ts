@@ -8,7 +8,7 @@ export const mediaSchema = z.object({
 	[mediaIdColumnName]: z.number(),
 	storage_key: z.string(),
 	created_at: apiDateSchema,
-	deleted_date: apiDateSchema.optional(),
+	deleted_date: apiDateSchema.nullable(),
 });
 
 export const mediaCreateSchema = mediaSchema.omit({

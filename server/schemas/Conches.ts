@@ -13,7 +13,7 @@ export const conchesSchema = z.object({
 	confirmations_needed_for_referrals: z.number(),
 	admin_id: z.number(),
 	created_at: apiDateSchema,
-	deleted_date: apiDateSchema.optional(),
+	deleted_date: apiDateSchema.nullable(),
 });
 
 export const conchesCreateSchema = conchesSchema.omit({

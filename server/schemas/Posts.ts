@@ -8,7 +8,7 @@ export const postsIdColumnName = "post_id" as const;
 export type Season = "winter" | "spring" | "summer" | "fall";
 
 export const storyDateSchema = z.object({
-	season: z.enum(["winter", "spring", "summer", "fall"]).optional(),
+	season: z.enum(["winter", "spring", "summer", "fall"]).nullable(),
 	year: z.number(),
 });
 
@@ -19,15 +19,15 @@ export const postsSchema = z.object({
 	author_id: z.number(),
 	title: z.string(),
 	created_at: apiDateSchema,
-	body_text: z.string().optional(),
+	body_text: z.string().nullable(),
 	location: z
 		.object({
 			type: z.literal("Point"),
 			coordinates: z.tuple([z.number(), z.number()]),
 		})
-		.optional(),
-	date: storyDateSchema.optional(),
-	deleted_date: apiDateSchema.optional(),
+		.nullable(),
+	date: storyDateSchema.nullable(),
+	deleted_date: apiDateSchema.nullable(),
 });
 
 export const postsCreateSchema = postsSchema.omit({
