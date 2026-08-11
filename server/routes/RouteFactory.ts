@@ -1,9 +1,9 @@
-import { Router } from "express";
+import { RequestHandler, Router } from "express";
 import { Pool } from "pg";
 import { CRUDFactory } from "../queries";
 import z, { ZodObject } from "zod";
 import { RouteAccessConfig } from "../types";
-import { auth } from "../middleware";
+import { auth, verifySession } from "../middleware";
 
 export class RouteFactory {
 	constructor(
@@ -34,7 +34,11 @@ export class RouteFactory {
 			}
 		});
 
-		router.get("", auth(getAllRoute), async (_req, res, next) => {
+		const getAllMiddlewares: RequestHandler[] = [];
+		if (getAllRoute !== "public")
+			getAllMiddlewares.push(verifySession(this.dbPool));
+		getAllMiddlewares.push(auth(getAllRoute));
+		router.get("", ...getAllMiddlewares, async (_req, res, next) => {
 			try {
 				const { text, values } = this.crudFactory.generateGetAll(
 					this.tableName,
@@ -47,7 +51,11 @@ export class RouteFactory {
 			}
 		});
 
-		router.post("", auth(postRoute), async (req, res, next) => {
+		const postMiddlewares: RequestHandler[] = [];
+		if (postRoute !== "public")
+			postMiddlewares.push(verifySession(this.dbPool));
+		postMiddlewares.push(auth(postRoute));
+		router.post("", ...postMiddlewares, async (req, res, next) => {
 			try {
 				const tableUpdates = this.createSchema.parse(req.body);
 				const { text, values } = this.crudFactory.generateCreateOne(
@@ -72,7 +80,11 @@ export class RouteFactory {
 			}
 		});
 
-		router.get("/:id", auth(getRoute), async (_req, res, next) => {
+		const getOneMiddlewares: RequestHandler[] = [];
+		if (getRoute !== "public")
+			getOneMiddlewares.push(verifySession(this.dbPool));
+		getOneMiddlewares.push(auth(getRoute));
+		router.get("/:id", ...getOneMiddlewares, async (_req, res, next) => {
 			try {
 				const resourceId = res.locals.resourceId as number;
 
@@ -96,7 +108,11 @@ export class RouteFactory {
 			}
 		});
 
-		router.patch("/:id", auth(patchRoute), async (req, res, next) => {
+		const patchMiddlewares: RequestHandler[] = [];
+		if (patchRoute !== "public")
+			patchMiddlewares.push(verifySession(this.dbPool));
+		patchMiddlewares.push(auth(patchRoute));
+		router.patch("/:id", ...patchMiddlewares, async (req, res, next) => {
 			try {
 				const resourceId = res.locals.resourceId as number;
 
@@ -121,7 +137,11 @@ export class RouteFactory {
 			}
 		});
 
-		router.delete("/:id", auth(deleteRoute), async (_req, res, next) => {
+		const deleteMiddlewares: RequestHandler[] = [];
+		if (deleteRoute !== "public")
+			deleteMiddlewares.push(verifySession(this.dbPool));
+		deleteMiddlewares.push(auth(deleteRoute));
+		router.delete("/:id", ...deleteMiddlewares, async (_req, res, next) => {
 			try {
 				const resourceId = res.locals.resourceId as number;
 
