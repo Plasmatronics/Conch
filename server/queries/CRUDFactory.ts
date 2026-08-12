@@ -24,7 +24,7 @@ class PrivateCRUDFactory {
 	): QueryConfig {
 		const entries = Object.entries(valueMap);
 		if (!entries.length)
-			throw new Error("No colunbs for updates were entered.");
+			throw new Error("No columns for updates were entered.");
 
 		const setClause = entries
 			.map(([key], i) => format("%I = $%s", key, i + 1))
