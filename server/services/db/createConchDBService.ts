@@ -2,7 +2,7 @@ import { SecretsManagerClient } from "@aws-sdk/client-secrets-manager";
 import { ConchDBService } from "./ConchDBService";
 import { AWSSecretStore } from "../secrets";
 import { PoolConfig } from "pg";
-import { ConchServerEnvConfig } from "../types";
+import { ConchServerEnvConfig } from "../../types";
 
 interface ConchDBServiceCreationConfig
 	extends

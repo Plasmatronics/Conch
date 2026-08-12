@@ -1,8 +1,8 @@
 import fs from "fs";
 import { Pool, PoolConfig } from "pg";
-import type { ConchServerEnvConfig, SecretStoreStrategy } from "../index";
+import type { SecretStoreStrategy } from "../secrets";
 import path from "path";
-import { HealthCheck, ConchService } from "../types";
+import { HealthCheck, ConchService, type ConchServerEnvConfig } from "../../types";
 
 interface ConchDBServiceConfig
 	extends
