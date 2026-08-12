@@ -5,7 +5,7 @@ import { ConchService } from "../types";
 export const conductServicesHealthCheck =
 	(services: ConchService[]) => async (_req: Request, res: Response) => {
 		try {
-			const { unhealthy, healthy: _healthy } = await healthCheck(services);
+			const { unhealthy } = await healthCheck(services);
 
 			if (unhealthy.length) {
 				const errorMessage = unhealthy
@@ -19,7 +19,7 @@ export const conductServicesHealthCheck =
 			res.status(200).json({ message: "All services healthy" });
 		} catch (error: unknown) {
 			res.status(503).json({
-				status: `${error instanceof Error ? error.message : "Unknown error has occurred."}`,
+				message: `${error instanceof Error ? error.message : "Unknown error has occurred."}`,
 			});
 		}
 	};
