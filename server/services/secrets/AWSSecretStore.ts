@@ -3,7 +3,7 @@ import {
 	GetSecretValueCommand,
 	DescribeSecretCommand,
 } from "@aws-sdk/client-secrets-manager";
-import { ConchService, HealthCheck } from "../types";
+import { ConchService, HealthCheck } from "../../types";
 
 interface SecretUsernameAndPassword {
 	username: string;
