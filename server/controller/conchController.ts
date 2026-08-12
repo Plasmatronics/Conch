@@ -124,7 +124,7 @@ export const deleteConch =
 			if (!deletedRows)
 				return res.status(404).json({ message: "Could not delete any rows" });
 
-			return res.status(200).json(deletedRows);
+			return res.status(204).json(deletedRows);
 		} catch (err) {
 			return next(err);
 		}
