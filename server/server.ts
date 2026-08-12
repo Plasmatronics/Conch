@@ -4,6 +4,7 @@ import { ConchService } from "./types";
 import { healthCheck, appEnvVariables } from "./utils";
 import { createConchDBService } from "./db";
 import {
+	createAuthRoutes,
 	createClaimRoutes,
 	createConchRoutes,
 	createMediaRoutes,
@@ -103,6 +104,9 @@ const startServer = async (): Promise<void> => {
 
 	const userRoutes = createUserRoutes(dbPool);
 	app.use(`${apiPrefix}/users`, userRoutes);
+
+	const authRoutes = createAuthRoutes(dbPool);
+	app.use(`${apiPrefix}`, authRoutes);
 
 	const server = app.listen(devPort ?? 4000, () => {
 		console.log(`Listening on port ${devPort ?? 4000}`);

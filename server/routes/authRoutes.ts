@@ -42,15 +42,15 @@ export const createAuthRoutes = (dbPool: Pool): Router => {
 
 	authRouter.patch(
 		"/me",
-		auth("authenticated"),
 		verifySession(dbPool),
+		auth("authenticated"),
 		patchUser(dbPool),
 	);
 
 	authRouter.get(
 		"/me",
-		auth("authenticated"),
 		verifySession(dbPool),
+		auth("authenticated"),
 		retrieveUser(dbPool),
 	);
 

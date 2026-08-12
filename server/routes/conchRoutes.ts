@@ -1,31 +1,62 @@
 import { Router } from "express";
-import {
-	conchesTableName,
-	conchesIdColumnName,
-	conchesUpdateSchema,
-	conchesCreateSchema,
-} from "../schemas";
-import { RouteFactory } from "./RouteFactory";
 import { Pool } from "pg";
-import { crudFactory } from "../queries";
-
-//TODO: handle conches distinclty
+import {
+	createConch,
+	getAllPersonalConches,
+	getConch,
+	updateConch,
+	deleteConch,
+} from "../controller";
+import { auth, verifySession } from "../middleware";
+import z from "zod";
 
 export const createConchRoutes = (dbPool: Pool): Router => {
-	const conchRouteFactory = new RouteFactory(
-		conchesTableName,
-		dbPool,
-		conchesIdColumnName,
-		crudFactory,
-		conchesCreateSchema,
-		conchesUpdateSchema,
+	const conchRouter = Router();
+
+	conchRouter.get(
+		"",
+		verifySession(dbPool),
+		auth("authenticated"),
+		getAllPersonalConches(dbPool),
 	);
 
-	return conchRouteFactory.createRoutes({
-		getAllRoute: "authenticated",
-		getRoute: "member",
-		postRoute: "authenticated",
-		patchRoute: "admin",
-		deleteRoute: "admin",
+	conchRouter.post(
+		"",
+		verifySession(dbPool),
+		auth("authenticated"),
+		createConch(dbPool),
+	);
+
+	conchRouter.param("conchId", (_req, res, next, conchId) => {
+		try {
+			const parsedConchId = z.string().regex(/^\d+$/).parse(conchId);
+			res.locals.conchId = Number(parsedConchId);
+			next();
+		} catch (err) {
+			next(err);
+		}
 	});
+
+	conchRouter.patch(
+		"/:conchId",
+		verifySession(dbPool),
+		auth("authenticated"),
+		updateConch(dbPool),
+	);
+
+	conchRouter.delete(
+		"/:conchId",
+		verifySession(dbPool),
+		auth("admin"),
+		deleteConch(dbPool),
+	);
+
+	conchRouter.get(
+		"/:conchId",
+		verifySession(dbPool),
+		auth("authenticated"),
+		getConch(dbPool),
+	);
+
+	return conchRouter;
 };
