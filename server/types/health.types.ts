@@ -4,3 +4,8 @@ export type HealthCheck = {
 	requestTime: number;
 	message?: string;
 };
+
+export interface ServicesHealthCheckResponse {
+	healthy: HealthCheck[];
+	unhealthy: HealthCheck[];
+}

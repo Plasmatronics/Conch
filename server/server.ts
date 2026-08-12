@@ -1,20 +1,8 @@
-import express, { type Express, type Request, type Response } from "express";
-import cookieParser from "cookie-parser";
+import express, { type Express } from "express";
 import { ConchService } from "./types";
-import { healthCheck, appEnvVariables } from "./utils";
-import { createConchDBService } from "./db";
-import {
-	createAuthRoutes,
-	createClaimRoutes,
-	createConchRoutes,
-	createMediaRoutes,
-	createMemberReferralRoutes,
-	createMemberRoutes,
-	createPostRoutes,
-	createRelationshipRoutes,
-	createUserReferralRoutes,
-	createUserRoutes,
-} from "./routes";
+import { appEnvVariables } from "./utils";
+import { createConchDBService, runStartupHealthCheck } from "./services";
+import { mountApp } from "./app";
 
 const startServer = async (): Promise<void> => {
 	const {
@@ -26,7 +14,6 @@ const startServer = async (): Promise<void> => {
 		rdsPortStr,
 		region,
 		caCertPath,
-		apiPrefix,
 		devPort,
 	} = appEnvVariables;
 
@@ -42,71 +29,13 @@ const startServer = async (): Promise<void> => {
 		connectionTimeoutMillis: 5000,
 	});
 
-	const vitalServices: ConchService[] = [dbPoolClient];
-	const areVitalServicesHealthy = await healthCheck(vitalServices);
-	const errors: string[] = [];
-	for (const { isHealthy, message, service } of areVitalServicesHealthy) {
-		if (isHealthy) continue;
-		errors.push(message ?? `An unknown error occurred in ${service}`);
-	}
-	if (errors.length) throw new Error(errors.join("\n"));
-
 	const dbPool = await dbPoolClient.initializePool();
 
+	const vitalServices: ConchService[] = [dbPoolClient];
+	await runStartupHealthCheck(vitalServices);
+
 	const app: Express = express();
-	app.get(`${apiPrefix}/health`, async (_req: Request, res: Response) => {
-		try {
-			const healthChecks = await healthCheck([dbPoolClient]);
-			const errors: string[] = [];
-			for (const { isHealthy, message, service } of healthChecks) {
-				if (isHealthy) continue;
-				errors.push(message ?? `An unknown error occurred in ${service}`);
-			}
-			if (errors.length) throw new Error(errors.join("\n"));
-
-			res.status(200).json({ status: "ok" });
-		} catch (error: unknown) {
-			res.status(503).json({
-				status: `${error instanceof Error ? error.message : "Unknown error has occurred."}`,
-			});
-		}
-	});
-
-	app.use(express.json());
-	app.use(cookieParser());
-
-	const claimRoutes = createClaimRoutes(dbPool);
-	app.use(`${apiPrefix}/conches/:conchId/claims`, claimRoutes);
-
-	const conchRoutes = createConchRoutes(dbPool);
-	app.use(`${apiPrefix}/conches`, conchRoutes);
-
-	const mediaRoutes = createMediaRoutes(dbPool);
-	app.use(`${apiPrefix}/conches/:conchId/media`, mediaRoutes);
-
-	const memberReferralRoutes = createMemberReferralRoutes(dbPool);
-	app.use(
-		`${apiPrefix}/conches/:conchId/memberReferrals`,
-		memberReferralRoutes,
-	);
-
-	const memberRoutes = createMemberRoutes(dbPool);
-	app.use(`${apiPrefix}/conches/:conchId/members`, memberRoutes);
-
-	const postRoutes = createPostRoutes(dbPool);
-	app.use(`${apiPrefix}/conches/:conchId/posts`, postRoutes);
-
-	const relationshipRoutes = createRelationshipRoutes(dbPool);
-	app.use(`${apiPrefix}/conches/:conchId/relationships`, relationshipRoutes);
-
-	const userReferralRoutes = createUserReferralRoutes(dbPool);
-	app.use(`${apiPrefix}/conches/:conchId/userReferrals`, userReferralRoutes);
-
-	const userRoutes = createUserRoutes(dbPool);
-	app.use(`${apiPrefix}/users`, userRoutes);
-
-	const authRoutes = createAuthRoutes(dbPool);
-	app.use(`${apiPrefix}`, authRoutes);
+	mountApp(app, dbPool, vitalServices);
 
 	const server = app.listen(devPort ?? 4000, () => {
 		console.log(`Listening on port ${devPort ?? 4000}`);

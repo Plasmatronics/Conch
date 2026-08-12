@@ -1,4 +1,4 @@
-import { createConchDBService } from "../db";
+import { createConchDBService } from "../services";
 import readline from "node:readline";
 import { RecordedError } from "../types";
 import { appEnvVariables } from "../utils";

@@ -2,7 +2,7 @@ import { enumCreationQueries, nodeToCreationQueryMap } from "../schemas";
 import type { PoolClient } from "pg";
 import { determineTopologicalOrderingOfTableCreation } from "./utils";
 import type { RecordedError } from "../types";
-import { createConchDBService } from "../db";
+import { createConchDBService } from "../services";
 import { appEnvVariables } from "../utils";
 
 const injectTablesIntoDB = async (): Promise<void> => {
