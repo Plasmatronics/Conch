@@ -40,7 +40,7 @@ export const createConchRoutes = (dbPool: Pool): Router => {
 	conchRouter.patch(
 		"/:conchId",
 		verifySession(dbPool),
-		auth("authenticated"),
+		auth("member"),
 		updateConch(dbPool),
 	);
 
@@ -54,7 +54,7 @@ export const createConchRoutes = (dbPool: Pool): Router => {
 	conchRouter.get(
 		"/:conchId",
 		verifySession(dbPool),
-		auth("authenticated"),
+		auth("member"),
 		getConch(dbPool),
 	);
 

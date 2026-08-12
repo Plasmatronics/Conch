@@ -10,6 +10,7 @@ import {
 } from "../schemas";
 import format from "pg-format";
 import z from "zod";
+import { getConch as getConchFromDb } from "../queries";
 
 export const createConch =
 	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {
@@ -61,12 +62,9 @@ export const getAllPersonalConches =
 export const getConch =
 	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const getConchRes = await dbPool.query(
-				`SELECT * FROM ${conchesTableName} WHERE ${conchesIdColumnName} = $1`,
-				[res.locals.conchId],
-			);
-
-			const conch = conchesSchema.parse(getConchRes.rows[0]);
+			const conch = await getConchFromDb(dbPool, res.locals.conchId);
+			if (!conch)
+				return res.status(404).json({ message: "Could not retrieve Conch" });
 			return res.status(200).json(conch);
 		} catch (err) {
 			return next(err);
@@ -82,9 +80,16 @@ export const updateConch =
 					.status(400)
 					.json({ message: "No columns entered for update" });
 
+			const conch = await getConchFromDb(dbPool, res.locals.conchId);
+			if (!conch)
+				return res.status(404).json({ message: "Could not retrieve Conch" });
+			if (conch.admin_id !== req.user![usersIdColumnName])
+				return res
+					.status(403)
+					.json({ message: "Only admins of this conch can update it." });
+
 			const columns = entries.map(([key]) => key);
 			const columnsPlaceholder = columns.map(() => "%I").join(",");
-
 			const values = entries.map(([_key, value]) => value);
 			const valuesPlaceholder = values.map(() => "%L").join(",");
 
@@ -107,7 +112,8 @@ export const updateConch =
 	};
 
 export const deleteConch =
-	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {
+	(dbPool: Pool) =>
+	async (_req: Request, res: Response, next: NextFunction) => {
 		try {
 			const deleteConchRes = await dbPool.query(
 				`DELETE from ${conchesTableName} WHERE
