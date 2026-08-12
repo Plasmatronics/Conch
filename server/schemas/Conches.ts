@@ -20,6 +20,7 @@ export const conchesCreateSchema = conchesSchema.omit({
 	[conchesIdColumnName]: true,
 	created_at: true,
 	deleted_date: true,
+	admin_id: true,
 });
 
 export const conchesUpdateSchema = conchesCreateSchema.partial();

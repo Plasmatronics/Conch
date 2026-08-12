@@ -18,7 +18,7 @@ export const getAllUsersConches = async (
 		return conches;
 	} catch (err) {
 		throw new Error(
-			`An error has occurred while retrieve conch membership of the user: ${err instanceof Error ? err.message : "an unknown error has occurred"}`,
+			`An error has occurred while retrieving conch membership: ${err instanceof Error ? err.message : "an unknown error has occurred"}`,
 		);
 	}
 };
