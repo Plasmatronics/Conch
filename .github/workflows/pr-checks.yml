@@ -163,6 +163,22 @@ jobs:
             If there are no meaningful problems, say:
             "No actionable issues found."
 
+            ### Dependency Version Verification
+            Never flag a dependency, runtime, GitHub Action, package, framework,
+            or tool version as invalid, nonexistent, outdated, deprecated,
+            prerelease, or unsupported based solely on your internal knowledge.
+            
+            Before making a version-related finding, verify the exact version
+            against an authoritative source such as:
+            - npm registry for npm packages
+            - the official GitHub repository for GitHub Actions
+            - official project documentation
+            
+            If external verification is unavailable, DO NOT make the finding.
+            
+            Never assume a version is invalid merely because it is newer than
+            versions present in your training knowledge.
+
             DIFF:
 
             ${diff}
