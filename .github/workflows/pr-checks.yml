@@ -16,11 +16,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  review:
-    name: Review pull request
+  test:
+    name: Tests
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - run: cd server && npm ci
+      - run: cd server && npm run test:unit
+
+  review:
+    name: Review pull request
+    needs: test
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -185,25 +204,25 @@ jobs:
 
             const candidate = data.candidates?.[0];
             const finishReason = candidate?.finishReason ?? "UNKNOWN";
-            
+
             const review = candidate?.content?.parts
               ?.filter(part => typeof part.text === "string")
               .map(part => part.text)
               .join("")
               .trim();
-            
+
             core.info(`Gemini finish reason: ${finishReason}`);
             core.info(
               `Gemini token usage: ${JSON.stringify(data.usageMetadata ?? {})}`
             );
-            
+
             if (!review) {
               core.setFailed(
                 `AI returned an empty review. Finish reason: ${finishReason}`
               );
               return;
             }
-            
+
             if (finishReason !== "STOP") {
               core.setFailed(
                 `AI returned an incomplete review. Finish reason: ${finishReason}`

@@ -9,7 +9,9 @@
 		"dev": "tsx watch server.ts",
 		"db:init": "tsx ./scripts/init-db.ts",
 		"db:nuke": "tsx ./scripts/nuke-db.ts",
-		"test": "vitest"
+		"test": "vitest",
+		"test:unit": "vitest run --exclude '**/*.integration.test.ts'",
+		"test:integration": "vitest run integration"
 	},
 	"dependencies": {
 		"@aws-sdk/client-secrets-manager": "^3.1095.0",
