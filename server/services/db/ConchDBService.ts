@@ -2,7 +2,11 @@ import fs from "fs";
 import { Pool, PoolConfig } from "pg";
 import type { SecretStoreStrategy } from "../secrets";
 import path from "path";
-import { HealthCheck, ConchService, type ConchServerEnvConfig } from "../../types";
+import {
+	HealthCheck,
+	ConchService,
+	type ConchServerEnvConfig,
+} from "../../types";
 
 interface ConchDBServiceConfig
 	extends
@@ -57,7 +61,7 @@ export class ConchDBService implements ConchService {
 			);
 			if (!caCert)
 				throw new Error(
-					"Failed to initialize database pool due to CA certificate error.",
+					"Failed to initialize database pool: CA certificate is empty.",
 				);
 
 			const pool = new Pool({
