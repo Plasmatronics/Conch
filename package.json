@@ -4,5 +4,36 @@
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
-	"scripts": {}
+	"workspaces": [
+		"server"
+	],
+	"scripts": {
+		"prepare": "husky",
+		"test": "npm run test --workspaces",
+		"lint": "npm run lint --workspaces",
+		"typecheck": "npm run typecheck --workspaces",
+		"format": "npm run format --workspaces",
+		"format:check": "npm run format:check --workspaces"
+	},
+	"lint-staged": {
+		"*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}": [
+			"eslint --fix",
+			"prettier --write"
+		],
+		"*.{json,md,yml,yaml}": [
+			"prettier --write"
+		]
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.39.5",
+		"eslint": "^9.39.5",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-react": "^7.37.5",
+		"globals": "^17.11.0",
+		"husky": "^9.1.7",
+		"jiti": "^2.7.0",
+		"lint-staged": "^16.4.0",
+		"prettier": "^3.9.6",
+		"typescript-eslint": "^8.67.0"
+	}
 }

@@ -49,7 +49,7 @@ export const signupUser =
    				RETURNING *`,
 				values,
 			);
-			const { user_id, app_role, ...userDbRes } = usersSchema.parse(
+			const { user_id, app_role, ..._userDbRes } = usersSchema.parse(
 				signupRes.rows[0],
 			);
 			req.user = {
@@ -80,7 +80,7 @@ export const loginUser =
 					.status(404)
 					.json({ message: "Could not find user with those credentials" });
 
-			const { user_id, app_role, password_hash, ...userDbRes } =
+			const { user_id, app_role, password_hash, ..._userDbRes } =
 				usersSchema.parse(userRes.rows[0]);
 
 			const isPasswordCorrect = await checkPassword(password, password_hash);
@@ -111,7 +111,9 @@ export const retrieveUser =
 			if (!userRes.rowCount)
 				return res.status(404).json({ message: "Could not retrieve user" });
 
-			const { password_hash, ...user } = usersSchema.parse(userRes.rows[0]);
+			const { password_hash: _password_hash, ...user } = usersSchema.parse(
+				userRes.rows[0],
+			);
 
 			return res.status(200).json(user);
 		} catch (err) {
@@ -147,7 +149,7 @@ export const patchUser =
 
 			const patchRes = await dbPool.query(formattedQuery);
 			const updatedUser = usersSchema.parse(patchRes.rows[0]);
-			const { password_hash, ...patchedUser } = updatedUser;
+			const { password_hash: _password_hash, ...patchedUser } = updatedUser;
 
 			return res.status(200).json(patchedUser);
 		} catch (err) {

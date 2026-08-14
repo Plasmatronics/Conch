@@ -29,10 +29,13 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: server/package-lock.json
+          cache-dependency-path: package-lock.json
 
-      - run: cd server && npm ci
-      - run: cd server && npm run test:unit
+      - run: npm ci
+        env:
+          HUSKY: 0
+
+      - run: npm run test:unit --workspaces
 
   review:
     name: Review pull request
@@ -167,15 +170,15 @@ jobs:
             Never flag a dependency, runtime, GitHub Action, package, framework,
             or tool version as invalid, nonexistent, outdated, deprecated,
             prerelease, or unsupported based solely on your internal knowledge.
-            
+
             Before making a version-related finding, verify the exact version
             against an authoritative source such as:
             - npm registry for npm packages
             - the official GitHub repository for GitHub Actions
             - official project documentation
-            
+
             If external verification is unavailable, DO NOT make the finding.
-            
+
             Never assume a version is invalid merely because it is newer than
             versions present in your training knowledge.
 
