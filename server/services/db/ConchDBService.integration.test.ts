@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+//need to use any to bypass private properties and test/examine them
 
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 
