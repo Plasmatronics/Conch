@@ -90,20 +90,20 @@ const injectTablesIntoDB = async (): Promise<void> => {
 				message: "An error occurred during pool closure",
 			});
 		}
+	}
 
-		if (errors.length === 1) {
-			const firstError = errors[0];
-			throw new Error(firstError.message, {
-				cause: firstError.cause,
-			});
-		} else if (errors.length > 1) {
-			throw new AggregateError(
-				errors.map(({ cause, message }) => new Error(message, { cause })),
-				transactionCommitted
-					? "Table injection succeeded, but multiple cleanup errors occurred"
-					: "Multiple errors occurred during table injection process",
-			);
-		}
+	if (errors.length === 1) {
+		const firstError = errors[0];
+		throw new Error(firstError.message, {
+			cause: firstError.cause,
+		});
+	} else if (errors.length > 1) {
+		throw new AggregateError(
+			errors.map(({ cause, message }) => new Error(message, { cause })),
+			transactionCommitted
+				? "Table injection succeeded, but multiple cleanup errors occurred"
+				: "Multiple errors occurred during table injection process",
+		);
 	}
 };
 

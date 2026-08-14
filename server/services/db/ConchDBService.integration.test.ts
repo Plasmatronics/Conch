@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 
 import { createConchDBService } from "./createConchDBService";

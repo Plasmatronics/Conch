@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import fs from "fs";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import { SecretStoreStrategy } from "../secrets";
-import { createConchDBService } from "./createConchDBService";
 import { ConchDBService } from "./ConchDBService";
-import { Pool } from "pg";
 
 vi.mock("fs", () => {
 	return {

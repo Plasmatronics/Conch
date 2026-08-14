@@ -51,21 +51,22 @@ const nukeDb = async (): Promise<void> => {
 				message: "An error occurred during pool closure",
 			});
 		}
-		if (errors.length === 1) {
-			const error = errors[0];
-			throw new Error(error.message, {
-				cause: error.cause,
-			});
-		} else if (errors.length > 1) {
-			throw new AggregateError(
-				errors.map((err) => {
-					return new Error(err.message, {
-						cause: err.cause,
-					});
-				}),
-				`Errors occurred during nuking and pool closure`,
-			);
-		}
+	}
+
+	if (errors.length === 1) {
+		const error = errors[0];
+		throw new Error(error.message, {
+			cause: error.cause,
+		});
+	} else if (errors.length > 1) {
+		throw new AggregateError(
+			errors.map((err) => {
+				return new Error(err.message, {
+					cause: err.cause,
+				});
+			}),
+			`Errors occurred during nuking and pool closure`,
+		);
 	}
 };
 
