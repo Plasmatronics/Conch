@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-//need to use any to bypass private properties and test/examine them
-
 import fs from "fs";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 

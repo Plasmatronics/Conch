@@ -27,7 +27,7 @@ const SESSION_COOKIE_CONFIG: CookieOptions = {
 	sameSite: "lax",
 };
 
-const hashSessionToken = (token: string) =>
+export const hashSessionToken = (token: string) =>
 	createHash("sha256").update(token).digest("hex");
 
 export const createSession =
@@ -48,7 +48,7 @@ export const createSession =
 			const values = Object.values(sessionPayload);
 
 			const formattedCreateSessionQuery = format(
-				`INSERT INTO %I (%I) VALUES (%L) RETURNING *`,
+				`INSERT INTO %I (%I) VALUES (%L)`,
 				sessionsTableName,
 				columns,
 				values,
@@ -95,12 +95,11 @@ export const verifySession =
 			}
 			const session = sessionsSchema.parse(queryRes.rows[0].session);
 			const user = usersSchema.parse(queryRes.rows[0].user);
-
 			if (
 				session.expire_time <= new Date() ||
 				session.absolute_expire_time <= new Date()
 			) {
-				return res.status(404).json({ message: "Session expired" });
+				return res.status(401).json({ message: "Session expired" });
 			}
 			const refreshedSessionExpireTimeSeconds = Math.min(
 				Date.now() + daysToMs(EXPIRE_TIME_NUM_DAYS),

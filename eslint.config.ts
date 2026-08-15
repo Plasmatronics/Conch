@@ -9,7 +9,9 @@ export default defineConfig([
 	{
 		ignores: ["**/dist/**", "**/build/**", "**/coverage/**"],
 	},
+
 	tseslint.configs.recommended,
+
 	{
 		files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
 		plugins: {
@@ -40,6 +42,7 @@ export default defineConfig([
 			},
 		},
 	},
+
 	{
 		files: ["client/**/*.{jsx,tsx}"],
 		...pluginReact.configs.flat["jsx-runtime"],
@@ -56,4 +59,11 @@ export default defineConfig([
 	},
 
 	eslintConfigPrettier,
+
+	{
+		files: ["**/*.test.ts", "**/*.test.tsx"],
+		rules: {
+			"@typescript-eslint/no-explicit-any": "off",
+		},
+	},
 ]);
