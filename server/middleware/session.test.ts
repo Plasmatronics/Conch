@@ -46,6 +46,21 @@ vi.mock("pg", () => {
 
 	return { Pool: MockPool };
 });
+vi.mock("../utils/appEnvVariables", () => ({
+	appEnvVariables: {
+		devPort: "3000",
+		secretId: "test-secret-id",
+		accessKeyId: "test-access-key",
+		secretAccessKey: "test-secret-key",
+		db: "test-db",
+		host: "localhost",
+		rdsPortStr: "5432",
+		region: "us-east-1",
+		caCertPath: "test-cert.pem",
+		apiPrefix: "/api",
+		nodeEnv: "test",
+	},
+}));
 
 const usersParseSpy = vi.spyOn(usersSchema, "parse");
 const sessionsParseSpy = vi.spyOn(sessionsSchema, "parse");
