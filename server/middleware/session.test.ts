@@ -3,13 +3,13 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import * as session from "./session";
 import { CookieOptions, NextFunction, Request, Response } from "express";
+
+import { usersSchema, usersIdColumnName } from "../schemas/Users";
 import {
+	sessionsSchema,
 	sessionsIdColumnName,
 	sessionsTableName,
-	usersIdColumnName,
-} from "../schemas";
-import { usersSchema } from "../schemas/Users";
-import { sessionsSchema } from "../schemas/Sessions";
+} from "../schemas/Sessions";
 
 import { Pool } from "pg";
 import { normalizeSql } from "../utils/normalizeSQLForVItest";
