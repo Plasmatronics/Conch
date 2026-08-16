@@ -12,7 +12,8 @@ import { usersSchema } from "../schemas/Users";
 import { sessionsSchema } from "../schemas/Sessions";
 
 import { Pool } from "pg";
-import { daysToMs, normalizeSql } from "../utils";
+import { normalizeSql } from "../utils/normalizeSQLForVItest";
+import { daysToMs } from "../utils/daysToMs";
 
 const mockRequest = {
 	user: {
