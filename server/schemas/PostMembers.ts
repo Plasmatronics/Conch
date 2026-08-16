@@ -11,13 +11,11 @@ export const postMembersSchema = z.object({
 	created_at: apiDateSchema,
 	member_id: z.number(),
 	post_id: z.number(),
-	deleted_date: apiDateSchema.nullable(),
 });
 
 export const postMembersCreateSchema = postMembersSchema.omit({
 	[postMembersIdColumnName]: true,
 	created_at: true,
-	deleted_date: true,
 });
 
 export const postMembersUpdateSchema = postMembersCreateSchema.partial();
@@ -35,5 +33,4 @@ CREATE TABLE ${postMembersTableName} (
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	member_id integer NOT NULL REFERENCES ${membersTableName},
 	post_id integer NOT NULL REFERENCES ${postsTableName},
-    deleted_date timestamptz
 );`;

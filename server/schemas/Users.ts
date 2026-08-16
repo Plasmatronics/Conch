@@ -19,7 +19,6 @@ export const usersSchema = z.object({
 	password_hash: z.string(),
 	created_at: apiDateSchema,
 	app_role: z.enum(["standard", "admin"]),
-	deleted_date: apiDateSchema.nullable(),
 });
 
 const passwordSchema = z.string().min(8);
@@ -30,7 +29,6 @@ export const usersSignupSchema = usersSchema
 		created_at: true,
 		app_role: true,
 		password_hash: true,
-		deleted_date: true,
 	})
 	.extend({
 		password: passwordSchema,
@@ -79,5 +77,4 @@ CREATE TABLE ${usersTableName} (
 	password_hash text NOT NULL,
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	app_role app_role NOT NULL DEFAULT 'standard',
-	deleted_date timestamptz
 );`;

@@ -8,13 +8,11 @@ export const mediaSchema = z.object({
 	[mediaIdColumnName]: z.number(),
 	storage_key: z.string(),
 	created_at: apiDateSchema,
-	deleted_date: apiDateSchema.nullable(),
 });
 
 export const mediaCreateSchema = mediaSchema.omit({
 	[mediaIdColumnName]: true,
 	created_at: true,
-	deleted_date: true,
 });
 
 export const mediaUpdateSchema = mediaCreateSchema.partial();
@@ -28,5 +26,4 @@ CREATE TABLE ${mediaTableName} (
 	${mediaIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	storage_key text NOT NULL,
-    deleted_date timestamptz
 );`;

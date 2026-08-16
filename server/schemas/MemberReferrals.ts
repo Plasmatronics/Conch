@@ -19,14 +19,12 @@ export const memberReferralsSchema = z.object({
 	child_id: z.number().nullable(),
 	spouse_id: z.number().nullable(),
 	count: z.number(),
-	deleted_date: apiDateSchema.nullable(),
 });
 
 export const memberReferralsCreateSchema = memberReferralsSchema
 	.omit({
 		[memberReferralsIdColumnName]: true,
 		created_at: true,
-		deleted_date: true,
 	})
 	.extend({
 		count: z.number().default(0),
@@ -56,5 +54,4 @@ CREATE TABLE ${memberReferralsTableName} (
 	child_id integer REFERENCES ${membersTableName},
 	spouse_id integer REFERENCES ${membersTableName},
 	count smallint NOT NULL DEFAULT 1,
-    deleted_date timestamptz
 );`;

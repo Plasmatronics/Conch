@@ -13,13 +13,11 @@ export const claimsSchema = z.object({
 	conch_id: z.number(),
 	user_id: z.number(),
 	member_id: z.number(),
-	deleted_date: apiDateSchema.nullable(),
 });
 
 export const claimsCreateSchema = claimsSchema.omit({
 	[claimsIdColumnName]: true,
 	created_at: true,
-	deleted_date: true,
 });
 
 export const claimsUpdateSchema = claimsCreateSchema.partial();
@@ -38,5 +36,4 @@ CREATE TABLE ${claimsTableName} (
 	conch_id integer NOT NULL REFERENCES ${conchesTableName},
 	user_id integer NOT NULL REFERENCES ${usersTableName},
 	member_id integer NOT NULL REFERENCES ${membersTableName},
-	deleted_date timestamptz
 );`;

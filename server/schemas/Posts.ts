@@ -27,13 +27,11 @@ export const postsSchema = z.object({
 		})
 		.nullable(),
 	date: storyDateSchema.nullable(),
-	deleted_date: apiDateSchema.nullable(),
 });
 
 export const postsCreateSchema = postsSchema.omit({
 	[postsIdColumnName]: true,
 	created_at: true,
-	deleted_date: true,
 });
 
 export const postsUpdateSchema = postsCreateSchema.partial();
@@ -56,7 +54,6 @@ CREATE TABLE ${postsTableName} (
 	location point,
 	year integer,
 	season season,
-	deleted_date timestamptz
 	CHECK (year IS NULL OR year BETWEEN 1900 AND 2100),
 	CHECK (year IS NOT NULL OR season IS NULL)
 );`;

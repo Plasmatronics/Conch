@@ -13,13 +13,11 @@ export const relationshipsSchema = z.object({
 	created_at: apiDateSchema,
 	source_member_id: z.number(),
 	target_member_id: z.number(),
-	deleted_date: apiDateSchema.nullable(),
 });
 
 export const relationshipsCreateSchema = relationshipsSchema.omit({
 	[relationshipsIdColumnName]: true,
 	created_at: true,
-	deleted_date: true,
 });
 
 export const relationshipsUpdateSchema = relationshipsCreateSchema.partial();
@@ -40,5 +38,4 @@ CREATE TABLE ${relationshipsTableName} (
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	source_member_id integer NOT NULL REFERENCES ${membersTableName},
 	target_member_id integer NOT NULL REFERENCES ${membersTableName},
-    deleted_date timestamptz
 );`;

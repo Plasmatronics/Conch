@@ -25,13 +25,11 @@ export const membersSchema = z.object({
 	birth_location: pointSchema.nullable(),
 	death_location: pointSchema.nullable(),
 	burial_location: pointSchema.nullable(),
-	deleted_date: apiDateSchema.nullable(),
 });
 
 export const membersCreateSchema = membersSchema.omit({
 	[membersIdColumnName]: true,
 	created_at: true,
-	deleted_date: true,
 });
 
 export const membersUpdateSchema = membersCreateSchema.partial();
@@ -58,5 +56,4 @@ CREATE TABLE ${membersTableName} (
 	birth_location point,
 	death_location point,
 	burial_location point,
-	deleted_date timestamptz
 );`;

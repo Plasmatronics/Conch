@@ -13,13 +13,11 @@ export const conchesSchema = z.object({
 	confirmations_needed_for_referrals: z.number(),
 	admin_id: z.number(),
 	created_at: apiDateSchema,
-	deleted_date: apiDateSchema.nullable(),
 });
 
 export const conchesCreateSchema = conchesSchema.omit({
 	[conchesIdColumnName]: true,
 	created_at: true,
-	deleted_date: true,
 	admin_id: true,
 });
 
@@ -40,5 +38,4 @@ CREATE TABLE ${conchesTableName} (
 	confirmations_needed_for_referrals smallint NOT NULL,
 	admin_id integer NOT NULL REFERENCES ${usersTableName},
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	deleted_date timestamptz
 );`;

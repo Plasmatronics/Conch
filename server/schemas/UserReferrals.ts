@@ -16,14 +16,12 @@ export const userReferralsSchema = z.object({
 	referrer_id: z.number(),
 	conch_id: z.number(),
 	count: z.number(),
-	deleted_date: apiDateSchema.nullable(),
 });
 
 export const userReferralsCreateSchema = userReferralsSchema
 	.omit({
 		[userReferralsIdColumnName]: true,
 		created_at: true,
-		deleted_date: true,
 	})
 	.extend({
 		count: z.number().default(0),
@@ -49,5 +47,4 @@ CREATE TABLE ${userReferralsTableName} (
 	referrer_id integer NOT NULL REFERENCES ${usersTableName},
 	conch_id integer NOT NULL REFERENCES ${conchesTableName},
 	count smallint NOT NULL DEFAULT 1,
-    deleted_date timestamptz
 );`;
