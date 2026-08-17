@@ -1,10 +1,9 @@
 import { createConchDBService } from "../services";
 import readline from "node:readline";
-import { RecordedError } from "../types";
 import { appEnvVariables } from "../appEnvVariables";
 
 const nukeDb = async (): Promise<void> => {
-	const errors: RecordedError[] = [];
+	const errors: Error[] = [];
 
 	const {
 		secretId,
@@ -38,33 +37,28 @@ const nukeDb = async (): Promise<void> => {
 			GRANT USAGE ON SCHEMA public TO PUBLIC;
 		`);
 	} catch (deletionError: unknown) {
-		errors.push({
-			cause: deletionError,
-			message: `Failed to nuke the database`,
-		});
+		errors.push(
+			new Error(`Failed to nuke the database`, {
+				cause: deletionError,
+			}),
+		);
 	} finally {
 		try {
 			await dbPoolClient.releaseClientsAndClosePool();
 		} catch (closureError: unknown) {
-			errors.push({
-				cause: closureError,
-				message: "An error occurred during pool closure",
-			});
+			errors.push(
+				new Error("An error occurred during pool closure", {
+					cause: closureError,
+				}),
+			);
 		}
 	}
 
 	if (errors.length === 1) {
-		const error = errors[0];
-		throw new Error(error.message, {
-			cause: error.cause,
-		});
+		throw errors[0];
 	} else if (errors.length > 1) {
 		throw new AggregateError(
-			errors.map((err) => {
-				return new Error(err.message, {
-					cause: err.cause,
-				});
-			}),
+			errors,
 			`Errors occurred during nuking and pool closure`,
 		);
 	}
