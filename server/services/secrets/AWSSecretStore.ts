@@ -4,6 +4,7 @@ import {
 	DescribeSecretCommand,
 } from "@aws-sdk/client-secrets-manager";
 import { ConchService, HealthCheck } from "../../types";
+import { AppError } from "../../errors";
 
 interface SecretUsernameAndPassword {
 	username: string;
@@ -54,17 +55,28 @@ export class AWSSecretStore implements SecretStoreStrategy {
 	}
 
 	async getSecretUsernameAndPassword(): Promise<SecretUsernameAndPassword> {
-		const command = new GetSecretValueCommand({
-			SecretId: this.config.secretId,
-		});
-		const response = await this.secretsManager.send(command);
-		const secretString = JSON.parse(response.SecretString as string);
+		try {
+			const command = new GetSecretValueCommand({
+				SecretId: this.config.secretId,
+			});
+			const response = await this.secretsManager.send(command);
+			const secretString = JSON.parse(response.SecretString as string);
 
-		if (!secretString.username)
-			throw new Error("Unable to load secret username");
-		if (!secretString.password)
-			throw new Error("Unable to load secret password");
+			if (!secretString.username)
+				throw new Error("Unable to load secret username");
+			if (!secretString.password)
+				throw new Error("Unable to load secret password");
 
-		return { username: secretString.username, password: secretString.password };
+			return {
+				username: secretString.username,
+				password: secretString.password,
+			};
+		} catch (err) {
+			throw new AppError(
+				`${err instanceof Error ? err.message : "An unknown error has occurred "}`,
+				500,
+				{ cause: err },
+			);
+		}
 	}
 }

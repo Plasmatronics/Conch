@@ -7,6 +7,7 @@ import {
 	ConchService,
 	type ConchServerEnvConfig,
 } from "../../types";
+import { AppError } from "../../errors";
 
 interface ConchDBServiceConfig
 	extends
@@ -59,10 +60,7 @@ export class ConchDBService implements ConchService {
 				path.resolve(process.cwd(), caCertPath),
 				"utf8",
 			);
-			if (!caCert)
-				throw new Error(
-					"Failed to initialize database pool: CA certificate is empty.",
-				);
+			if (!caCert) throw new Error("CA certificate is empty.");
 
 			const pool = new Pool({
 				...poolConfig,
@@ -83,8 +81,10 @@ export class ConchDBService implements ConchService {
 			this.pool = pool;
 			return this.pool;
 		} catch (err: unknown) {
-			throw new Error(
+			throw new AppError(
 				`Error during pool creation: ${err instanceof Error ? err.message : "an unknown error has occurred."}`,
+				500,
+				{ cause: err },
 			);
 		}
 	}
@@ -120,10 +120,12 @@ export class ConchDBService implements ConchService {
 			await pool.end();
 			console.log("Successfully disconnected from the database pool");
 		} catch (err: unknown) {
-			throw new Error(
+			throw new AppError(
 				`An error occurred during pool closure: ${
 					err instanceof Error ? err.message : "Unknown error"
 				}`,
+				500,
+				{ cause: err },
 			);
 		} finally {
 			if (this.pool === pool) {
