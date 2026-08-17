@@ -24,6 +24,7 @@ import {
 	usersCreateSchema,
 	usersIdColumnName,
 } from "../schemas/Users";
+import { AppError } from "../errors";
 
 const createPasswordSpy = vi.spyOn(passwordUtils, "createPasswordHash");
 const checkPasswordSpy = vi.spyOn(passwordUtils, "checkPassword");
@@ -195,10 +196,9 @@ describe("Login User", () => {
 		});
 		await loginHandler(loginRequest, mockResponse, mockNextFunction);
 
-		expect(mockResponse.status).toHaveBeenCalledWith(404);
-		expect(mockResponse.json).toHaveBeenCalledWith({
-			message: "Could not find user with those credentials",
-		});
+		expect(mockNextFunction).toHaveBeenCalledWith(
+			new AppError("Could not find user with those credentials", 404),
+		);
 	});
 
 	test("Login returns 401 when password is incorrect", async () => {
@@ -211,10 +211,9 @@ describe("Login User", () => {
 		});
 		await loginHandler(loginRequest, mockResponse, mockNextFunction);
 
-		expect(mockResponse.status).toHaveBeenCalledWith(401);
-		expect(mockResponse.json).toHaveBeenCalledWith({
-			message: "Incorrect credentials",
-		});
+		expect(mockNextFunction).toHaveBeenCalledWith(
+			new AppError("Incorrect credentials", 401),
+		);
 	});
 
 	test("Login forwards database errors to next", async () => {
@@ -269,11 +268,9 @@ describe("Retrieve User", () => {
 		});
 
 		await retrieveUserHandler(retrieveRequest, mockResponse, mockNextFunction);
-
-		expect(mockResponse.status).toHaveBeenCalledWith(404);
-		expect(mockResponse.json).toHaveBeenCalledWith({
-			message: "Could not retrieve user",
-		});
+		expect(mockNextFunction).toHaveBeenCalledWith(
+			new AppError("Could not retrieve user", 404),
+		);
 	});
 
 	test("Password hash is omitted from return", async () => {
@@ -356,11 +353,10 @@ describe("Patch User", () => {
 
 		await patchUserHandler(patchRequest, mockResponse, mockNextFunction);
 
-		expect(mockResponse.status).toHaveBeenCalledWith(400);
 		expect(mockPool.query).not.toHaveBeenCalled();
-		expect(mockResponse.json).toHaveBeenCalledWith({
-			message: "No fields provided to update",
-		});
+		expect(mockNextFunction).toHaveBeenCalledWith(
+			new AppError("No fields provided to update", 400),
+		);
 	});
 
 	test("Patch user forwards database errors to next", async () => {
