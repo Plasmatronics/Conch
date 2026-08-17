@@ -11,6 +11,7 @@ import {
 import { NextFunction, Request, Response } from "express";
 import format from "pg-format";
 import { checkPassword, createPasswordHash } from "../utils";
+import { AppError } from "../errors";
 
 export const signupUser =
 	(dbPool: Pool) =>
@@ -46,7 +47,7 @@ export const signupUser =
 
 			return next();
 		} catch (err) {
-			next(err);
+			return next(err);
 		}
 	};
 
@@ -62,16 +63,13 @@ export const loginUser =
 			);
 
 			if (!userRes.rowCount)
-				return res
-					.status(404)
-					.json({ message: "Could not find user with those credentials" });
+				throw new AppError("Could not find user with those credentials", 404);
 
 			const { user_id, app_role, password_hash, ..._userDbRes } =
 				usersSchema.parse(userRes.rows[0]);
 
 			const isPasswordCorrect = await checkPassword(password, password_hash);
-			if (!isPasswordCorrect)
-				return res.status(401).json({ message: "Incorrect credentials" });
+			if (!isPasswordCorrect) throw new AppError("Incorrect credentials", 401);
 
 			req.user = {
 				user_id,
@@ -81,7 +79,7 @@ export const loginUser =
 
 			return next();
 		} catch (err) {
-			next(err);
+			return next(err);
 		}
 	};
 
@@ -94,8 +92,7 @@ export const retrieveUser =
 				WHERE ${usersIdColumnName} = $1`,
 				[req.user![usersIdColumnName]],
 			);
-			if (!userRes.rowCount)
-				return res.status(404).json({ message: "Could not retrieve user" });
+			if (!userRes.rowCount) throw new AppError("Could not retrieve user", 404);
 
 			const { password_hash: _password_hash, ...user } = usersSchema.parse(
 				userRes.rows[0],
@@ -103,7 +100,7 @@ export const retrieveUser =
 
 			return res.status(200).json(user);
 		} catch (err) {
-			next(err);
+			return next(err);
 		}
 	};
 
@@ -117,9 +114,7 @@ export const patchUser =
 			const values = Object.values(payload);
 			const valuesPlaceholder = keys.map(() => "%L");
 			if (!keys.length || !values.length)
-				return res.status(400).json({
-					message: "No fields provided to update",
-				});
+				throw new AppError("No fields provided to update", 400);
 
 			const formattedQuery = format(
 				`UPDATE %I
@@ -139,6 +134,6 @@ export const patchUser =
 
 			return res.status(200).json(patchedUser);
 		} catch (err) {
-			next(err);
+			return next(err);
 		}
 	};

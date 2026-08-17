@@ -1,7 +1,6 @@
 import { enumCreationQueries, nodeToCreationQueryMap } from "../schemas";
 import type { PoolClient } from "pg";
 import { determineTopologicalOrderingOfTableCreation } from "./utils";
-import type { RecordedError } from "../types";
 import { createConchDBService } from "../services";
 import { appEnvVariables } from "../appEnvVariables";
 
@@ -32,7 +31,7 @@ const injectTablesIntoDB = async (): Promise<void> => {
 	let client: PoolClient | null = null;
 	let transactionInitialized = false;
 	let transactionCommitted = false;
-	const errors: Array<RecordedError> = [];
+	const errors: Array<Error> = [];
 	try {
 		const creationOrder = determineTopologicalOrderingOfTableCreation();
 		if (!creationOrder.length)
@@ -57,49 +56,50 @@ const injectTablesIntoDB = async (): Promise<void> => {
 			`The following tables were added to the db:\n ${creationOrder.join("\n")}`,
 		);
 	} catch (originalError: unknown) {
-		errors.push({
-			cause: originalError,
-			message: "An error occurred during table injection",
-		});
+		errors.push(
+			new Error("An error occurred during table injection", {
+				cause: originalError,
+			}),
+		);
 		try {
 			if (client && transactionInitialized) await client.query("ROLLBACK");
 			transactionInitialized = false;
 		} catch (rollbackError: unknown) {
-			errors.push({
-				cause: rollbackError,
-				message: "An error occurred during transaction rollback",
-			});
+			errors.push(
+				new Error("An error occurred during transaction rollback", {
+					cause: rollbackError,
+				}),
+			);
 		}
 	} finally {
 		if (client) {
 			try {
 				client.release();
 			} catch (releaseError: unknown) {
-				errors.push({
-					cause: releaseError,
-					message: "An error occurred during client release",
-				});
+				errors.push(
+					new Error("An error occurred during client release", {
+						cause: releaseError,
+					}),
+				);
 			}
 		}
 
 		try {
 			await dbPoolClient.releaseClientsAndClosePool();
 		} catch (poolClosureError: unknown) {
-			errors.push({
-				cause: poolClosureError,
-				message: "An error occurred during pool closure",
-			});
+			errors.push(
+				new Error("An error occurred during pool closure", {
+					cause: poolClosureError,
+				}),
+			);
 		}
 	}
 
 	if (errors.length === 1) {
-		const firstError = errors[0];
-		throw new Error(firstError.message, {
-			cause: firstError.cause,
-		});
+		throw errors[0];
 	} else if (errors.length > 1) {
 		throw new AggregateError(
-			errors.map(({ cause, message }) => new Error(message, { cause })),
+			errors,
 			transactionCommitted
 				? "Table injection succeeded, but multiple cleanup errors occurred"
 				: "Multiple errors occurred during table injection process",

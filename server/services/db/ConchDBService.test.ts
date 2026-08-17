@@ -103,7 +103,7 @@ describe("Initialization processes", () => {
 			vi.mocked(fs.promises.readFile).mockResolvedValue("");
 
 			await expect(dbService.initializePool()).rejects.toThrow(
-				"Error during pool creation: Failed to initialize database pool: CA certificate is empty.",
+				"Error during pool creation: CA certificate is empty.",
 			);
 		});
 	});

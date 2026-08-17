@@ -11,6 +11,7 @@ import {
 import format from "pg-format";
 import z from "zod";
 import { getConch as getConchFromDb } from "../queries";
+import { AppError } from "../errors";
 
 export const createConch =
 	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {
@@ -63,8 +64,8 @@ export const getConch =
 	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const conch = await getConchFromDb(dbPool, res.locals.conchId);
-			if (!conch)
-				return res.status(404).json({ message: "Could not retrieve Conch" });
+			if (!conch) throw new AppError("Could not retrieve Conch", 404);
+
 			return res.status(200).json(conch);
 		} catch (err) {
 			return next(err);
@@ -76,17 +77,12 @@ export const updateConch =
 		try {
 			const entries = Object.entries(conchesUpdateSchema.parse(req.body));
 			if (!entries.length)
-				return res
-					.status(400)
-					.json({ message: "No columns entered for update" });
+				throw new AppError("No columns entered for update", 400);
 
 			const conch = await getConchFromDb(dbPool, res.locals.conchId);
-			if (!conch)
-				return res.status(404).json({ message: "Could not retrieve Conch" });
+			if (!conch) throw new AppError("Could not retrieve Conch", 404);
 			if (conch.admin_id !== req.user![usersIdColumnName])
-				return res
-					.status(403)
-					.json({ message: "Only admins of this conch can update it." });
+				throw new AppError("Only admins of this conch can update it. ", 403);
 
 			const columns = entries.map(([key]) => key);
 			const columnsPlaceholder = columns.map(() => "%I").join(",");
@@ -121,8 +117,7 @@ export const deleteConch =
 				[res.locals.conchId],
 			);
 			const deletedRows = deleteConchRes.rowCount;
-			if (!deletedRows)
-				return res.status(404).json({ message: "Could not delete any rows" });
+			if (!deletedRows) throw new AppError("Could not delete any rows", 404);
 
 			return res.status(204).json();
 		} catch (err) {

@@ -4,6 +4,7 @@ import { CRUDFactory } from "../queries";
 import z, { ZodObject } from "zod";
 import { RouteAccessConfig } from "../types";
 import { auth, verifySession } from "../middleware";
+import { AppError } from "../errors";
 
 export class RouteFactory {
 	constructor(
@@ -30,7 +31,7 @@ export class RouteFactory {
 				res.locals.conchId = Number(parsedConchId);
 				next();
 			} catch (err) {
-				next(err);
+				return next(err);
 			}
 		});
 
@@ -47,7 +48,7 @@ export class RouteFactory {
 				const queryResponse = await this.dbPool.query(text, values);
 				return res.status(200).json(queryResponse.rows ?? null);
 			} catch (err: unknown) {
-				next(err);
+				return next(err);
 			}
 		});
 
@@ -66,7 +67,7 @@ export class RouteFactory {
 				const queryResponse = await this.dbPool.query(text, values);
 				return res.status(201).json(queryResponse.rows[0] ?? []);
 			} catch (err: unknown) {
-				next(err);
+				return next(err);
 			}
 		});
 
@@ -76,7 +77,7 @@ export class RouteFactory {
 				res.locals.resourceId = Number(parsedResourceId);
 				next();
 			} catch (err) {
-				next(err);
+				return next(err);
 			}
 		});
 
@@ -96,15 +97,15 @@ export class RouteFactory {
 
 				const queryResponse = await this.dbPool.query(text, values);
 
-				if (!queryResponse.rows.length) {
-					return res.status(404).json({
-						message: `${this.tableName} with ID ${resourceId} not found.`,
-					});
-				}
+				if (!queryResponse.rows.length)
+					throw new AppError(
+						`${this.tableName} with ID ${resourceId} not found.`,
+						404,
+					);
 
 				return res.status(200).json(queryResponse.rows[0] ?? null);
 			} catch (err: unknown) {
-				next(err);
+				return next(err);
 			}
 		});
 
@@ -125,15 +126,15 @@ export class RouteFactory {
 				);
 
 				const queryResponse = await this.dbPool.query(text, values);
-				if (!queryResponse.rows.length) {
-					return res.status(404).json({
-						message: `${this.tableName} with ID ${resourceId} not found.`,
-					});
-				}
+				if (!queryResponse.rows.length)
+					throw new AppError(
+						`${this.tableName} with ID ${resourceId} not found.`,
+						404,
+					);
 
 				return res.status(200).json(queryResponse.rows[0] ?? null);
 			} catch (err: unknown) {
-				next(err);
+				return next(err);
 			}
 		});
 
@@ -153,15 +154,14 @@ export class RouteFactory {
 
 				const queryResponse = await this.dbPool.query(text, values);
 
-				if (!queryResponse.rows.length) {
-					return res.status(404).json({
-						message: `${this.tableName} with ID ${resourceId} not found.`,
-					});
-				}
-
+				if (!queryResponse.rows.length)
+					throw new AppError(
+						`${this.tableName} with ID ${resourceId} not found.`,
+						404,
+					);
 				return res.status(200).json(queryResponse.rows[0] ?? null);
 			} catch (err: unknown) {
-				next(err);
+				return next(err);
 			}
 		});
 
