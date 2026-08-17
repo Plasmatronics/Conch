@@ -16,6 +16,7 @@ import {
 } from "./routes";
 import { ConchService } from "./types";
 import { appEnvVariables } from "./appEnvVariables";
+import { errorHandlerMiddleware } from "./middleware";
 
 export const mountApp = (
 	app: Express,
@@ -61,4 +62,6 @@ export const mountApp = (
 
 	const healthRoutes = createHealthRoutes(vitalServices);
 	app.use(`${apiPrefix}/health`, healthRoutes);
+
+	app.use(errorHandlerMiddleware);
 };
