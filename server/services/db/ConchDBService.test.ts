@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import { SecretStoreStrategy } from "../secrets";
 import { ConchDBService } from "./ConchDBService";
+import { mockPool } from "../../vitest.setup";
 
 vi.mock("fs", () => {
 	return {
@@ -12,22 +13,6 @@ vi.mock("fs", () => {
 			},
 		},
 	};
-});
-
-const mockPool = {
-	on: vi.fn(),
-	query: vi.fn(),
-	end: vi.fn(),
-};
-
-vi.mock("pg", () => {
-	class MockPool {
-		constructor() {
-			return mockPool;
-		}
-	}
-
-	return { Pool: MockPool };
 });
 
 const testConfig = {

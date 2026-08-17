@@ -2,50 +2,28 @@
 
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import * as session from "./session";
-import { CookieOptions, NextFunction, Request, Response } from "express";
+import { Response } from "express";
 
-import { usersSchema, usersIdColumnName } from "../schemas/Users";
-import {
-	sessionsSchema,
-	sessionsIdColumnName,
-	sessionsTableName,
-} from "../schemas/Sessions";
+import { sessionsIdColumnName, sessionsTableName } from "../schemas/Sessions";
 
 import { Pool } from "pg";
-import { normalizeSql } from "../utils/normalizeSQLForVItest";
 import { daysToMs } from "../utils/daysToMs";
-
-const mockRequest = {
-	user: {
-		[usersIdColumnName]: "test-user-id",
-	},
-	cookies: {
-		session_token: "test-session-token",
-	},
-} as unknown as Request;
-const mockResponse: Record<string, any> = {
-	cookie(key: string, value: string, options: CookieOptions) {
-		mockResponse[key] = [value, options];
-	},
-	clearCookie(key: string, _options: CookieOptions) {
-		if (key in mockResponse) delete mockResponse[key];
-	},
-	status: vi.fn(),
-};
-const mockNextFunction = vi.fn() as unknown as NextFunction;
+import {
+	mockNextFunction,
+	mockRequest,
+	mockResponse,
+	mockSession,
+	mockUser,
+	sessionsParseSpy,
+	usersParseSpy,
+	normalizeSql,
+	mockParsedUser,
+} from "../vitest.setup";
 
 const mockPool = {
 	query: vi.fn(),
 };
-vi.mock("pg", () => {
-	class MockPool {
-		constructor() {
-			return mockPool;
-		}
-	}
 
-	return { Pool: MockPool };
-});
 vi.mock("../utils/appEnvVariables", () => ({
 	appEnvVariables: {
 		devPort: "3000",
@@ -61,9 +39,6 @@ vi.mock("../utils/appEnvVariables", () => ({
 		nodeEnv: "test",
 	},
 }));
-
-const usersParseSpy = vi.spyOn(usersSchema, "parse");
-const sessionsParseSpy = vi.spyOn(sessionsSchema, "parse");
 
 const hashSessionTokenSpy = vi.spyOn(session, "hashSessionToken");
 
@@ -83,15 +58,11 @@ describe("Session Creation", () => {
 			rowCount: 1,
 		});
 
-		await createSessionHandler(
-			mockRequest,
-			mockResponse as unknown as Response,
-			mockNextFunction,
-		);
+		await createSessionHandler(mockRequest, mockResponse, mockNextFunction);
 	});
 
 	test("hashing function is deterministic", async () => {
-		const cookie = mockResponse.session_token[0];
+		const cookie = (mockResponse as any).session_token[0];
 		expect(hashSessionTokenSpy).returned(session.hashSessionToken(cookie));
 	});
 
@@ -121,35 +92,20 @@ describe("Session Creation", () => {
 describe("Session Verification", () => {
 	const refreshExtensionNumDays = 30;
 	const expireDate = new Date(Date.now() + daysToMs(refreshExtensionNumDays));
-	const userId = 976341942;
-	const sessionId = 482046382;
-	const user = {
-		user_id: userId,
-		first_name: "test-first-name",
-		last_name: "test-last-name",
-		email: "test@gmail.com",
-		phone_number: "555-555-5555",
-		password_hash: "4E33fE3rl09",
-		created_at: new Date(),
-		app_role: "standard" as const,
-		deleted_date: null,
-	};
-	const session = {
-		session_id: sessionId,
-		session_token_hash: "4Rt0fE3rl09",
-		user_id: userId,
+	const refreshedMockSession = {
+		...mockSession,
 		expire_time: expireDate,
 		absolute_expire_time: expireDate,
 	};
 
 	beforeEach(async () => {
 		vi.mocked(mockPool.query).mockResolvedValue({
-			rows: [{ user, session }],
+			rows: [{ mockUser, refreshedMockSession }],
 			rowCount: 2,
 		});
 
-		vi.mocked(usersParseSpy).mockReturnValue(user);
-		vi.mocked(sessionsParseSpy).mockReturnValue(session);
+		vi.mocked(usersParseSpy).mockReturnValue(mockParsedUser);
+		vi.mocked(sessionsParseSpy).mockReturnValue(refreshedMockSession);
 
 		await verifySessionHandler(
 			mockRequest,
@@ -169,27 +125,29 @@ describe("Session Verification", () => {
 			`);
 
 		expect(normalizedSQLCall).toBe(expectedNormalizedQuery);
-		expect(sqlParams).toEqual(expect.arrayContaining([expireDate, sessionId]));
+		expect(sqlParams).toEqual(
+			expect.arrayContaining([expireDate, mockSession[sessionsIdColumnName]]),
+		);
 	});
 
 	test("Expired token rejects", async () => {
 		const expiredDate = new Date(Date.now() - 1);
 		const expiredSession = {
-			...session,
+			...mockSession,
 			expire_time: expiredDate,
 			absolute_expire_time: expiredDate,
 		};
 		vi.mocked(mockPool.query).mockResolvedValue({
 			rows: [
 				{
-					user,
+					mockUser,
 					session: expiredSession,
 				},
 			],
 			rowCount: 2,
 		});
 
-		vi.mocked(usersParseSpy).mockReturnValue(user);
+		vi.mocked(usersParseSpy).mockReturnValue(mockParsedUser);
 		vi.mocked(sessionsParseSpy).mockReturnValue(expiredSession);
 
 		await verifySessionHandler(
@@ -234,7 +192,7 @@ describe("Session Verification", () => {
 	test("Failed session refresh rejects", async () => {
 		vi.mocked(mockPool.query)
 			.mockResolvedValueOnce({
-				rows: [{ user, session }],
+				rows: [{ mockUser, session }],
 				rowCount: 1,
 			})
 			.mockResolvedValueOnce({
@@ -291,7 +249,7 @@ describe("Session Revokation", () => {
 			mockNextFunction,
 		);
 
-		expect(mockResponse.session_token).toBeUndefined();
+		expect((mockResponse as any).session_token).toBeUndefined();
 		expect(mockNextFunction).toHaveBeenCalled();
 	});
 

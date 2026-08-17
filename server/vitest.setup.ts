@@ -36,22 +36,28 @@ export const mockResponse = {
 	clearCookie(key: string, _options: CookieOptions) {
 		if (key in mockResponse) delete (mockResponse as any)[key];
 	},
-	status: vi.fn(),
+	status: vi.fn().mockReturnThis(),
+	json: vi.fn().mockReturnThis(),
 } as unknown as Response;
 export const mockNextFunction = vi.fn() as unknown as NextFunction;
 
-const mockUserId = 976341942;
-const mockSessionId = 482046382;
+export const mockUserId = 976341942;
+export const mockSessionId = 482046382;
 
-export const mockUser: Users = {
+export const mockUser: Omit<Users, "created_at"> & { created_at: string } = {
 	user_id: mockUserId,
 	first_name: "test-first-name",
 	last_name: "test-last-name",
 	email: "test@gmail.com",
 	phone_number: "555-555-5555",
-	password_hash: "4E33fE3rl09",
-	created_at: new Date(),
+	password_hash: "$2b$10$5P5tiz5U8qxpkSQAHI613O2AQLqtP0AXpr.3bJenmKFJizFO/qwP2",
+	created_at: new Date().toISOString(),
 	app_role: "standard" as const,
+};
+
+export const mockParsedUser: Users = {
+	...mockUser,
+	created_at: new Date(),
 };
 export const mockSession: Sessions = {
 	session_id: mockSessionId,
