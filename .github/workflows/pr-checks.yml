@@ -31,9 +31,6 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      - name: Create .env
-        run: printf '%s' "${{ secrets.TEST_ENV }}" > .env
-
       - run: npm ci
         env:
           HUSKY: 0

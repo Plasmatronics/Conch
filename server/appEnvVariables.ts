@@ -1,11 +1,11 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
-import { ConchServerEnvConfig } from "../types";
+import { ConchServerEnvConfig } from "./types";
 
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({
-	path: path.resolve(currentDirectory, "../../config.env"),
+	path: path.resolve(currentDirectory, "../config.env"),
 });
 
 const loadEnvVariables = (): ConchServerEnvConfig => {

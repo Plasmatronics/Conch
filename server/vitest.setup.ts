@@ -5,6 +5,22 @@ import { Users, usersIdColumnName, usersSchema } from "./schemas/Users";
 import { CookieOptions, NextFunction, Response, Request } from "express";
 import { Sessions, sessionsSchema } from "./schemas/Sessions";
 
+vi.mock("./appEnvVariables", () => ({
+	appEnvVariables: {
+		devPort: "3000",
+		secretId: "test-secret-id",
+		accessKeyId: "test-access-key",
+		secretAccessKey: "test-secret-key",
+		db: "test-db",
+		host: "localhost",
+		rdsPortStr: "5432",
+		region: "us-east-1",
+		caCertPath: "test-cert.pem",
+		apiPrefix: "/api",
+		nodeEnv: "test",
+	},
+}));
+
 export const mockPool = {
 	on: vi.fn(),
 	query: vi.fn(),
@@ -36,22 +52,28 @@ export const mockResponse = {
 	clearCookie(key: string, _options: CookieOptions) {
 		if (key in mockResponse) delete (mockResponse as any)[key];
 	},
-	status: vi.fn(),
+	status: vi.fn().mockReturnThis(),
+	json: vi.fn().mockReturnThis(),
 } as unknown as Response;
 export const mockNextFunction = vi.fn() as unknown as NextFunction;
 
-const mockUserId = 976341942;
-const mockSessionId = 482046382;
+export const mockUserId = 976341942;
+export const mockSessionId = 482046382;
 
-export const mockUser: Users = {
+export const mockUser: Omit<Users, "created_at"> & { created_at: string } = {
 	user_id: mockUserId,
 	first_name: "test-first-name",
 	last_name: "test-last-name",
 	email: "test@gmail.com",
 	phone_number: "555-555-5555",
-	password_hash: "4E33fE3rl09",
-	created_at: new Date(),
+	password_hash: "$2b$10$5P5tiz5U8qxpkSQAHI613O2AQLqtP0AXpr.3bJenmKFJizFO/qwP2",
+	created_at: new Date().toISOString(),
 	app_role: "standard" as const,
+};
+
+export const mockParsedUser: Users = {
+	...mockUser,
+	created_at: new Date(),
 };
 export const mockSession: Sessions = {
 	session_id: mockSessionId,

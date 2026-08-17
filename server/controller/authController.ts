@@ -9,29 +9,14 @@ import {
 	usersUpdateSchema,
 } from "../schemas";
 import { NextFunction, Request, Response } from "express";
-import { compare, hash } from "bcrypt";
 import format from "pg-format";
-
-const createPasswordHash = async (
-	unhashedPassword: string,
-): Promise<string> => {
-	const saltRounds = 10;
-	return await hash(unhashedPassword, saltRounds);
-};
-
-const checkPassword = async (
-	unhashedPassword: string,
-	dbHash: string,
-): Promise<boolean> => {
-	return await compare(unhashedPassword, dbHash);
-};
+import { checkPassword, createPasswordHash } from "../utils";
 
 export const signupUser =
 	(dbPool: Pool) =>
 	async (req: Request, _res: Response, next: NextFunction) => {
 		try {
 			const { password, ...payload } = usersSignupSchema.parse(req.body);
-
 			const passwordHash = await createPasswordHash(password);
 			const passwordHashInjectedPayload = usersCreateSchema.parse({
 				...payload,
@@ -52,6 +37,7 @@ export const signupUser =
 			const { user_id, app_role, ..._userDbRes } = usersSchema.parse(
 				signupRes.rows[0],
 			);
+
 			req.user = {
 				user_id,
 				app_role,
@@ -85,7 +71,7 @@ export const loginUser =
 
 			const isPasswordCorrect = await checkPassword(password, password_hash);
 			if (!isPasswordCorrect)
-				return res.status(401).json({ message: "Password Incorrect." });
+				return res.status(401).json({ message: "Incorrect credentials" });
 
 			req.user = {
 				user_id,

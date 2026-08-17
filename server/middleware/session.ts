@@ -15,8 +15,9 @@ import {
 } from "../schemas";
 import { createHash, randomBytes } from "node:crypto";
 import format from "pg-format";
-import { appEnvVariables, daysToMs } from "../utils";
+import { daysToMs } from "../utils";
 import { getAllUsersConches } from "../queries";
+import { appEnvVariables } from "../appEnvVariables";
 
 const EXPIRE_TIME_NUM_DAYS = 30;
 const ABSOLUTE_EXPIRE_TIME_NUM_DAYS = 90;
