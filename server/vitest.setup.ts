@@ -5,6 +5,22 @@ import { Users, usersIdColumnName, usersSchema } from "./schemas/Users";
 import { CookieOptions, NextFunction, Response, Request } from "express";
 import { Sessions, sessionsSchema } from "./schemas/Sessions";
 
+vi.mock("./appEnvVariables", () => ({
+	appEnvVariables: {
+		devPort: "3000",
+		secretId: "test-secret-id",
+		accessKeyId: "test-access-key",
+		secretAccessKey: "test-secret-key",
+		db: "test-db",
+		host: "localhost",
+		rdsPortStr: "5432",
+		region: "us-east-1",
+		caCertPath: "test-cert.pem",
+		apiPrefix: "/api",
+		nodeEnv: "test",
+	},
+}));
+
 export const mockPool = {
 	on: vi.fn(),
 	query: vi.fn(),

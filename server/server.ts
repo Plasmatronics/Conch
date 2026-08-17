@@ -1,6 +1,6 @@
 import express, { type Express } from "express";
 import { ConchService } from "./types";
-import { appEnvVariables } from "./utils";
+import { appEnvVariables } from "./appEnvVariables";
 import { createConchDBService, runStartupHealthCheck } from "./services";
 import { mountApp } from "./app";
 

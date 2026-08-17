@@ -1,5 +1,3 @@
-//need to use any to bypass private properties and test/examine them
-
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import * as session from "./session";
 import { Response } from "express";
@@ -23,22 +21,6 @@ import {
 const mockPool = {
 	query: vi.fn(),
 };
-
-vi.mock("../utils/appEnvVariables", () => ({
-	appEnvVariables: {
-		devPort: "3000",
-		secretId: "test-secret-id",
-		accessKeyId: "test-access-key",
-		secretAccessKey: "test-secret-key",
-		db: "test-db",
-		host: "localhost",
-		rdsPortStr: "5432",
-		region: "us-east-1",
-		caCertPath: "test-cert.pem",
-		apiPrefix: "/api",
-		nodeEnv: "test",
-	},
-}));
 
 const hashSessionTokenSpy = vi.spyOn(session, "hashSessionToken");
 

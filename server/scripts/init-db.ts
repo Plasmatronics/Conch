@@ -3,7 +3,7 @@ import type { PoolClient } from "pg";
 import { determineTopologicalOrderingOfTableCreation } from "./utils";
 import type { RecordedError } from "../types";
 import { createConchDBService } from "../services";
-import { appEnvVariables } from "../utils";
+import { appEnvVariables } from "../appEnvVariables";
 
 const injectTablesIntoDB = async (): Promise<void> => {
 	const {

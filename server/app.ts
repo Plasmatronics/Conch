@@ -15,7 +15,7 @@ import {
 	createUserRoutes,
 } from "./routes";
 import { ConchService } from "./types";
-import { appEnvVariables } from "./utils";
+import { appEnvVariables } from "./appEnvVariables";
 
 export const mountApp = (
 	app: Express,

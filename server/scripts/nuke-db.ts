@@ -1,7 +1,7 @@
 import { createConchDBService } from "../services";
 import readline from "node:readline";
 import { RecordedError } from "../types";
-import { appEnvVariables } from "../utils";
+import { appEnvVariables } from "../appEnvVariables";
 
 const nukeDb = async (): Promise<void> => {
 	const errors: RecordedError[] = [];
