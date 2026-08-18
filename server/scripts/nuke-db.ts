@@ -1,8 +1,9 @@
 import { createConchDBService } from "../services";
 import readline from "node:readline";
 import { appEnvVariables } from "../appEnvVariables";
+import { pathToFileURL } from "node:url";
 
-const nukeDb = async (): Promise<void> => {
+export const nukeDb = async (): Promise<void> => {
 	const errors: Error[] = [];
 
 	const {
@@ -95,4 +96,9 @@ const confirmNukeDb = async (): Promise<void> => {
 	}
 };
 
-await confirmNukeDb();
+const isDirectExecution =
+	process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isDirectExecution) {
+	await confirmNukeDb();
+}
