@@ -1,5 +1,5 @@
 import fs from "fs";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { afterAll, beforeEach, describe, expect, test, vi } from "vitest";
 
 import { SecretStoreStrategy } from "../secrets";
 import { ConchDBService } from "./ConchDBService";
@@ -54,6 +54,12 @@ beforeEach(() => {
 	mockPool.end.mockResolvedValue(undefined);
 
 	dbService = new ConchDBService(testConfig, mockSecretStore);
+});
+
+const consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+afterAll(() => {
+	consoleLogSpy.mockRestore();
 });
 
 describe("Initialization processes", () => {

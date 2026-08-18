@@ -3,8 +3,9 @@ import type { PoolClient } from "pg";
 import { determineTopologicalOrderingOfTableCreation } from "./utils";
 import { createConchDBService } from "../services";
 import { appEnvVariables } from "../appEnvVariables";
+import { pathToFileURL } from "node:url";
 
-const injectTablesIntoDB = async (): Promise<void> => {
+export const injectTablesIntoDB = async (): Promise<void> => {
 	const {
 		secretId,
 		accessKeyId,
@@ -107,4 +108,9 @@ const injectTablesIntoDB = async (): Promise<void> => {
 	}
 };
 
-await injectTablesIntoDB();
+const isDirectExecution =
+	process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isDirectExecution) {
+	await injectTablesIntoDB();
+}

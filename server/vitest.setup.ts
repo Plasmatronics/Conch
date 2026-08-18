@@ -21,10 +21,16 @@ vi.mock("./appEnvVariables", () => ({
 	},
 }));
 
+export const mockPoolClient = {
+	query: vi.fn(),
+	release: vi.fn(),
+};
+
 export const mockPool = {
 	on: vi.fn(),
 	query: vi.fn(),
 	end: vi.fn(),
+	connect: vi.fn(),
 };
 
 vi.mock("pg", () => {
