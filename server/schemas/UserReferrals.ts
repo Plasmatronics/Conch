@@ -24,10 +24,16 @@ export const userReferralsCreateSchema = userReferralsSchema
 		created_at: true,
 	})
 	.extend({
+		referred_email: z.email().nullable().optional(),
 		count: z.number().default(0),
 	});
 
-export const userReferralsUpdateSchema = userReferralsCreateSchema.partial();
+export const userReferralsUpdateSchema = userReferralsSchema
+	.omit({
+		[userReferralsIdColumnName]: true,
+		created_at: true,
+	})
+	.partial();
 
 export type UserReferrals = z.infer<typeof userReferralsSchema>;
 

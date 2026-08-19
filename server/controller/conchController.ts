@@ -10,7 +10,7 @@ import {
 } from "../schemas";
 import format from "pg-format";
 import z from "zod";
-import { getConch as getConchFromDb } from "../queries";
+import { getConchFromDb } from "../queries";
 import { AppError } from "../errors";
 
 export const createConch =
@@ -33,7 +33,6 @@ export const createConch =
 
 			const conchCreationRes = await dbPool.query(conchCreationQuery);
 			const createdConch = conchesSchema.parse(conchCreationRes.rows[0]);
-
 			return res.status(201).json(createdConch);
 		} catch (err) {
 			return next(err);

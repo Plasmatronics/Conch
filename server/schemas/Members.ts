@@ -27,10 +27,21 @@ export const membersSchema = z.object({
 	burial_location: pointSchema.nullable(),
 });
 
-export const membersCreateSchema = membersSchema.omit({
-	[membersIdColumnName]: true,
-	created_at: true,
-});
+export const membersCreateSchema = membersSchema
+	.omit({
+		[membersIdColumnName]: true,
+		created_at: true,
+	})
+	.extend({
+		photo_id: z.number().nullable().optional(),
+		date_of_birth: apiDateSchema.nullable().optional(),
+		biography: z.string().nullable().optional(),
+		date_of_death: apiDateSchema.nullable().optional(),
+		addresses: z.array(pointSchema).nullable().optional(),
+		birth_location: pointSchema.nullable().optional(),
+		death_location: pointSchema.nullable().optional(),
+		burial_location: pointSchema.nullable().optional(),
+	});
 
 export const membersUpdateSchema = membersCreateSchema.partial();
 

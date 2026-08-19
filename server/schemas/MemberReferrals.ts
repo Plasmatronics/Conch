@@ -27,6 +27,10 @@ export const memberReferralsCreateSchema = memberReferralsSchema
 		created_at: true,
 	})
 	.extend({
+		parent_one_id: z.number().nullable().optional(),
+		parent_two_id: z.number().nullable().optional(),
+		child_id: z.number().nullable().optional(),
+		spouse_id: z.number().nullable().optional(),
 		count: z.number().default(0),
 	});
 
