@@ -3,7 +3,7 @@ import { AppError } from "../errors";
 import { ZodError } from "zod";
 
 export const errorHandler = async (
-	err: AppError,
+	err: unknown,
 	_req: Request,
 	res: Response,
 	_next: NextFunction,
@@ -14,9 +14,10 @@ export const errorHandler = async (
 		return res.status(err.statusCode).json({
 			message: err.message,
 		});
-	} else {
-		return res.status(500).json({
-			message: "Internal server error",
-		});
 	}
+
+	console.error(err);
+	return res.status(500).json({
+		message: "Internal server error",
+	});
 };
