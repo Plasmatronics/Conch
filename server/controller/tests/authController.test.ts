@@ -7,8 +7,8 @@ import {
 	loginUser,
 	retrieveUser,
 	patchUser,
-} from "./authController";
-import * as passwordUtils from "../utils/password";
+} from "../authController";
+import * as passwordUtils from "../../utils/password";
 
 import {
 	mockNextFunction,
@@ -17,14 +17,14 @@ import {
 	mockResponse,
 	mockUser,
 	normalizeSql,
-} from "../vitest.setup";
+} from "../../vitest.setup";
 
 import {
 	usersTableName,
 	usersCreateSchema,
 	usersIdColumnName,
-} from "../schemas/Users";
-import { AppError } from "../errors";
+} from "../../schemas/Users";
+import { AppError } from "../../errors";
 
 const createPasswordSpy = vi.spyOn(passwordUtils, "createPasswordHash");
 const checkPasswordSpy = vi.spyOn(passwordUtils, "checkPassword");

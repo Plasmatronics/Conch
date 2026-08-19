@@ -6,7 +6,7 @@ import {
 	conchesTableName,
 } from "../schemas";
 
-export const getConch = async (
+export const getConchFromDb = async (
 	dbPool: Pool,
 	conch_id: number,
 ): Promise<Conches | null> => {
