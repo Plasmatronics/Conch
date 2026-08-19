@@ -29,10 +29,22 @@ export const postsSchema = z.object({
 	date: storyDateSchema.nullable(),
 });
 
-export const postsCreateSchema = postsSchema.omit({
-	[postsIdColumnName]: true,
-	created_at: true,
-});
+export const postsCreateSchema = postsSchema
+	.omit({
+		[postsIdColumnName]: true,
+		created_at: true,
+	})
+	.extend({
+		body_text: z.string().nullable().optional(),
+		location: z
+			.object({
+				type: z.literal("Point"),
+				coordinates: z.tuple([z.number(), z.number()]),
+			})
+			.nullable()
+			.optional(),
+		date: storyDateSchema.nullable().optional(),
+	});
 
 export const postsUpdateSchema = postsCreateSchema.partial();
 

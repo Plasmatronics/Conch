@@ -23,6 +23,7 @@ export const conchesCreateSchema = conchesSchema
 	})
 	.extend({
 		confirmations_needed_for_referrals: z.number().default(2),
+		media_id: z.number().nullable().optional(),
 	});
 
 export const conchesUpdateSchema = conchesSchema
