@@ -128,6 +128,53 @@ describe("conchController", () => {
 			expect(mockNextFunction).not.toHaveBeenCalled();
 		});
 
+		test("defaults media_id to null when omitted from the request body", async () => {
+			mockRequest.body = {
+				conch_name: mockConch.conch_name,
+				confirmations_needed_for_referrals:
+					mockConch.confirmations_needed_for_referrals,
+			};
+
+			const date = new Date();
+
+			mockPool.query.mockResolvedValue({
+				rows: [{ ...mockConch, created_at: date.toISOString() }],
+				rowCount: 1,
+			});
+
+			await createConchHandler(mockRequest, mockResponse, mockNextFunction);
+
+			expect(mockResponse.status).toHaveBeenCalledWith(201);
+			expect(mockResponse.json).toHaveBeenCalledWith({
+				...mockConch,
+				media_id: null,
+				created_at: date,
+			});
+		});
+
+		test("defaults confirmations_needed_for_referrals to 2 when omitted from the request body", async () => {
+			mockRequest.body = {
+				conch_name: mockConch.conch_name,
+				media_id: mockConch.media_id,
+			};
+
+			const date = new Date();
+
+			mockPool.query.mockResolvedValue({
+				rows: [{ ...mockConch, created_at: date.toISOString() }],
+				rowCount: 1,
+			});
+
+			await createConchHandler(mockRequest, mockResponse, mockNextFunction);
+
+			expect(mockResponse.status).toHaveBeenCalledWith(201);
+			expect(mockResponse.json).toHaveBeenCalledWith({
+				...mockConch,
+				confirmations_needed_for_referrals: 2,
+				created_at: date,
+			});
+		});
+
 		test("does not query the database when request validation fails", async () => {
 			mockRequest.body = {
 				conch_name: 123,
@@ -344,6 +391,72 @@ describe("conchController", () => {
 		WHERE ${conchesIdColumnName} = '${mockConchId}'
 		RETURNING *
 	`),
+			);
+
+			expect(mockResponse.status).toHaveBeenCalledWith(200);
+			expect(mockResponse.json).toHaveBeenCalledWith({
+				...updatedConch,
+				created_at: date,
+			});
+		});
+
+		test("updates an existing conch's media_id to null", async () => {
+			const updateBodyRequest = {
+				...mockRequest,
+				body: {
+					media_id: null,
+				},
+			} as unknown as Request;
+
+			const date = new Date();
+			const updatedConch = {
+				...mockConch,
+				media_id: null,
+				created_at: date.toISOString(),
+			};
+
+			mockPool.query.mockResolvedValue({
+				rows: [updatedConch],
+				rowCount: 1,
+			});
+
+			await updateConchHandler(
+				updateBodyRequest,
+				mockResponse,
+				mockNextFunction,
+			);
+
+			expect(mockResponse.status).toHaveBeenCalledWith(200);
+			expect(mockResponse.json).toHaveBeenCalledWith({
+				...updatedConch,
+				created_at: date,
+			});
+		});
+
+		test("updates an existing conch's confirmations_needed_for_referrals to a new value", async () => {
+			const updateBodyRequest = {
+				...mockRequest,
+				body: {
+					confirmations_needed_for_referrals: 5,
+				},
+			} as unknown as Request;
+
+			const date = new Date();
+			const updatedConch = {
+				...mockConch,
+				confirmations_needed_for_referrals: 5,
+				created_at: date.toISOString(),
+			};
+
+			mockPool.query.mockResolvedValue({
+				rows: [updatedConch],
+				rowCount: 1,
+			});
+
+			await updateConchHandler(
+				updateBodyRequest,
+				mockResponse,
+				mockNextFunction,
 			);
 
 			expect(mockResponse.status).toHaveBeenCalledWith(200);
