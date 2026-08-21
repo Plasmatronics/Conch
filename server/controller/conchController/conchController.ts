@@ -7,11 +7,11 @@ import {
 	conchesTableName,
 	conchesUpdateSchema,
 	usersIdColumnName,
-} from "../schemas";
+} from "../../schemas";
 import format from "pg-format";
 import z from "zod";
-import { getConchFromDb } from "../queries";
-import { AppError } from "../errors";
+import { getConchFromDb } from "../../queries";
+import { AppError } from "../../errors";
 
 export const createConch =
 	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {

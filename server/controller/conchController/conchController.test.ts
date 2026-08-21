@@ -14,7 +14,7 @@ import {
 	getAllPersonalConches,
 	getConch,
 	updateConch,
-} from "../conchController";
+} from "./conchController";
 import {
 	conchesIdColumnName,
 	conchesSchema,

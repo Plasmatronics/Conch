@@ -1,3 +1,4 @@
 export * from "./authController";
 export * from "./conchController";
-export * from "./healthControllers";
+export * from "./healthController";
+export * from "./postController";

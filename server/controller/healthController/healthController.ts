@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { healthCheck } from "../services";
-import { ConchService } from "../types";
-import { AppError } from "../errors";
+import { healthCheck } from "../../services";
+import { ConchService } from "../../types";
+import { AppError } from "../../errors";
 
 export const conductServicesHealthCheck =
 	(services: ConchService[]) =>

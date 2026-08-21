@@ -7,7 +7,7 @@ import {
 	loginUser,
 	retrieveUser,
 	patchUser,
-} from "../authController";
+} from "./authController";
 import * as passwordUtils from "../../utils/password";
 
 import {

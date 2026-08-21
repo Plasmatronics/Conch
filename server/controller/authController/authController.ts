@@ -7,11 +7,11 @@ import {
 	usersSignupSchema,
 	usersTableName,
 	usersUpdateSchema,
-} from "../schemas";
+} from "../../schemas";
 import { NextFunction, Request, Response } from "express";
 import format from "pg-format";
-import { checkPassword, createPasswordHash } from "../utils";
-import { AppError } from "../errors";
+import { checkPassword, createPasswordHash } from "../../utils";
+import { AppError } from "../../errors";
 
 export const signupUser =
 	(dbPool: Pool) =>
