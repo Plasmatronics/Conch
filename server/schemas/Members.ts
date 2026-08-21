@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { conchesTableName } from "./Conches";
-import { mediaTableName } from "./Media";
+import { mediaQuerySchema, mediaTableName } from "./Media";
 import { apiDateSchema } from "./shared";
 
 export const membersTableName = "members" as const;
@@ -26,6 +26,15 @@ export const membersSchema = z.object({
 	death_location: pointSchema.nullable(),
 	burial_location: pointSchema.nullable(),
 });
+
+export const memberQuerySchema = membersSchema
+	.pick({
+		first_name: true,
+		last_name: true,
+	})
+	.extend({
+		photo: mediaQuerySchema.nullable(),
+	});
 
 export const membersCreateSchema = membersSchema
 	.omit({

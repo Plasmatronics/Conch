@@ -12,6 +12,7 @@ import {
 	mediaDependencyEdges,
 	mediaTableName,
 	createMediaTableQuery,
+	mediaTypeEnum,
 } from "./Media";
 import {
 	memberReferralsDependencyEdges,
@@ -81,6 +82,7 @@ export const enumCreationQueries: string[] = [
 	createAppRoleEnumQuery,
 	createRelationshipTypeEnumQuery,
 	createSeasonEnum,
+	mediaTypeEnum,
 ];
 
 export const nodeToCreationQueryMap: Record<string, string> = {

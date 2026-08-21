@@ -4,18 +4,23 @@ import { apiDateSchema } from "./shared";
 export const mediaTableName = "media" as const;
 export const mediaIdColumnName = "media_id" as const;
 
+export type mediaType = "image" | "video" | "audio" | "document";
+export const mediaTypeEnum = `CREATE TYPE media_type AS ENUM ('winter', 'spring', 'summer', 'fall');`;
+
 export const mediaSchema = z.object({
 	[mediaIdColumnName]: z.number(),
 	storage_key: z.string(),
 	created_at: apiDateSchema,
+	mime_type: z.string(),
+	media_type: z.enum(["image", "video", "audio", "document"]),
 });
 
-export const mediaCreateSchema = mediaSchema.omit({
+export const mediaQuerySchema = mediaSchema.omit({
 	[mediaIdColumnName]: true,
 	created_at: true,
 });
 
-export const mediaUpdateSchema = mediaCreateSchema.partial();
+export const mediaUpdateSchema = mediaQuerySchema.partial();
 
 export type Media = z.infer<typeof mediaSchema>;
 
@@ -26,4 +31,6 @@ CREATE TABLE ${mediaTableName} (
 	${mediaIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	storage_key text NOT NULL,
+	mime_type text NOT NULL,
+	media_type media_type NOT NULL
 );`;

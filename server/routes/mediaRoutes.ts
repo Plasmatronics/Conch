@@ -5,7 +5,7 @@ import { crudFactory } from "../queries";
 import {
 	mediaTableName,
 	mediaIdColumnName,
-	mediaCreateSchema,
+	mediaQuerySchema,
 	mediaUpdateSchema,
 } from "../schemas";
 
@@ -15,7 +15,7 @@ export const createMediaRoutes = (dbPool: Pool): Router => {
 		dbPool,
 		mediaIdColumnName,
 		crudFactory,
-		mediaCreateSchema,
+		mediaQuerySchema,
 		mediaUpdateSchema,
 	);
 

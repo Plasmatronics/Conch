@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { usersTableName } from "./Users";
 import { apiDateSchema } from "./shared";
+import { postMembersSchema } from "./PostMembers";
+import { postMediaSchema } from "./PostMedia";
+import { mediaQuerySchema } from "./Media";
+import { memberQuerySchema } from "./Members";
+import { conchesTableName } from "./Conches";
 
 export const postsTableName = "posts" as const;
 export const postsIdColumnName = "post_id" as const;
@@ -27,12 +32,19 @@ export const postsSchema = z.object({
 		})
 		.nullable(),
 	date: storyDateSchema.nullable(),
+	conch_id: z.number(),
+});
+
+export const postQuerySchema = postsSchema.extend({
+	members: z.array(memberQuerySchema).default([]),
+	media: z.array(mediaQuerySchema).default([]),
 });
 
 export const postsCreateSchema = postsSchema
 	.omit({
 		[postsIdColumnName]: true,
 		created_at: true,
+		author_id: true,
 	})
 	.extend({
 		body_text: z.string().nullable().optional(),
@@ -44,6 +56,8 @@ export const postsCreateSchema = postsSchema
 			.nullable()
 			.optional(),
 		date: storyDateSchema.nullable().optional(),
+		members: z.array(postMembersSchema.shape.member_id).default([]),
+		media: z.array(mediaQuerySchema).default([]),
 	});
 
 export const postsUpdateSchema = postsCreateSchema.partial();
@@ -52,6 +66,7 @@ export type Posts = z.infer<typeof postsSchema>;
 
 export const postsDependencyEdges: Array<[string, string]> = [
 	[postsTableName, usersTableName],
+	[postsTableName, conchesTableName],
 ];
 
 export const createSeasonEnum = `CREATE TYPE season AS ENUM ('winter', 'spring', 'summer', 'fall');`;
@@ -60,6 +75,7 @@ export const createPostsTableQuery = `
 CREATE TABLE ${postsTableName} (
 	${postsIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	author_id integer NOT NULL REFERENCES ${usersTableName},
+	conch_id integer NOT NULL REFERENCES ${conchesTableName},
 	title text NOT NULL,
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	body_text text,
