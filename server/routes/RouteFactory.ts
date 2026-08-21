@@ -5,6 +5,7 @@ import z, { ZodObject } from "zod";
 import { RouteAccessConfig } from "../types";
 import { auth, verifySession } from "../middleware";
 import { AppError } from "../errors";
+import { paramId } from "../schemas/utils";
 
 export class RouteFactory {
 	constructor(
@@ -27,7 +28,7 @@ export class RouteFactory {
 
 		router.param("conchId", (_req, res, next, conchId) => {
 			try {
-				const parsedConchId = z.string().regex(/^\d+$/).parse(conchId);
+				const parsedConchId = paramId.parse(conchId);
 				res.locals.conchId = Number(parsedConchId);
 				next();
 			} catch (err) {
@@ -73,7 +74,7 @@ export class RouteFactory {
 
 		router.param("id", (_req, res, next, id) => {
 			try {
-				const parsedResourceId = z.string().regex(/^\d+$/).parse(id);
+				const parsedResourceId = paramId.parse(id);
 				res.locals.resourceId = Number(parsedResourceId);
 				next();
 			} catch (err) {
