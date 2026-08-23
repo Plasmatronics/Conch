@@ -1,29 +1,41 @@
 import { Router } from "express";
 import { Pool } from "pg";
 import { RouteFactory } from "./RouteFactory";
-import { crudFactory } from "../queries";
+import { CRUDFactory } from "../queries";
 import {
 	relationshipsTableName,
 	relationshipsIdColumnName,
+	relationshipsSchema,
 	relationshipsCreateSchema,
 	relationshipsUpdateSchema,
 } from "../schemas";
+import { ControllerFactory } from "../controller";
 
 export const createRelationshipRoutes = (dbPool: Pool): Router => {
-	const relationshipRouteFactory = new RouteFactory(
-		relationshipsTableName,
-		dbPool,
-		relationshipsIdColumnName,
-		crudFactory,
-		relationshipsCreateSchema,
-		relationshipsUpdateSchema,
-	);
-
-	return relationshipRouteFactory.createRoutes({
-		getAllRoute: "member",
-		getRoute: "member",
-		postRoute: "member",
-		patchRoute: "member",
-		deleteRoute: "member",
+	const crudFactory = new CRUDFactory({
+		tableName: relationshipsTableName,
+		idColumnName: relationshipsIdColumnName,
 	});
+
+	const controllers = new ControllerFactory({
+		dbPool,
+		crudFactory,
+		createSchema: relationshipsCreateSchema,
+		updateSchema: relationshipsUpdateSchema,
+		tableSchema: relationshipsSchema,
+		conchScoped: true,
+		idParamName: "relationshipId",
+	});
+	const relationshipRouteFactory = new RouteFactory(dbPool);
+
+	return relationshipRouteFactory.createRoutes(
+		{
+			getAll: "member",
+			get: "member",
+			post: "member",
+			patch: "member",
+			delete: "member",
+		},
+		controllers.createControllers(),
+	);
 };
