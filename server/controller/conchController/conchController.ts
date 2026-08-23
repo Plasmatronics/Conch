@@ -75,8 +75,6 @@ export const updateConch =
 	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const entries = Object.entries(conchesUpdateSchema.parse(req.body));
-			if (!entries.length)
-				throw new AppError("No columns entered for update", 400);
 
 			const conch = await getConchFromDb(dbPool, res.locals.conchId);
 			if (!conch) throw new AppError("Could not retrieve Conch", 404);

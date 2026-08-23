@@ -113,8 +113,6 @@ export const patchUser =
 
 			const values = Object.values(payload);
 			const valuesPlaceholder = keys.map(() => "%L");
-			if (!keys.length || !values.length)
-				throw new AppError("No fields provided to update", 400);
 
 			const formattedQuery = format(
 				`UPDATE %I
