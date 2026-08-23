@@ -2,7 +2,6 @@ import { z } from "zod";
 import { usersTableName } from "./Users";
 import { apiDateSchema } from "./shared";
 import { postMembersSchema } from "./PostMembers";
-import { postMediaSchema } from "./PostMedia";
 import { mediaQuerySchema } from "./Media";
 import { memberQuerySchema } from "./Members";
 import { conchesTableName } from "./Conches";
@@ -45,6 +44,7 @@ export const postsCreateSchema = postsSchema
 		[postsIdColumnName]: true,
 		created_at: true,
 		author_id: true,
+		conch_id: true,
 	})
 	.extend({
 		body_text: z.string().nullable().optional(),
@@ -60,7 +60,17 @@ export const postsCreateSchema = postsSchema
 		media: z.array(mediaQuerySchema).default([]),
 	});
 
-export const postsUpdateSchema = postsCreateSchema.partial();
+export const postsUpdateSchema = postsSchema
+	.omit({
+		[postsIdColumnName]: true,
+		created_at: true,
+		author_id: true,
+		conch_id: true,
+	})
+	.partial()
+	.refine((obj) => Object.keys(obj).length > 0, {
+		message: "At least one field must be provided",
+	});
 
 export type Posts = z.infer<typeof postsSchema>;
 

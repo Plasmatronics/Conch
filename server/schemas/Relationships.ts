@@ -20,7 +20,11 @@ export const relationshipsCreateSchema = relationshipsSchema.omit({
 	created_at: true,
 });
 
-export const relationshipsUpdateSchema = relationshipsCreateSchema.partial();
+export const relationshipsUpdateSchema = relationshipsCreateSchema
+	.partial()
+	.refine((obj) => Object.keys(obj).length > 0, {
+		message: "At least one field must be provided",
+	});
 
 export type Relationships = z.infer<typeof relationshipsSchema>;
 

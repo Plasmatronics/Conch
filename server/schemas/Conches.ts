@@ -32,7 +32,10 @@ export const conchesUpdateSchema = conchesSchema
 		created_at: true,
 		admin_id: true,
 	})
-	.partial();
+	.partial()
+	.refine((obj) => Object.keys(obj).length > 0, {
+		message: "At least one field must be provided",
+	});
 
 export type Conches = z.infer<typeof conchesSchema>;
 

@@ -18,7 +18,11 @@ export const postMediaCreateSchema = postMediaSchema.omit({
 	created_at: true,
 });
 
-export const postMediaUpdateSchema = postMediaCreateSchema.partial();
+export const postMediaUpdateSchema = postMediaCreateSchema
+	.partial()
+	.refine((obj) => Object.keys(obj).length > 0, {
+		message: "At least one field must be provided",
+	});
 
 export type PostMedia = z.infer<typeof postMediaSchema>;
 

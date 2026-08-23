@@ -17,9 +17,13 @@ export const sessionsCreateSchema = sessionsSchema.omit({
 	[sessionsIdColumnName]: true,
 });
 
-export const sessionsUpdateSchema = sessionsSchema.pick({
-	expire_time: true,
-});
+export const sessionsUpdateSchema = sessionsSchema
+	.pick({
+		expire_time: true,
+	})
+	.refine((obj) => Object.keys(obj).length > 0, {
+		message: "At least one field must be provided",
+	});
 
 export type Sessions = z.infer<typeof sessionsSchema>;
 

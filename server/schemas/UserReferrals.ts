@@ -22,6 +22,7 @@ export const userReferralsCreateSchema = userReferralsSchema
 	.omit({
 		[userReferralsIdColumnName]: true,
 		created_at: true,
+		conch_id: true,
 	})
 	.extend({
 		referred_email: z.email().nullable().optional(),
@@ -32,8 +33,12 @@ export const userReferralsUpdateSchema = userReferralsSchema
 	.omit({
 		[userReferralsIdColumnName]: true,
 		created_at: true,
+		conch_id: true,
 	})
-	.partial();
+	.partial()
+	.refine((obj) => Object.keys(obj).length > 0, {
+		message: "At least one field must be provided",
+	});
 
 export type UserReferrals = z.infer<typeof userReferralsSchema>;
 
