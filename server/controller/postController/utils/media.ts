@@ -45,7 +45,7 @@ export const createMedia = async (
 
 	const placeholders = media
 		.map((_, index) => {
-			const offset = index * 3;
+			const offset = index * 4;
 
 			return `(
                 $${offset + 1},
