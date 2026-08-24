@@ -6,17 +6,16 @@ import {
 	getAllPosts,
 	getPost,
 	getMemberPosts,
-	mediaControllers,
-	membersControllers,
 	patchPost,
+	addPostMembers,
+	deletePostMembers,
+	addPostMedia,
+	deletePostMedia,
 } from "../controller";
 import { auth, verifySession } from "../middleware";
 
 export const createPostRoutes = (dbPool: Pool): Router => {
 	const postRouter = Router();
-
-	const { delete: deleteMedia, post: postMedia } = mediaControllers(dbPool);
-	const { delete: deleteMember, post: postMember } = membersControllers(dbPool);
 
 	//Get Member Posts
 	postRouter.get(
@@ -31,25 +30,25 @@ export const createPostRoutes = (dbPool: Pool): Router => {
 		"/:postId/members",
 		verifySession(dbPool),
 		auth("member"),
-		postMember,
+		addPostMembers,
 	);
-	postRouter.delete(
-		"/:postId/members/:memberId",
+	postRouter.post(
+		"/:postId/members/:memberId/batchDelete",
 		verifySession(dbPool),
 		auth("member"),
-		deleteMember,
+		deletePostMembers,
 	);
 	postRouter.post(
 		"/:postId/media",
 		verifySession(dbPool),
 		auth("member"),
-		postMedia,
+		addPostMedia,
 	);
-	postRouter.delete(
-		"/:postId/media/:mediaId",
+	postRouter.post(
+		"/:postId/media/:mediaId/batchDelete",
 		verifySession(dbPool),
 		auth("member"),
-		deleteMedia,
+		deletePostMedia,
 	);
 
 	//Resource Id Operarations

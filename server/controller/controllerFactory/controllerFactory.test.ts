@@ -8,8 +8,6 @@ import type { CRUDFactory } from "../../queries";
 import { AppError } from "../../errors";
 import { mockNextFunction, mockPool, mockResponse } from "../../vitest.setup";
 
-const tableName = "users";
-const idColumnName = "user_id";
 const resourceId = 42;
 const conchId = 7;
 const resource = { user_id: resourceId, name: "John" };
