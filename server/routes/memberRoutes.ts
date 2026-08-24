@@ -1,29 +1,19 @@
 import { Router } from "express";
 import { Pool } from "pg";
 import { RouteFactory } from "./RouteFactory";
-import { crudFactory } from "../queries";
-import {
-	membersTableName,
-	membersIdColumnName,
-	membersCreateSchema,
-	membersUpdateSchema,
-} from "../schemas";
+import { membersControllers } from "../controller";
 
 export const createMemberRoutes = (dbPool: Pool): Router => {
-	const memberRouteFactory = new RouteFactory(
-		membersTableName,
-		dbPool,
-		membersIdColumnName,
-		crudFactory,
-		membersCreateSchema,
-		membersUpdateSchema,
-	);
+	const memberRouteFactory = new RouteFactory(dbPool);
 
-	return memberRouteFactory.createRoutes({
-		getAllRoute: "member",
-		getRoute: "member",
-		postRoute: "admin",
-		patchRoute: "member",
-		deleteRoute: "admin",
-	});
+	return memberRouteFactory.createRoutes(
+		{
+			getAll: "member",
+			get: "member",
+			post: "admin",
+			patch: "member",
+			delete: "admin",
+		},
+		membersControllers(dbPool),
+	);
 };

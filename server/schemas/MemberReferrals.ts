@@ -25,6 +25,7 @@ export const memberReferralsCreateSchema = memberReferralsSchema
 	.omit({
 		[memberReferralsIdColumnName]: true,
 		created_at: true,
+		conch_id: true,
 	})
 	.extend({
 		parent_one_id: z.number().nullable().optional(),
@@ -34,8 +35,11 @@ export const memberReferralsCreateSchema = memberReferralsSchema
 		count: z.number().default(0),
 	});
 
-export const memberReferralsUpdateSchema =
-	memberReferralsCreateSchema.partial();
+export const memberReferralsUpdateSchema = memberReferralsCreateSchema
+	.partial()
+	.refine((obj) => Object.keys(obj).length > 0, {
+		message: "At least one field must be provided",
+	});
 
 export type MemberReferrals = z.infer<typeof memberReferralsSchema>;
 

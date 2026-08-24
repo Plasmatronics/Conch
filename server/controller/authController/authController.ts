@@ -7,11 +7,11 @@ import {
 	usersSignupSchema,
 	usersTableName,
 	usersUpdateSchema,
-} from "../schemas";
+} from "../../schemas";
 import { NextFunction, Request, Response } from "express";
 import format from "pg-format";
-import { checkPassword, createPasswordHash } from "../utils";
-import { AppError } from "../errors";
+import { checkPassword, createPasswordHash } from "../../utils";
+import { AppError } from "../../errors";
 
 export const signupUser =
 	(dbPool: Pool) =>
@@ -113,8 +113,6 @@ export const patchUser =
 
 			const values = Object.values(payload);
 			const valuesPlaceholder = keys.map(() => "%L");
-			if (!keys.length || !values.length)
-				throw new AppError("No fields provided to update", 400);
 
 			const formattedQuery = format(
 				`UPDATE %I

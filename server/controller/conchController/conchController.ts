@@ -7,11 +7,11 @@ import {
 	conchesTableName,
 	conchesUpdateSchema,
 	usersIdColumnName,
-} from "../schemas";
+} from "../../schemas";
 import format from "pg-format";
 import z from "zod";
-import { getConchFromDb } from "../queries";
-import { AppError } from "../errors";
+import { getConchFromDb } from "../../queries";
+import { AppError } from "../../errors";
 
 export const createConch =
 	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {
@@ -75,8 +75,6 @@ export const updateConch =
 	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const entries = Object.entries(conchesUpdateSchema.parse(req.body));
-			if (!entries.length)
-				throw new AppError("No columns entered for update", 400);
 
 			const conch = await getConchFromDb(dbPool, res.locals.conchId);
 			if (!conch) throw new AppError("Could not retrieve Conch", 404);

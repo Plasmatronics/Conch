@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { conchesTableName } from "./Conches";
-import { mediaTableName } from "./Media";
+import { mediaQuerySchema, mediaTableName } from "./Media";
 import { apiDateSchema } from "./shared";
 
 export const membersTableName = "members" as const;
@@ -27,10 +27,21 @@ export const membersSchema = z.object({
 	burial_location: pointSchema.nullable(),
 });
 
+export const memberQuerySchema = membersSchema
+	.pick({
+		first_name: true,
+		last_name: true,
+		conch_id: true,
+	})
+	.extend({
+		photo: mediaQuerySchema.nullable(),
+	});
+
 export const membersCreateSchema = membersSchema
 	.omit({
 		[membersIdColumnName]: true,
 		created_at: true,
+		conch_id: true,
 	})
 	.extend({
 		photo_id: z.number().nullable().optional(),
@@ -43,7 +54,11 @@ export const membersCreateSchema = membersSchema
 		burial_location: pointSchema.nullable().optional(),
 	});
 
-export const membersUpdateSchema = membersCreateSchema.partial();
+export const membersUpdateSchema = membersCreateSchema
+	.partial()
+	.refine((obj) => Object.keys(obj).length > 0, {
+		message: "At least one field must be provided",
+	});
 
 export type Members = z.infer<typeof membersSchema>;
 

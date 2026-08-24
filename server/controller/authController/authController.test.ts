@@ -7,7 +7,7 @@ import {
 	loginUser,
 	retrieveUser,
 	patchUser,
-} from "../authController";
+} from "./authController";
 import * as passwordUtils from "../../utils/password";
 
 import {
@@ -348,15 +348,13 @@ describe("Patch User", () => {
 		});
 	});
 
-	test("Patch user returns 400 when no fields are provided", async () => {
+	test("Patch user rejects when no fields are provided", async () => {
 		patchRequest.body = {};
 
 		await patchUserHandler(patchRequest, mockResponse, mockNextFunction);
 
 		expect(mockPool.query).not.toHaveBeenCalled();
-		expect(mockNextFunction).toHaveBeenCalledWith(
-			new AppError("No fields provided to update", 400),
-		);
+		expect(mockNextFunction).toHaveBeenCalledWith(expect.any(z.ZodError));
 	});
 
 	test("Patch user forwards database errors to next", async () => {

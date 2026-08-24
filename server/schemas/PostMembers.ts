@@ -18,7 +18,11 @@ export const postMembersCreateSchema = postMembersSchema.omit({
 	created_at: true,
 });
 
-export const postMembersUpdateSchema = postMembersCreateSchema.partial();
+export const postMembersUpdateSchema = postMembersCreateSchema
+	.partial()
+	.refine((obj) => Object.keys(obj).length > 0, {
+		message: "At least one field must be provided",
+	});
 
 export type PostMember = z.infer<typeof postMembersSchema>;
 

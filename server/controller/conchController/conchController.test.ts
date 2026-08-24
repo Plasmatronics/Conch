@@ -14,7 +14,7 @@ import {
 	getAllPersonalConches,
 	getConch,
 	updateConch,
-} from "../conchController";
+} from "./conchController";
 import {
 	conchesIdColumnName,
 	conchesSchema,
@@ -483,10 +483,7 @@ describe("conchController", () => {
 
 			const error = vi.mocked(mockNextFunction).mock.calls[0][0];
 
-			expect(error).toMatchObject({
-				message: "No columns entered for update",
-				statusCode: 400,
-			});
+			expect(error).toBeInstanceOf(z.ZodError);
 		});
 
 		test("does not update when the conch cannot be found", async () => {

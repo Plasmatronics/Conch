@@ -18,9 +18,14 @@ export const claimsSchema = z.object({
 export const claimsCreateSchema = claimsSchema.omit({
 	[claimsIdColumnName]: true,
 	created_at: true,
+	conch_id: true,
 });
 
-export const claimsUpdateSchema = claimsCreateSchema.partial();
+export const claimsUpdateSchema = claimsCreateSchema
+	.partial()
+	.refine((obj) => Object.keys(obj).length > 0, {
+		message: "At least one field must be provided",
+	});
 export type Claims = z.infer<typeof claimsSchema>;
 
 export const claimsDependencyEdges: Array<[string, string]> = [
