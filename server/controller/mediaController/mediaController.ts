@@ -9,6 +9,7 @@ import {
 	postMediaSchema,
 	postsIdColumnName,
 	postsTableName,
+	conchesIdColumnName,
 } from "../../schemas";
 import { ControllerFactory } from "../controllerFactory";
 import { CRUDFactory } from "../../queries";
@@ -46,13 +47,16 @@ export const deletePostMedia =
 			await poolClient.query("BEGIN");
 			const { mediaIds } = req.body;
 			const parsedMediaIds = z.number().array().parse(mediaIds);
+			const parsedConchId = idSchema.parse(req.params.conchId);
 
 			for (const id of parsedMediaIds) {
 				const postMediaDeleteRes = await poolClient.query(
 					`
 					DELETE FROM ${postMediaTableName} WHERE ${mediaIdColumnName} = $1
+					AND ${postsIdColumnName} IN (SELECT ${postsIdColumnName} FROM ${postsTableName} WHERE ${conchesIdColumnName} = $2)
+
 					`,
-					[id],
+					[id, parsedConchId],
 				);
 				if (!postMediaDeleteRes.rowCount) {
 					throw new AppError("Could not find resource to delete", 404);
@@ -60,9 +64,9 @@ export const deletePostMedia =
 
 				const mediaDeleteRes = await poolClient.query(
 					`
-					DELETE FROM ${mediaTableName} WHERE ${mediaIdColumnName} = $1
+					DELETE FROM ${mediaTableName} WHERE ${mediaIdColumnName} = $1 AND ${conchesIdColumnName} = $2
 					`,
-					[id],
+					[id, parsedConchId],
 				);
 				if (!mediaDeleteRes.rowCount) {
 					throw new AppError("Could not find resource to delete", 404);
@@ -115,7 +119,7 @@ export const addPostMedia =
 						SELECT $1, p.${postsIdColumnName}
 						FROM ${postsTableName} AS p
 						WHERE p.${postsIdColumnName} = $2
-						AND p.conch_id = $3
+						AND p.${conchesIdColumnName} = $3
 						RETURNING *;
     				`,
 					[mediaId, parsedPostId, parsedConchId],

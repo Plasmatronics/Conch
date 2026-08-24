@@ -9,6 +9,7 @@ import {
 	postMembersSchema,
 	postsIdColumnName,
 	postsTableName,
+	conchesIdColumnName,
 } from "../../schemas";
 import { ControllerFactory } from "../controllerFactory";
 import { CRUDFactory } from "../../queries";
@@ -46,14 +47,16 @@ export const deletePostMembers =
 			const { memberIds } = req.body;
 			const parsedMemberIds = z.number().array().parse(memberIds);
 			const parsedPostId = idSchema.parse(req.params.postId);
+			const parsedConchId = idSchema.parse(req.params.conchId);
 
 			for (const id of parsedMemberIds) {
 				const postMembersDeleteRes = await poolClient.query(
 					`
-					DELETE FROM ${[postMembersTableName]} WHERE ${membersIdColumnName} = $1
+					DELETE FROM ${postMembersTableName} WHERE ${membersIdColumnName} = $1
 					AND ${postsIdColumnName} = $2
+					AND ${postsIdColumnName} IN (SELECT ${postsIdColumnName} FROM ${postsTableName} WHERE ${conchesIdColumnName} = $3)
 					`,
-					[id, parsedPostId],
+					[id, parsedPostId, parsedConchId],
 				);
 				if (!postMembersDeleteRes.rowCount) {
 					throw new AppError("Could not find resource to delete", 404);
@@ -102,8 +105,8 @@ export const addPostMembers =
 					JOIN ${postsTableName} AS p
 						ON p.${postsIdColumnName} = $2
 					WHERE m.${membersIdColumnName} = $1
-					AND m.conch_id = $3
-					AND p.conch_id = $3
+					AND m.${conchesIdColumnName} = $3
+					AND p.${conchesIdColumnName} = $3
 					RETURNING *;
 				`,
 					[memberId, parsedPostId, parsedConchId],
