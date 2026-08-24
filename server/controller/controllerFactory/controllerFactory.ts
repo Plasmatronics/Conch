@@ -3,7 +3,7 @@ import { AppError } from "../../errors";
 import { Pool } from "pg";
 import { CRUDFactory } from "../../queries";
 import { ZodObject } from "zod";
-import { paramId } from "../../schemas/utils";
+import { idSchema } from "../../schemas/utils";
 
 export interface Controllers {
 	getAll: RequestHandler;
@@ -46,7 +46,7 @@ export class ControllerFactory {
 		if (!this.conchScoped) return undefined;
 
 		const conchId = req.params.conchId;
-		return paramId.parse(conchId);
+		return idSchema.parse(conchId);
 	}
 
 	createControllers(): Controllers {
@@ -97,7 +97,7 @@ export class ControllerFactory {
 			next: NextFunction,
 		) => {
 			try {
-				const resourceId = paramId.parse(req.params[this.idParamName]);
+				const resourceId = idSchema.parse(req.params[this.idParamName]);
 				const conchId = this.parseConchId(req);
 
 				const { text, values } = this.crudFactory.generateGetOne(
@@ -122,7 +122,7 @@ export class ControllerFactory {
 			next: NextFunction,
 		) => {
 			try {
-				const resourceId = paramId.parse(req.params[this.idParamName]);
+				const resourceId = idSchema.parse(req.params[this.idParamName]);
 				const conchId = this.parseConchId(req);
 
 				const tableUpdates = this.updateSchema.parse(req.body);
@@ -149,7 +149,7 @@ export class ControllerFactory {
 			next: NextFunction,
 		) => {
 			try {
-				const resourceId = paramId.parse(req.params[this.idParamName]);
+				const resourceId = idSchema.parse(req.params[this.idParamName]);
 				const conchId = this.parseConchId(req);
 
 				const { text, values } = this.crudFactory.generateDeleteOne(

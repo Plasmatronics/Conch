@@ -1,1 +1,1 @@
-export * from "./paramId";
+export * from "./idSchema";
