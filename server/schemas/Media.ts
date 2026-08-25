@@ -18,7 +18,7 @@ export const mediaSchema = z.object({
 	[conchesIdColumnName]: z.number(),
 	mime_type: z.string(),
 	media_type: z.enum(["image", "video", "audio", "document"]),
-	is_conch_photo: z.boolean(),
+	is_conch_cover_photo: z.boolean(),
 });
 
 export const mediaQuerySchema = mediaSchema.omit({
@@ -28,7 +28,7 @@ export const mediaQuerySchema = mediaSchema.omit({
 });
 
 export const mediaCreateSchema = mediaQuerySchema.omit({
-	is_conch_photo: true,
+	is_conch_cover_photo: true,
 });
 
 export const mediaUpdateSchema = mediaCreateSchema
@@ -51,5 +51,5 @@ CREATE TABLE ${mediaTableName} (
 	storage_key text NOT NULL,
 	mime_type text NOT NULL,
 	media_type media_type NOT NULL,
-	is_conch_photo boolean NOT NULL DEFAULT FALSE
+	is_conch_cover_photo boolean NOT NULL DEFAULT FALSE
 );`;
