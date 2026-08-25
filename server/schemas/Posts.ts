@@ -1,13 +1,15 @@
 import { z } from "zod";
-import { usersTableName } from "./Users";
-import { apiDateSchema } from "./shared";
-import { postMembersSchema } from "./PostMembers";
-import { mediaQuerySchema } from "./Media";
+import {
+	apiDateSchema,
+	conchesIdColumnName,
+	conchesTableName,
+	postsIdColumnName,
+	postsTableName,
+	usersTableName,
+} from "./shared";
 import { memberQuerySchema } from "./Members";
-import { conchesTableName } from "./Conches";
-
-export const postsTableName = "posts" as const;
-export const postsIdColumnName = "post_id" as const;
+import { mediaCreateSchema, mediaQuerySchema } from "./Media";
+import { postMembersSchema } from "./PostMembers";
 
 export type Season = "winter" | "spring" | "summer" | "fall";
 
@@ -31,7 +33,7 @@ export const postsSchema = z.object({
 		})
 		.nullable(),
 	date: storyDateSchema.nullable(),
-	conch_id: z.number(),
+	[conchesIdColumnName]: z.number(),
 });
 
 export const postQuerySchema = postsSchema.extend({
@@ -44,7 +46,7 @@ export const postsCreateSchema = postsSchema
 		[postsIdColumnName]: true,
 		created_at: true,
 		author_id: true,
-		conch_id: true,
+		[conchesIdColumnName]: true,
 	})
 	.extend({
 		body_text: z.string().nullable().optional(),
@@ -57,7 +59,7 @@ export const postsCreateSchema = postsSchema
 			.optional(),
 		date: storyDateSchema.nullable().optional(),
 		members: z.array(postMembersSchema.shape.member_id).default([]),
-		media: z.array(mediaQuerySchema).default([]),
+		media: z.array(mediaCreateSchema).default([]),
 	});
 
 export const postsUpdateSchema = postsSchema
@@ -65,7 +67,7 @@ export const postsUpdateSchema = postsSchema
 		[postsIdColumnName]: true,
 		created_at: true,
 		author_id: true,
-		conch_id: true,
+		[conchesIdColumnName]: true,
 	})
 	.partial()
 	.refine((obj) => Object.keys(obj).length > 0, {
@@ -85,7 +87,7 @@ export const createPostsTableQuery = `
 CREATE TABLE ${postsTableName} (
 	${postsIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	author_id integer NOT NULL REFERENCES ${usersTableName},
-	conch_id integer NOT NULL REFERENCES ${conchesTableName},
+	${conchesIdColumnName} integer NOT NULL REFERENCES ${conchesTableName},
 	title text NOT NULL,
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	body_text text,

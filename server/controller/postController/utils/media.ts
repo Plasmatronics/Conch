@@ -1,9 +1,11 @@
 import { PoolClient } from "pg";
 import {
+	conchesIdColumnName,
+	mediaCreateSchema,
 	mediaIdColumnName,
-	mediaQuerySchema,
 	mediaTableName,
 	postMediaTableName,
+	postsIdColumnName,
 } from "../../../schemas";
 import { AppError } from "../../../errors";
 import z from "zod";
@@ -27,8 +29,8 @@ export const createPostMedia = async (
 	await poolClient.query(
 		`
         INSERT INTO ${postMediaTableName} (
-            media_id,
-            post_id
+            ${mediaIdColumnName},
+            ${postsIdColumnName}
         )
         VALUES ${placeholders};
         `,
@@ -38,7 +40,7 @@ export const createPostMedia = async (
 
 export const createMedia = async (
 	poolClient: PoolClient,
-	media: z.infer<typeof mediaQuerySchema>[],
+	media: z.infer<typeof mediaCreateSchema>[],
 	conchId: number,
 ): Promise<number[]> => {
 	if (!media.length) return [];
@@ -68,7 +70,7 @@ export const createMedia = async (
             storage_key,
             mime_type,
             media_type,
-			conch_id
+			${conchesIdColumnName}
         )
         VALUES ${placeholders}
         RETURNING ${mediaIdColumnName};

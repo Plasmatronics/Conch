@@ -1,8 +1,5 @@
 import { z } from "zod";
-import { apiDateSchema } from "./shared";
-
-export const usersTableName = "users" as const;
-export const usersIdColumnName = "user_id" as const;
+import { apiDateSchema, usersIdColumnName, usersTableName } from "./shared";
 
 export const createAppRoleEnumQuery = `
 CREATE TYPE app_role AS ENUM ('standard', 'admin');
@@ -79,5 +76,5 @@ CREATE TABLE ${usersTableName} (
 	phone_number text NOT NULL,
 	password_hash text NOT NULL,
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	app_role app_role NOT NULL DEFAULT 'standard',
+	app_role app_role NOT NULL DEFAULT 'standard'
 );`;

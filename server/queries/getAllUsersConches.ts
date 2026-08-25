@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { claimsSchema, claimsTableName } from "../schemas";
+import { claimsSchema, claimsTableName, usersIdColumnName } from "../schemas";
 import z from "zod";
 
 export const getAllUsersConches = async (
@@ -9,7 +9,7 @@ export const getAllUsersConches = async (
 	try {
 		const claimsRes = await dbPool.query(
 			`
-		SELECT * FROM ${claimsTableName} WHERE user_id = $1`,
+		SELECT * FROM ${claimsTableName} WHERE ${usersIdColumnName} = $1`,
 			[user_id],
 		);
 		const claims = z.array(claimsSchema).parse(claimsRes.rows);

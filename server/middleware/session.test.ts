@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import * as session from "./session";
 import { Response } from "express";
 
-import { sessionsIdColumnName, sessionsTableName } from "../schemas/Sessions";
+import { sessionsIdColumnName, sessionsTableName } from "../schemas";
 
 import { Pool } from "pg";
 import { daysToMs } from "../utils/daysToMs";

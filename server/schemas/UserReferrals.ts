@@ -1,11 +1,13 @@
 import { z } from "zod";
-import { usersTableName } from "./Users";
-import { conchesTableName } from "./Conches";
-import { membersTableName } from "./Members";
-import { apiDateSchema } from "./shared";
-
-export const userReferralsTableName = "user_referrals" as const;
-export const userReferralsIdColumnName = "user_referral_id" as const;
+import {
+	apiDateSchema,
+	conchesIdColumnName,
+	conchesTableName,
+	membersTableName,
+	userReferralsIdColumnName,
+	userReferralsTableName,
+	usersTableName,
+} from "./shared";
 
 export const userReferralsSchema = z.object({
 	[userReferralsIdColumnName]: z.number(),
@@ -14,7 +16,7 @@ export const userReferralsSchema = z.object({
 	referred_email: z.email().nullable(),
 	referred_member_id: z.number(),
 	referrer_id: z.number(),
-	conch_id: z.number(),
+	[conchesIdColumnName]: z.number(),
 	count: z.number(),
 });
 
@@ -22,7 +24,7 @@ export const userReferralsCreateSchema = userReferralsSchema
 	.omit({
 		[userReferralsIdColumnName]: true,
 		created_at: true,
-		conch_id: true,
+		[conchesIdColumnName]: true,
 	})
 	.extend({
 		referred_email: z.email().nullable().optional(),
@@ -33,7 +35,7 @@ export const userReferralsUpdateSchema = userReferralsSchema
 	.omit({
 		[userReferralsIdColumnName]: true,
 		created_at: true,
-		conch_id: true,
+		[conchesIdColumnName]: true,
 	})
 	.partial()
 	.refine((obj) => Object.keys(obj).length > 0, {
@@ -56,6 +58,6 @@ CREATE TABLE ${userReferralsTableName} (
 	referred_email text,
 	referred_member_id integer NOT NULL REFERENCES ${membersTableName},
 	referrer_id integer NOT NULL REFERENCES ${usersTableName},
-	conch_id integer NOT NULL REFERENCES ${conchesTableName},
-	count smallint NOT NULL DEFAULT 1,
+	${conchesIdColumnName} integer NOT NULL REFERENCES ${conchesTableName},
+	count smallint NOT NULL DEFAULT 1
 );`;

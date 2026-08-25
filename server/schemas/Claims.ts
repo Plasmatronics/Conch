@@ -1,18 +1,22 @@
 import { z } from "zod";
-import { membersTableName } from "./Members";
-import { usersTableName } from "./Users";
-import { conchesTableName } from "./Conches";
-import { apiDateSchema } from "./shared";
-
-export const claimsTableName = "claims" as const;
-export const claimsIdColumnName = "claim_id" as const;
+import {
+	claimsIdColumnName,
+	claimsTableName,
+	conchesIdColumnName,
+	membersIdColumnName,
+	usersIdColumnName,
+	conchesTableName,
+	apiDateSchema,
+	membersTableName,
+	usersTableName,
+} from "./shared";
 
 export const claimsSchema = z.object({
 	[claimsIdColumnName]: z.number(),
 	created_at: apiDateSchema,
-	conch_id: z.number(),
-	user_id: z.number(),
-	member_id: z.number(),
+	[conchesIdColumnName]: z.number(),
+	[usersIdColumnName]: z.number(),
+	[membersIdColumnName]: z.number(),
 });
 
 export const claimsCreateSchema = claimsSchema.omit({
@@ -38,7 +42,7 @@ export const createClaimsTableQuery = `
 CREATE TABLE ${claimsTableName} (
     ${claimsIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	conch_id integer NOT NULL REFERENCES ${conchesTableName},
-	user_id integer NOT NULL REFERENCES ${usersTableName},
-	member_id integer NOT NULL REFERENCES ${membersTableName},
+	${conchesIdColumnName} integer NOT NULL REFERENCES ${conchesTableName},
+	${usersIdColumnName} integer NOT NULL REFERENCES ${usersTableName},
+	${membersIdColumnName} integer NOT NULL REFERENCES ${membersTableName}
 );`;

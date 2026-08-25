@@ -1,14 +1,16 @@
 import { z } from "zod";
-import { apiDateSchema } from "./shared";
-import { usersTableName } from "./Users";
-
-export const sessionsTableName = "sessions" as const;
-export const sessionsIdColumnName = "session_id" as const;
+import {
+	apiDateSchema,
+	sessionsIdColumnName,
+	sessionsTableName,
+	usersIdColumnName,
+	usersTableName,
+} from "./shared";
 
 export const sessionsSchema = z.object({
 	[sessionsIdColumnName]: z.number(),
 	session_token_hash: z.string(),
-	user_id: z.number(),
+	[usersIdColumnName]: z.number(),
 	expire_time: apiDateSchema,
 	absolute_expire_time: apiDateSchema,
 });
@@ -35,7 +37,7 @@ export const createSessionsTableQuery = `
 CREATE TABLE ${sessionsTableName} (
 	${sessionsIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	session_token_hash text NOT NULL UNIQUE,
-	user_id integer NOT NULL REFERENCES ${usersTableName} ON DELETE CASCADE,
+	${usersIdColumnName} integer NOT NULL REFERENCES ${usersTableName} ON DELETE CASCADE,
 	expire_time timestamptz NOT NULL,
 	absolute_expire_time timestamptz NOT NULL
 );`;
