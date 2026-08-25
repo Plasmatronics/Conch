@@ -2,7 +2,7 @@ import { z } from "zod";
 import { usersTableName } from "./Users";
 import { apiDateSchema } from "./shared";
 import { postMembersSchema } from "./PostMembers";
-import { mediaQuerySchema } from "./Media";
+import { mediaCreateSchema, mediaQuerySchema } from "./Media";
 import { memberQuerySchema } from "./Members";
 import { conchesTableName } from "./Conches";
 import { conchesIdColumnName } from "./shared";
@@ -58,7 +58,7 @@ export const postsCreateSchema = postsSchema
 			.optional(),
 		date: storyDateSchema.nullable().optional(),
 		members: z.array(postMembersSchema.shape.member_id).default([]),
-		media: z.array(mediaQuerySchema).default([]),
+		media: z.array(mediaCreateSchema).default([]),
 	});
 
 export const postsUpdateSchema = postsSchema

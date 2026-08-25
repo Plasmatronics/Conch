@@ -1,8 +1,8 @@
 import { PoolClient } from "pg";
 import {
 	conchesIdColumnName,
+	mediaCreateSchema,
 	mediaIdColumnName,
-	mediaQuerySchema,
 	mediaTableName,
 	postMediaTableName,
 	postsIdColumnName,
@@ -40,7 +40,7 @@ export const createPostMedia = async (
 
 export const createMedia = async (
 	poolClient: PoolClient,
-	media: z.infer<typeof mediaQuerySchema>[],
+	media: z.infer<typeof mediaCreateSchema>[],
 	conchId: number,
 ): Promise<number[]> => {
 	if (!media.length) return [];

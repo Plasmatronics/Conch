@@ -12,7 +12,6 @@ export const conchesSchema = z.object({
 	confirmations_needed_for_referrals: z.number(),
 	admin_id: z.number(),
 	created_at: apiDateSchema,
-	is_conch_photo: z.boolean(),
 });
 
 export const conchesCreateSchema = conchesSchema
@@ -23,7 +22,6 @@ export const conchesCreateSchema = conchesSchema
 	})
 	.extend({
 		confirmations_needed_for_referrals: z.number().default(2),
-		media_id: z.number().nullable().optional(),
 	});
 
 export const conchesUpdateSchema = conchesSchema
@@ -31,7 +29,6 @@ export const conchesUpdateSchema = conchesSchema
 		[conchesIdColumnName]: true,
 		created_at: true,
 		admin_id: true,
-		is_conch_photo: true,
 	})
 	.partial()
 	.refine((obj) => Object.keys(obj).length > 0, {
@@ -50,6 +47,5 @@ CREATE TABLE ${conchesTableName} (
 	conch_name text NOT NULL,
 	confirmations_needed_for_referrals smallint NOT NULL DEFAULT 2,
 	admin_id integer NOT NULL REFERENCES ${usersTableName},
-	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	is_conch_photo boolean NOT NULL DEFAULT FALSE
+	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );`;

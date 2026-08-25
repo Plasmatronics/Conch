@@ -7,8 +7,9 @@ export const mediaTableName = "media" as const;
 export const mediaIdColumnName = "media_id" as const;
 
 export type mediaType = "image" | "video" | "audio" | "document";
-export const mediaTypeEnum = `CREATE TYPE media_type AS ENUM ('winter', 'spring', 'summer', 'fall');`;
-
+export const mediaTypeEnum = `
+CREATE TYPE media_type AS ENUM ('image', 'video', 'audio', 'document');
+`;
 export const mediaSchema = z.object({
 	[mediaIdColumnName]: z.number(),
 	storage_key: z.string(),
@@ -16,6 +17,7 @@ export const mediaSchema = z.object({
 	[conchesIdColumnName]: z.number(),
 	mime_type: z.string(),
 	media_type: z.enum(["image", "video", "audio", "document"]),
+	is_conch_photo: z.boolean(),
 });
 
 export const mediaQuerySchema = mediaSchema.omit({
@@ -24,7 +26,11 @@ export const mediaQuerySchema = mediaSchema.omit({
 	conch_id: true,
 });
 
-export const mediaUpdateSchema = mediaQuerySchema
+export const mediaCreateSchema = mediaQuerySchema.omit({
+	is_conch_photo: true,
+});
+
+export const mediaUpdateSchema = mediaCreateSchema
 	.partial()
 	.refine((obj) => Object.keys(obj).length > 0, {
 		message: "At least one field must be provided",
@@ -43,5 +49,6 @@ CREATE TABLE ${mediaTableName} (
 	${conchesIdColumnName} integer NOT NULL REFERENCES ${conchesTableName},
 	storage_key text NOT NULL,
 	mime_type text NOT NULL,
-	media_type media_type NOT NULL
+	media_type media_type NOT NULL,
+	is_conch_photo boolean NOT NULL DEFAULT FALSE
 );`;

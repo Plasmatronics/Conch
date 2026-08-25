@@ -59,6 +59,7 @@ const hydratedPost = {
 			storage_key: "posts/image.jpg",
 			mime_type: "image/jpeg",
 			media_type: "image" as const,
+			is_conch_photo: false,
 		},
 	],
 };

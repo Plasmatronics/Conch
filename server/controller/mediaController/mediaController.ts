@@ -10,6 +10,7 @@ import {
 	postsIdColumnName,
 	postsTableName,
 	conchesIdColumnName,
+	mediaCreateSchema,
 } from "../../schemas";
 import { ControllerFactory } from "../controllerFactory";
 import { CRUDFactory } from "../../queries";
@@ -28,7 +29,7 @@ export const mediaControllers = (dbPool: Pool) => {
 	const mediaControllerFactory = new ControllerFactory({
 		dbPool,
 		crudFactory,
-		createSchema: mediaQuerySchema,
+		createSchema: mediaCreateSchema,
 		updateSchema: mediaUpdateSchema,
 		tableSchema: mediaSchema,
 		conchScoped: true,
