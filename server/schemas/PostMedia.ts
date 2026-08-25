@@ -1,11 +1,13 @@
 import { z } from "zod";
-import { mediaTableName } from "./shared";
-import { apiDateSchema } from "./shared";
-import { postsTableName } from "./shared";
-import { mediaIdColumnName, postsIdColumnName } from "./shared";
-
-export const postMediaTableName = "post_media" as const;
-export const postMediaIdColumnName = "post_media_id" as const;
+import {
+	apiDateSchema,
+	postsTableName,
+	mediaTableName,
+	mediaIdColumnName,
+	postsIdColumnName,
+	postMediaIdColumnName,
+	postMediaTableName,
+} from "./shared";
 
 export const postMediaSchema = z.object({
 	[postMediaIdColumnName]: z.number(),

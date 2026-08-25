@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { membersTableName } from "./Members";
-import { apiDateSchema } from "./shared";
-
-export const relationshipsTableName = "relationships" as const;
-export const relationshipsIdColumnName = "relationship_id" as const;
+import {
+	apiDateSchema,
+	membersTableName,
+	relationshipsIdColumnName,
+	relationshipsTableName,
+} from "./shared";
 
 export type Relationship = "spouse" | "child" | "pet" | "friend";
 

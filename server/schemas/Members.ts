@@ -1,10 +1,14 @@
 import { z } from "zod";
-import { conchesTableName } from "./Conches";
-import { mediaQuerySchema, mediaTableName } from "./Media";
-import { apiDateSchema, conchesIdColumnName } from "./shared";
-
-export const membersTableName = "members" as const;
-export const membersIdColumnName = "member_id" as const;
+import {} from "./Conches";
+import {
+	apiDateSchema,
+	conchesIdColumnName,
+	conchesTableName,
+	mediaTableName,
+	membersIdColumnName,
+	membersTableName,
+} from "./shared";
+import { mediaQuerySchema } from "./Media";
 
 const pointSchema = z.object({
 	type: z.literal("Point"),

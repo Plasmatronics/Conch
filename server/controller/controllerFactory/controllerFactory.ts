@@ -3,7 +3,7 @@ import { AppError } from "../../errors";
 import { Pool } from "pg";
 import { CRUDFactory } from "../../queries";
 import { ZodObject } from "zod";
-import { idSchema } from "../../schemas/utils";
+import { idSchema } from "../../schemas";
 
 export interface Controllers {
 	getAll: RequestHandler;

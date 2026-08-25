@@ -1,12 +1,13 @@
 import { z } from "zod";
-import { membersTableName } from "./Members";
-import { usersTableName } from "./Users";
-import { conchesTableName } from "./Conches";
-import { apiDateSchema } from "./shared";
-import { conchesIdColumnName } from "./shared";
-
-export const memberReferralsTableName = "member_referrals" as const;
-export const memberReferralsIdColumnName = "member_referral_id" as const;
+import {
+	conchesTableName,
+	memberReferralsTableName,
+	memberReferralsIdColumnName,
+	conchesIdColumnName,
+	usersTableName,
+	membersTableName,
+	apiDateSchema,
+} from "./shared";
 
 export const memberReferralsSchema = z.object({
 	[memberReferralsIdColumnName]: z.number(),

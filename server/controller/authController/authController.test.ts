@@ -23,7 +23,7 @@ import {
 	usersTableName,
 	usersCreateSchema,
 	usersIdColumnName,
-} from "../../schemas/Users";
+} from "../../schemas";
 import { AppError } from "../../errors";
 
 const createPasswordSpy = vi.spyOn(passwordUtils, "createPasswordHash");

@@ -40,5 +40,5 @@ CREATE TABLE ${postMembersTableName} (
 	${postMembersIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	${membersIdColumnName} integer NOT NULL REFERENCES ${membersTableName},
-	post_id integer NOT NULL REFERENCES ${postsTableName}
+	${postsIdColumnName} integer NOT NULL REFERENCES ${postsTableName}
 );`;

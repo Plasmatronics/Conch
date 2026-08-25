@@ -11,6 +11,7 @@ import {
 	postsTableName,
 	conchesIdColumnName,
 	mediaCreateSchema,
+	idSchema,
 } from "../../schemas";
 import { ControllerFactory } from "../controllerFactory";
 import { CRUDFactory } from "../../queries";
@@ -18,7 +19,6 @@ import { NextFunction, Request, Response } from "express";
 import { AppError } from "../../errors";
 import z from "zod";
 import { createMedia } from "../postController/utils";
-import { idSchema } from "../../schemas/utils";
 
 export const mediaControllers = (dbPool: Pool) => {
 	const crudFactory = new CRUDFactory({

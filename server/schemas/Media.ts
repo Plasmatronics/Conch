@@ -1,10 +1,11 @@
 import { z } from "zod";
-import { apiDateSchema } from "./shared";
-import { conchesTableName } from "./shared";
-import { conchesIdColumnName } from "./shared";
-
-export const mediaTableName = "media" as const;
-export const mediaIdColumnName = "media_id" as const;
+import {
+	apiDateSchema,
+	mediaIdColumnName,
+	mediaTableName,
+	conchesTableName,
+	conchesIdColumnName,
+} from "./shared";
 
 export type mediaType = "image" | "video" | "audio" | "document";
 export const mediaTypeEnum = `

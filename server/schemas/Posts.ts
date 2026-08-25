@@ -1,14 +1,15 @@
 import { z } from "zod";
-import { usersTableName } from "./Users";
-import { apiDateSchema } from "./shared";
-import { postMembersSchema } from "./PostMembers";
-import { mediaCreateSchema, mediaQuerySchema } from "./Media";
+import {
+	apiDateSchema,
+	conchesIdColumnName,
+	conchesTableName,
+	postsIdColumnName,
+	postsTableName,
+	usersTableName,
+} from "./shared";
 import { memberQuerySchema } from "./Members";
-import { conchesTableName } from "./Conches";
-import { conchesIdColumnName } from "./shared";
-
-export const postsTableName = "posts" as const;
-export const postsIdColumnName = "post_id" as const;
+import { mediaCreateSchema, mediaQuerySchema } from "./Media";
+import { postMembersSchema } from "./PostMembers";
 
 export type Season = "winter" | "spring" | "summer" | "fall";
 

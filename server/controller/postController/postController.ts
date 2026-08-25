@@ -20,7 +20,7 @@ import {
 	getHydratedPostsQuery,
 	getMemberHydratedPostsQuery,
 } from "./utils";
-import { idSchema } from "../../schemas/utils";
+import { idSchema } from "../../schemas";
 import format from "pg-format";
 
 export const getPost =

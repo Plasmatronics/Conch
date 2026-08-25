@@ -10,13 +10,13 @@ import {
 	postsIdColumnName,
 	postsTableName,
 	conchesIdColumnName,
+	idSchema,
 } from "../../schemas";
 import { ControllerFactory } from "../controllerFactory";
 import { CRUDFactory } from "../../queries";
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../../errors";
 import z from "zod";
-import { idSchema } from "../../schemas/utils";
 
 export const membersControllers = (dbPool: Pool) => {
 	const crudFactory = new CRUDFactory({

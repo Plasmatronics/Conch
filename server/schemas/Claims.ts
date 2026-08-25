@@ -1,16 +1,15 @@
 import { z } from "zod";
-import { membersTableName } from "./Members";
-import { usersTableName } from "./Users";
-import { conchesTableName } from "./Conches";
 import {
+	claimsIdColumnName,
+	claimsTableName,
 	conchesIdColumnName,
 	membersIdColumnName,
 	usersIdColumnName,
+	conchesTableName,
+	apiDateSchema,
+	membersTableName,
+	usersTableName,
 } from "./shared";
-import { apiDateSchema } from "./shared";
-
-export const claimsTableName = "claims" as const;
-export const claimsIdColumnName = "claim_id" as const;
 
 export const claimsSchema = z.object({
 	[claimsIdColumnName]: z.number(),

@@ -1,9 +1,11 @@
 import { z } from "zod";
-import { apiDateSchema, usersIdColumnName } from "./shared";
-import { usersTableName } from "./Users";
-
-export const sessionsTableName = "sessions" as const;
-export const sessionsIdColumnName = "session_id" as const;
+import {
+	apiDateSchema,
+	sessionsIdColumnName,
+	sessionsTableName,
+	usersIdColumnName,
+	usersTableName,
+} from "./shared";
 
 export const sessionsSchema = z.object({
 	[sessionsIdColumnName]: z.number(),

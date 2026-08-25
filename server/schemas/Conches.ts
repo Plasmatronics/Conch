@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { mediaTableName } from "./shared";
-import { usersTableName } from "./Users";
-import { apiDateSchema } from "./shared";
-
-export const conchesTableName = "conches" as const;
-export const conchesIdColumnName = "conch_id" as const;
+import {
+	conchesIdColumnName,
+	conchesTableName,
+	usersTableName,
+	apiDateSchema,
+} from "./shared";
 
 export const conchesSchema = z.object({
 	[conchesIdColumnName]: z.number(),
