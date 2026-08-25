@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { mediaTableName } from "./Media";
+import { mediaTableName } from "./shared";
 import { usersTableName } from "./Users";
 import { apiDateSchema } from "./shared";
 
@@ -9,10 +9,10 @@ export const conchesIdColumnName = "conch_id" as const;
 export const conchesSchema = z.object({
 	[conchesIdColumnName]: z.number(),
 	conch_name: z.string(),
-	media_id: z.number().nullable(),
 	confirmations_needed_for_referrals: z.number(),
 	admin_id: z.number(),
 	created_at: apiDateSchema,
+	is_conch_photo: z.boolean(),
 });
 
 export const conchesCreateSchema = conchesSchema
@@ -31,6 +31,7 @@ export const conchesUpdateSchema = conchesSchema
 		[conchesIdColumnName]: true,
 		created_at: true,
 		admin_id: true,
+		is_conch_photo: true,
 	})
 	.partial()
 	.refine((obj) => Object.keys(obj).length > 0, {
@@ -40,7 +41,6 @@ export const conchesUpdateSchema = conchesSchema
 export type Conches = z.infer<typeof conchesSchema>;
 
 export const conchesDependencyEdges: Array<[string, string]> = [
-	[conchesTableName, mediaTableName],
 	[conchesTableName, usersTableName],
 ];
 
@@ -48,8 +48,8 @@ export const createConchesTableQuery = `
 CREATE TABLE ${conchesTableName} (
     ${conchesIdColumnName} integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	conch_name text NOT NULL,
-	media_id integer REFERENCES ${mediaTableName},
 	confirmations_needed_for_referrals smallint NOT NULL DEFAULT 2,
 	admin_id integer NOT NULL REFERENCES ${usersTableName},
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	is_conch_photo boolean NOT NULL DEFAULT FALSE
 );`;

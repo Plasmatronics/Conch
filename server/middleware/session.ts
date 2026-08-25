@@ -87,7 +87,7 @@ export const verifySession =
      		row_to_json(users) AS user
    			FROM sessions
    			JOIN users
-     		ON sessions.user_id = users.${usersIdColumnName}
+     		ON sessions.${usersIdColumnName} = users.${usersIdColumnName}
    			WHERE sessions.session_token_hash = $1`,
 				[tokenHash],
 			);

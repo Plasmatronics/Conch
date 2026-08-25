@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { Pool, PoolClient } from "pg";
 import { AppError } from "../../errors";
 import {
+	conchesIdColumnName,
 	postQuerySchema,
 	postsCreateSchema,
 	postsIdColumnName,
@@ -62,7 +63,7 @@ export const patchPost =
     UPDATE %I
     SET ${updatePlaceholders}
     WHERE %I = $${updateValues.length + 1}
-    AND conch_id = $${updateValues.length + 2}
+    AND ${conchesIdColumnName} = $${updateValues.length + 2}
     `,
 				postsTableName,
 				...updateKeys,
@@ -154,7 +155,7 @@ export const createPost =
                     location,
                     date,
                     author_id,
-                    conch_id
+                    ${conchesIdColumnName}
                 )
                 VALUES (
                     $1,

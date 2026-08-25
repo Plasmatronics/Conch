@@ -41,5 +41,5 @@ CREATE TABLE ${relationshipsTableName} (
 	relationship_type relationship NOT NULL,
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	source_member_id integer NOT NULL REFERENCES ${membersTableName},
-	target_member_id integer NOT NULL REFERENCES ${membersTableName},
+	target_member_id integer NOT NULL REFERENCES ${membersTableName}
 );`;

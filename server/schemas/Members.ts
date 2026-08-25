@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { conchesTableName } from "./Conches";
 import { mediaQuerySchema, mediaTableName } from "./Media";
-import { apiDateSchema } from "./shared";
+import { apiDateSchema, conchesIdColumnName } from "./shared";
 
 export const membersTableName = "members" as const;
 export const membersIdColumnName = "member_id" as const;
@@ -16,7 +16,7 @@ export const membersSchema = z.object({
 	created_at: apiDateSchema,
 	first_name: z.string(),
 	last_name: z.string(),
-	conch_id: z.number(),
+	[conchesIdColumnName]: z.number(),
 	photo_id: z.number().nullable(),
 	date_of_birth: apiDateSchema.nullable(),
 	biography: z.string().nullable(),
@@ -73,7 +73,7 @@ CREATE TABLE ${membersTableName} (
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	first_name text NOT NULL,
 	last_name text NOT NULL,
-	conch_id integer NOT NULL REFERENCES ${conchesTableName},
+	${conchesIdColumnName} integer NOT NULL REFERENCES ${conchesTableName},
 	photo_id integer REFERENCES ${mediaTableName},
 	date_of_birth timestamptz,
 	biography text,
@@ -81,5 +81,5 @@ CREATE TABLE ${membersTableName} (
 	addresses point[],
 	birth_location point,
 	death_location point,
-	burial_location point,
+	burial_location point
 );`;

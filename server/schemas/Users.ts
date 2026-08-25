@@ -79,5 +79,5 @@ CREATE TABLE ${usersTableName} (
 	phone_number text NOT NULL,
 	password_hash text NOT NULL,
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	app_role app_role NOT NULL DEFAULT 'standard',
+	app_role app_role NOT NULL DEFAULT 'standard'
 );`;

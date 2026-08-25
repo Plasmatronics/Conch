@@ -1,5 +1,9 @@
 import { PoolClient } from "pg";
-import { postMembersTableName, postsIdColumnName } from "../../../schemas";
+import {
+	membersIdColumnName,
+	postMembersTableName,
+	postsIdColumnName,
+} from "../../../schemas";
 import { createHydratedPostsQuery } from "./posts";
 
 export const getMemberHydratedPostsQuery = createHydratedPostsQuery(`
@@ -7,8 +11,8 @@ export const getMemberHydratedPostsQuery = createHydratedPostsQuery(`
     AND EXISTS (
         SELECT 1
         FROM ${postMembersTableName} AS filter_pm
-        WHERE filter_pm.post_id = p.${postsIdColumnName}
-        AND filter_pm.member_id = $2
+        WHERE filter_pm.${postsIdColumnName} = p.${postsIdColumnName}
+        AND filter_pm.${membersIdColumnName} = $2
     )
     ORDER BY p.created_at DESC
 `);
@@ -32,8 +36,8 @@ export const createPostMembers = async (
 	await poolClient.query(
 		`
         INSERT INTO ${postMembersTableName} (
-            member_id,
-            post_id
+            ${membersIdColumnName},
+            ${postsIdColumnName}
         )
         VALUES ${placeholders};
         `,

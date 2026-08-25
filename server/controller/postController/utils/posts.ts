@@ -1,4 +1,5 @@
 import {
+	conchesIdColumnName,
 	mediaIdColumnName,
 	mediaTableName,
 	membersIdColumnName,
@@ -38,10 +39,10 @@ export const createHydratedPostsQuery = (whereClause: string) => `
 							)
 							FROM ${postMembersTableName} AS pm
 							JOIN ${membersTableName} AS m
-								ON pm.member_id = m.${membersIdColumnName}
+								ON pm.${membersIdColumnName} = m.${membersIdColumnName}
 							LEFT JOIN ${mediaTableName} AS photo
 								ON m.photo_id = photo.${mediaIdColumnName}
-							WHERE pm.post_id = p.${postsIdColumnName}
+							WHERE pm.${postsIdColumnName} = p.${postsIdColumnName}
 						),
 						'[]'::json
 					) AS members,
@@ -57,8 +58,8 @@ export const createHydratedPostsQuery = (whereClause: string) => `
 							)
 							FROM ${postMediaTableName} AS pm
 							JOIN ${mediaTableName} AS media
-								ON pm.media_id = media.${mediaIdColumnName}
-							WHERE pm.post_id = p.${postsIdColumnName}
+								ON pm.${mediaIdColumnName} = media.${mediaIdColumnName}
+							WHERE pm.${postsIdColumnName} = p.${postsIdColumnName}
 						),
 						'[]'::json
 					) AS media
@@ -70,10 +71,10 @@ export const createHydratedPostsQuery = (whereClause: string) => `
 
 export const getHydratedPostQuery = createHydratedPostsQuery(`
 				WHERE p.${postsIdColumnName} = $1
-				AND p.conch_id = $2
+				AND p.${conchesIdColumnName} = $2
 			`);
 
 export const getHydratedPostsQuery = createHydratedPostsQuery(`
-				WHERE p.conch_id = $1
+				WHERE p.${conchesIdColumnName} = $1
 				ORDER BY p.created_at DESC
 			`);
