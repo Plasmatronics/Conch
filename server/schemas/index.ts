@@ -1,58 +1,18 @@
-import { claimsDependencyEdges, createClaimsTableQuery } from "./Claims";
-import { conchesDependencyEdges, createConchesTableQuery } from "./Conches";
-import {
-	mediaDependencyEdges,
-	createMediaTableQuery,
-	mediaTypeEnum,
-} from "./Media";
-import {
-	memberReferralsDependencyEdges,
-	createMemberReferralsQuery,
-} from "./MemberReferrals";
-import { membersDependencyEdges, createMembersTableQuery } from "./Members";
-import {
-	postsDependencyEdges,
-	createPostsTableQuery,
-	createSeasonEnum,
-} from "./Posts";
-import {
-	postMediaDependencyEdges,
-	createPostMediaTableQuery,
-} from "./PostMedia";
-import {
-	postMembersDependencyEdges,
-	postMembersTableName,
-	createPostMembersTableQuery,
-} from "./PostMembers";
+import { claimsDependencyEdges } from "./Claims";
+import { conchesDependencyEdges } from "./Conches";
+import { mediaDependencyEdges, mediaTypeEnum } from "./Media";
+import { memberReferralsDependencyEdges } from "./MemberReferrals";
+import { membersDependencyEdges } from "./Members";
+import { postsDependencyEdges, createSeasonEnum } from "./Posts";
+import { postMediaDependencyEdges } from "./PostMedia";
+import { postMembersDependencyEdges } from "./PostMembers";
 import {
 	relationshipsDependencyEdges,
-	createRelationshipsTableQuery,
 	createRelationshipTypeEnumQuery,
 } from "./Relationships";
-import {
-	userReferralsDependencyEdges,
-	createUserReferralsQuery,
-} from "./UserReferrals";
-import {
-	usersDependencyEdges,
-	createUsersTableQuery,
-	createAppRoleEnumQuery,
-} from "./Users";
-import { createSessionsTableQuery, sessionsDependencyEdges } from "./Sessions";
-
-import {
-	conchesTableName,
-	mediaTableName,
-	postsTableName,
-	membersTableName,
-	claimsTableName,
-	memberReferralsTableName,
-	postMediaTableName,
-	relationshipsTableName,
-	sessionsTableName,
-	userReferralsTableName,
-	usersTableName,
-} from "./shared";
+import { userReferralsDependencyEdges } from "./UserReferrals";
+import { usersDependencyEdges, createAppRoleEnumQuery } from "./Users";
+import { sessionsDependencyEdges } from "./Sessions";
 
 export const dependencyEdges: Array<[string, string]> = [
 	...claimsDependencyEdges,
@@ -75,21 +35,6 @@ export const enumCreationQueries: string[] = [
 	createSeasonEnum,
 	mediaTypeEnum,
 ];
-
-export const nodeToCreationQueryMap: Record<string, string> = {
-	[sessionsTableName]: createSessionsTableQuery,
-	[claimsTableName]: createClaimsTableQuery,
-	[conchesTableName]: createConchesTableQuery,
-	[mediaTableName]: createMediaTableQuery,
-	[memberReferralsTableName]: createMemberReferralsQuery,
-	[membersTableName]: createMembersTableQuery,
-	[postsTableName]: createPostsTableQuery,
-	[postMediaTableName]: createPostMediaTableQuery,
-	[postMembersTableName]: createPostMembersTableQuery,
-	[relationshipsTableName]: createRelationshipsTableQuery,
-	[userReferralsTableName]: createUserReferralsQuery,
-	[usersTableName]: createUsersTableQuery,
-};
 
 export * from "./Claims";
 export * from "./Conches";

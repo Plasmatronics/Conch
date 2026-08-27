@@ -5,6 +5,7 @@ export const membersTableName = "members" as const;
 export const claimsTableName = "claims" as const;
 export const memberReferralsTableName = "member_referrals" as const;
 export const postMediaTableName = "post_media" as const;
+export const postMembersTableName = "post_members" as const;
 export const relationshipsTableName = "relationships" as const;
 export const sessionsTableName = "sessions" as const;
 export const userReferralsTableName = "user_referrals" as const;

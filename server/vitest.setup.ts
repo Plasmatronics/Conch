@@ -1,7 +1,8 @@
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 
 import { vi } from "vitest";
-import { Users, usersIdColumnName, usersSchema } from "./schemas/Users";
+import { usersIdColumnName } from "./schemas/shared";
+import { Users, usersSchema } from "./schemas/Users";
 import { CookieOptions, NextFunction, Response, Request } from "express";
 import { Sessions, sessionsSchema } from "./schemas/Sessions";
 
@@ -92,4 +93,5 @@ export const mockSession: Sessions = {
 export const usersParseSpy = vi.spyOn(usersSchema, "parse");
 export const sessionsParseSpy = vi.spyOn(sessionsSchema, "parse");
 
-export const normalizeSql = (sql: string) => sql.replace(/\s+/g, " ").trim();
+export const normalizeSql = (sql: string) =>
+	sql.replace(/\s+/g, " ").replace(/\(\s+/g, "(").replace(/\s+\)/g, ")").trim();
