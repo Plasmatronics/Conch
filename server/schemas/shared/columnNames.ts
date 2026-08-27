@@ -9,3 +9,4 @@ export const postMediaIdColumnName = "post_media_id" as const;
 export const relationshipsIdColumnName = "relationship_id" as const;
 export const sessionsIdColumnName = "session_id" as const;
 export const userReferralsIdColumnName = "user_referral_id" as const;
+export const postMembersIdColumnName = "post_member_id" as const;

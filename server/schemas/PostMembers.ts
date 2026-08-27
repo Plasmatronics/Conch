@@ -1,14 +1,15 @@
 import { z } from "zod";
-import { membersTableName } from "./shared";
+import {
+	membersTableName,
+	postMembersIdColumnName,
+	postMembersTableName,
+} from "./shared";
 import { postsTableName } from "./shared";
 import {
 	apiDateSchema,
 	membersIdColumnName,
 	postsIdColumnName,
 } from "./shared";
-
-export const postMembersTableName = "post_members" as const;
-export const postMembersIdColumnName = "post_member_id" as const;
 
 export const postMembersSchema = z.object({
 	[postMembersIdColumnName]: z.number(),

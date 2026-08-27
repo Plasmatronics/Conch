@@ -1,0 +1,443 @@
+import { describe, expect, test } from "vitest";
+import { normalizeSql } from "../vitest.setup";
+import { ReadQueryBuilder } from "./ReadQueryBuilder";
+
+const testTable = "posts";
+const testId = "post_id";
+
+describe("ReadQueryBuilder", () => {
+	describe("pagination", () => {
+		test("cursor options enforce matching key and value lengths at runtime", () => {
+			expect(() =>
+				new ReadQueryBuilder(testTable)
+					.paginate({
+						keys: ["created_at", testId],
+						values: [1],
+						lastSeenId: 10,
+					})
+					.build(),
+			).toThrow("Cursor keys and values must have matching lengths");
+		});
+
+		test("uses the provided id cursor value when id is already included", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.paginate({
+					keys: ["created_at", testId],
+					values: [100, 10],
+					lastSeenId: 999,
+				})
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+			SELECT * FROM posts
+			WHERE (
+				created_at < '100'
+				OR (
+					created_at = '100'
+					AND post_id < '10'
+				)
+			)
+			ORDER BY created_at DESC, post_id DESC
+			LIMIT 25
+		`),
+			);
+		});
+
+		test("paginates using multiple cursors and hydrates id", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.paginate({
+					keys: ["created_at", "people"],
+					values: [100, 5],
+					lastSeenId: 10,
+				})
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+					SELECT * FROM posts
+					WHERE (
+						created_at < '100'
+						OR (
+							created_at = '100'
+							AND
+								(
+									people < '5'
+									OR (
+										people = '5'
+										AND post_id < '10'
+									)
+								)
+						)
+					)
+					ORDER BY created_at DESC, people DESC, post_id DESC
+					LIMIT 25
+				`),
+			);
+
+			expect(result.values).toEqual([]);
+		});
+
+		test("paginates using a single cursor and hydrates id", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.paginate({
+					keys: ["created_at"],
+					values: [100],
+					lastSeenId: 10,
+				})
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+					SELECT * FROM posts
+					WHERE (
+						created_at < '100'
+						OR (
+							created_at = '100'
+							AND post_id < '10'
+						)
+					)
+					ORDER BY created_at DESC, post_id DESC
+					LIMIT 25
+				`),
+			);
+
+			expect(result.values).toEqual([]);
+		});
+
+		test("orders by multiple cursors without applying cursor conditions when no values are provided", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.paginate({
+					keys: ["created_at", "people"],
+				})
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+					SELECT * FROM posts
+					ORDER BY created_at DESC, people DESC, post_id DESC
+					LIMIT 25
+				`),
+			);
+
+			expect(result.values).toEqual([]);
+		});
+
+		test("orders by a single cursor without applying cursor conditions when no value is provided", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.paginate({
+					keys: ["created_at"],
+				})
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+					SELECT * FROM posts
+					ORDER BY created_at DESC, post_id DESC
+					LIMIT 25
+				`),
+			);
+
+			expect(result.values).toEqual([]);
+		});
+
+		test("adds the table id as a cursor tie breaker when it is not included", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.paginate({
+					keys: ["created_at"],
+				})
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+					SELECT * FROM posts
+					ORDER BY created_at DESC, ${testId} DESC
+					LIMIT 25
+				`),
+			);
+		});
+
+		test("does not add the table id when it is already included", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.paginate({
+					keys: ["created_at", testId],
+				})
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+					SELECT * FROM posts
+					ORDER BY created_at DESC, post_id DESC
+					LIMIT 25
+				`),
+			);
+		});
+
+		test("paginates in ascending order", () => {
+			const result = new ReadQueryBuilder(testTable, null, 25, "ASC")
+				.paginate({
+					keys: ["created_at"],
+					values: [100],
+					lastSeenId: 10,
+				})
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+			SELECT * FROM posts
+			WHERE (
+				created_at > '100'
+				OR (
+					created_at = '100'
+					AND post_id > '10'
+				)
+			)
+			ORDER BY created_at ASC, post_id ASC
+			LIMIT 25
+		`),
+			);
+
+			expect(result.values).toEqual([]);
+		});
+
+		test("works when no cursor is provided", () => {
+			const result = new ReadQueryBuilder(testTable).build();
+
+			expect(normalizeSql(result.query)).toBe(
+				`SELECT * FROM ${testTable} LIMIT 25`,
+			);
+
+			expect(result.values).toEqual([]);
+		});
+
+		test("Throws error on successive pagination", () => {
+			expect(() =>
+				new ReadQueryBuilder(testTable)
+					.paginate({ keys: ["created_at", testId] })
+					.paginate({ keys: ["created_at", testId] })
+					.build(),
+			).toThrow("Pagination has already been configured");
+		});
+
+		test("Throws error upon pagination if table doesnt have mapped id", () => {
+			const unpaginatedRes = new ReadQueryBuilder("bad_table").build();
+
+			expect(normalizeSql(unpaginatedRes.query)).toBe(
+				normalizeSql(`SELECT * FROM bad_table LIMIT 25`),
+			);
+			expect(unpaginatedRes.values).toEqual([]);
+
+			expect(() =>
+				new ReadQueryBuilder("bad_table")
+					.paginate({ keys: ["created_at", testId] })
+					.build(),
+			).toThrow(`No ID column configured for table "bad_table"`);
+		});
+	});
+
+	describe("limit", () => {
+		test("uses the default limit", () => {
+			const result = new ReadQueryBuilder(testTable).build();
+
+			expect(normalizeSql(result.query)).toBe(
+				`SELECT * FROM ${testTable} LIMIT 25`,
+			);
+		});
+
+		test("uses a provided limit within the allowed range", () => {
+			const result = new ReadQueryBuilder(testTable, null, 50).build();
+
+			expect(normalizeSql(result.query)).toBe(
+				`SELECT * FROM ${testTable} LIMIT 50`,
+			);
+		});
+
+		test("clamps a limit above the maximum", () => {
+			const result = new ReadQueryBuilder(testTable, null, 500).build();
+
+			expect(normalizeSql(result.query)).toBe(
+				`SELECT * FROM ${testTable} LIMIT 100`,
+			);
+		});
+
+		test("uses the default limit when the provided limit is zero", () => {
+			const result = new ReadQueryBuilder(testTable, null, 0).build();
+
+			expect(normalizeSql(result.query)).toBe(
+				`SELECT * FROM ${testTable} LIMIT 25`,
+			);
+		});
+
+		test("uses the default limit when the provided limit is negative", () => {
+			const result = new ReadQueryBuilder(testTable, null, -10).build();
+
+			expect(normalizeSql(result.query)).toBe(
+				`SELECT * FROM ${testTable} LIMIT 25`,
+			);
+		});
+	});
+
+	describe("filters", () => {
+		test("works when no filters nor cursor are added", () => {
+			const result = new ReadQueryBuilder(testTable).build();
+
+			expect(result).toEqual({
+				query: `SELECT * FROM ${testTable} LIMIT 25`,
+				values: [],
+			});
+		});
+
+		test("works when no filters are added", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.paginate({
+					keys: ["created_at"],
+				})
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+					SELECT * FROM posts
+					ORDER BY created_at DESC, post_id DESC
+					LIMIT 25
+				`),
+			);
+
+			expect(result.values).toEqual([]);
+		});
+
+		test("applies filters before pagination", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.filter([
+					{
+						column: "status",
+						value: "active",
+					},
+				])
+				.paginate({
+					keys: ["created_at"],
+					values: [100],
+					lastSeenId: 10,
+				})
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+					SELECT * FROM posts
+					WHERE status = $1
+					AND (
+						created_at < '100'
+						OR (
+							created_at = '100'
+							AND post_id < '10'
+						)
+					)
+					ORDER BY created_at DESC, post_id DESC
+					LIMIT 25
+				`),
+			);
+
+			expect(result.values).toEqual(["active"]);
+		});
+
+		test("filters by a single condition without pagination", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.filter([
+					{
+						column: "status",
+						value: "active",
+					},
+				])
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+			SELECT * FROM posts
+			WHERE status = $1
+			LIMIT 25
+		`),
+			);
+
+			expect(result.values).toEqual(["active"]);
+		});
+
+		test("filters by multiple conditions without pagination", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.filter([
+					{
+						column: "status",
+						value: "active",
+					},
+					{
+						column: "people",
+						value: 5,
+					},
+				])
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+			SELECT * FROM posts
+			WHERE status = $1
+			AND people = $2
+			LIMIT 25
+		`),
+			);
+
+			expect(result.values).toEqual(["active", 5]);
+		});
+
+		test("accumulates filters across successive filter calls", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.filter([{ column: "status", value: "active" }])
+				.filter([{ column: "people", value: 5 }])
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+			SELECT * FROM posts
+			WHERE status = $1
+			AND people = $2
+			LIMIT 25
+		`),
+			);
+
+			expect(result.values).toEqual(["active", 5]);
+		});
+
+		test("filters and scopes by conch without pagination", () => {
+			const result = new ReadQueryBuilder(testTable, "conch-123")
+				.filter([
+					{
+						column: "status",
+						value: "active",
+					},
+				])
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+			SELECT * FROM posts
+			WHERE status = $1
+			AND conch_id = $2
+			LIMIT 25
+		`),
+			);
+
+			expect(result.values).toEqual(["active", "conch-123"]);
+		});
+
+		test("scopes by conch without pagination nor filtering", () => {
+			const result = new ReadQueryBuilder(testTable, "conch-123").build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+			SELECT * FROM posts
+			WHERE conch_id = $1
+			LIMIT 25
+		`),
+			);
+
+			expect(result.values).toEqual(["conch-123"]);
+		});
+	});
+});
