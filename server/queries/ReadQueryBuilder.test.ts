@@ -7,13 +7,16 @@ const testId = "post_id";
 
 describe("ReadQueryBuilder", () => {
 	describe("pagination", () => {
-		test("cursor options enforce matching key and value lengths at compile time", () => {
-			// @ts-expect-error cursor keys and values must have matching lengths
-			new ReadQueryBuilder(testTable).paginate({
-				keys: ["created_at", "people"],
-				values: [100],
-				lastSeenId: 10,
-			});
+		test("cursor options enforce matching key and value lengths at runtime", () => {
+			expect(() =>
+				new ReadQueryBuilder(testTable)
+					.paginate({
+						keys: ["created_at", testId],
+						values: [1],
+						lastSeenId: 10,
+					})
+					.build(),
+			).toThrow("Cursor keys and values must have matching lengths");
 		});
 
 		test("uses the provided id cursor value when id is already included", () => {
@@ -41,7 +44,7 @@ describe("ReadQueryBuilder", () => {
 			);
 		});
 
-		test("paginates using a cursor tuple and hydrates id", () => {
+		test("paginates using multiple cursors and hydrates id", () => {
 			const result = new ReadQueryBuilder(testTable)
 				.paginate({
 					keys: ["created_at", "people"],
@@ -102,7 +105,7 @@ describe("ReadQueryBuilder", () => {
 			expect(result.values).toEqual([]);
 		});
 
-		test("orders by a cursor tuple without applying cursor conditions when no values are provided", () => {
+		test("orders by multiple cursors without applying cursor conditions when no values are provided", () => {
 			const result = new ReadQueryBuilder(testTable)
 				.paginate({
 					keys: ["created_at", "people"],

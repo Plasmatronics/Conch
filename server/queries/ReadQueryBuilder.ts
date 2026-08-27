@@ -3,31 +3,15 @@ import { conchesIdColumnName, tableNameToIdColumnMap } from "../schemas";
 
 type SortDirection = "ASC" | "DESC";
 
-type CursorTuple = [string] | [string, string];
-
-type CursorValues<T extends CursorTuple> = {
-	[K in keyof T]: unknown;
-};
-
 type CursorOptions =
 	| {
-			keys: [string];
-			values?: undefined;
-			lastSeenId?: undefined;
+			keys: string[];
+			values?: never;
+			lastSeenId?: never;
 	  }
 	| {
-			keys: [string];
-			values: [unknown];
-			lastSeenId: number;
-	  }
-	| {
-			keys: [string, string];
-			values?: undefined;
-			lastSeenId?: undefined;
-	  }
-	| {
-			keys: [string, string];
-			values: [unknown, unknown];
+			keys: string[];
+			values: unknown[];
 			lastSeenId: number;
 	  };
 
@@ -115,6 +99,11 @@ export class ReadQueryBuilder {
 			const cursorValues = this.pagination.values
 				? [...this.pagination.values]
 				: undefined;
+			if (
+				cursorValues !== undefined &&
+				cursorKeys.length !== cursorValues.length
+			)
+				throw new Error("Cursor keys and values must have matching lengths");
 
 			const idKey = tableNameToIdColumnMap[this.tableName];
 
