@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { normalizeSql } from "../vitest.setup";
+import { normalizeSql } from "../../vitest.setup";
 import { ReadQueryBuilder } from "./ReadQueryBuilder";
 
 const testTable = "posts";
@@ -438,6 +438,27 @@ describe("ReadQueryBuilder", () => {
 			);
 
 			expect(result.values).toEqual(["conch-123"]);
+		});
+
+		test("uses explicitly provided conch id instead of constructor conch id", () => {
+			const result = new ReadQueryBuilder(testTable, "conch-123")
+				.filter([
+					{
+						column: "conch_id",
+						value: "conch-456",
+					},
+				])
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+			SELECT * FROM posts
+			WHERE conch_id = $1
+			LIMIT 25
+		`),
+			);
+
+			expect(result.values).toEqual(["conch-456"]);
 		});
 	});
 });
