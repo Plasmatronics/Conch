@@ -1,5 +1,6 @@
 import format from "pg-format";
-import { conchesIdColumnName, tableNameToIdColumnMap } from "../schemas";
+import { conchesIdColumnName, tableNameToIdColumnMap } from "../../schemas";
+import { BuildQuery, QueryBuilder } from "./QueryBuilder";
 
 type SortDirection = "ASC" | "DESC";
 
@@ -20,24 +21,20 @@ export type FilterOptions = {
 	value: unknown;
 };
 
-type BuildQuery = {
-	query: string;
-	values: unknown[];
-};
-
 const DEFAULT_LIMIT = 25;
 const MAX_LIMIT = 100;
 
-export class ReadQueryBuilder {
+export class ReadQueryBuilder extends QueryBuilder {
 	private filters: FilterOptions[] = [];
 	private pagination: CursorOptions | null = null;
 
 	constructor(
-		private tableName: string,
-		private conchId: string | null = null,
+		tableName: string,
+		conchId: string | null = null,
 		private clampedLimit: number = DEFAULT_LIMIT,
 		private sortDirection: SortDirection = "DESC",
 	) {
+		super(tableName, conchId);
 		if (this.clampedLimit > MAX_LIMIT) this.clampedLimit = MAX_LIMIT;
 		else if (this.clampedLimit <= 0) this.clampedLimit = DEFAULT_LIMIT;
 	}
@@ -83,12 +80,14 @@ export class ReadQueryBuilder {
 
 		const conditions: string[] = [];
 
+		let isConchIdIncluded = false;
 		this.filters.forEach((filter) => {
+			if (filter.column === conchesIdColumnName) isConchIdIncluded = true;
 			conditions.push(format(`%I = $${curPlaceholder++}`, filter.column));
 			values.push(filter.value);
 		});
 
-		if (this.conchId !== null) {
+		if (this.conchId !== null && !isConchIdIncluded) {
 			conditions.push(`${conchesIdColumnName} = $${curPlaceholder++}`);
 			values.push(this.conchId);
 		}
