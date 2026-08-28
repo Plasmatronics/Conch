@@ -15,7 +15,7 @@ export class CreateQueryBuilder extends QueryBuilder {
 		return this;
 	}
 
-	returning(keys: string[]) {
+	addReturning(keys: string[]) {
 		if (this.returningFields[0] === "*") return this;
 
 		for (const key of keys) {

@@ -11,7 +11,7 @@ export interface KeyValuePair {
 	value: unknown;
 }
 
-export interface UpdateDeleteCondition extends KeyValuePair {
+export interface Condition extends KeyValuePair {
 	operator: UpdateDeleteOperator;
 }
 

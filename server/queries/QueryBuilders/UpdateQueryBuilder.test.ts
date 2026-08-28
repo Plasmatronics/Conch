@@ -14,7 +14,7 @@ describe("UpdateQueryBuilder", () => {
 
 		test("updates a single field", () => {
 			const result = new UpdateQueryBuilder(testTable)
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
@@ -34,7 +34,7 @@ describe("UpdateQueryBuilder", () => {
 
 		test("updates multiple fields", () => {
 			const result = new UpdateQueryBuilder(testTable)
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
@@ -59,13 +59,13 @@ describe("UpdateQueryBuilder", () => {
 
 		test("accumulates update fields across successive calls", () => {
 			const result = new UpdateQueryBuilder(testTable)
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
 					},
 				])
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "people",
 						value: 5,
@@ -88,13 +88,13 @@ describe("UpdateQueryBuilder", () => {
 	describe("conditions", () => {
 		test("updates using a single condition", () => {
 			const result = new UpdateQueryBuilder(testTable)
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
@@ -116,13 +116,13 @@ describe("UpdateQueryBuilder", () => {
 
 		test("updates using multiple conditions", () => {
 			const result = new UpdateQueryBuilder(testTable)
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "status",
 						operator: "=",
@@ -150,13 +150,13 @@ describe("UpdateQueryBuilder", () => {
 
 		test("supports different condition operators", () => {
 			const result = new UpdateQueryBuilder(testTable)
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "status",
 						value: "archived",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "people",
 						operator: ">=",
@@ -184,20 +184,20 @@ describe("UpdateQueryBuilder", () => {
 
 		test("accumulates conditions across successive calls", () => {
 			const result = new UpdateQueryBuilder(testTable)
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "status",
 						operator: "=",
 						value: "active",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "people",
 						operator: ">",
@@ -222,7 +222,7 @@ describe("UpdateQueryBuilder", () => {
 	describe("conch id", () => {
 		test("automatically scopes update by conch id", () => {
 			const result = new UpdateQueryBuilder(testTable, "conch-123")
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
@@ -234,22 +234,22 @@ describe("UpdateQueryBuilder", () => {
 				normalizeSql(`
 					UPDATE posts SET
 					title = $1
-					WHERE conch_id = 'conch-123';
+					WHERE conch_id = $2;
 				`),
 			);
 
-			expect(result.values).toEqual(["Updated title"]);
+			expect(result.values).toEqual(["Updated title", "conch-123"]);
 		});
 
 		test("adds conch id alongside other conditions", () => {
 			const result = new UpdateQueryBuilder(testTable, "conch-123")
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
@@ -263,22 +263,22 @@ describe("UpdateQueryBuilder", () => {
 					UPDATE posts SET
 					title = $1
 					WHERE post_id = $2
-					AND conch_id = 'conch-123';
+					AND conch_id = $3;
 				`),
 			);
 
-			expect(result.values).toEqual(["Updated title", 10]);
+			expect(result.values).toEqual(["Updated title", 10, "conch-123"]);
 		});
 
 		test("does not add constructor conch id when condition explicitly includes conch id", () => {
 			const result = new UpdateQueryBuilder(testTable, "conch-123")
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "conch_id",
 						operator: "=",
@@ -302,20 +302,20 @@ describe("UpdateQueryBuilder", () => {
 	describe("returning", () => {
 		test("returns a single field", () => {
 			const result = new UpdateQueryBuilder(testTable)
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
 						value: 10,
 					},
 				])
-				.returning(["post_id"])
+				.addReturning(["post_id"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -332,20 +332,20 @@ describe("UpdateQueryBuilder", () => {
 
 		test("returns multiple fields", () => {
 			const result = new UpdateQueryBuilder(testTable)
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
 						value: 10,
 					},
 				])
-				.returning(["post_id", "title"])
+				.addReturning(["post_id", "title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -362,20 +362,20 @@ describe("UpdateQueryBuilder", () => {
 
 		test("returns all fields using wildcard", () => {
 			const result = new UpdateQueryBuilder(testTable)
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
 						value: 10,
 					},
 				])
-				.returning(["*"])
+				.addReturning(["*"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -392,14 +392,14 @@ describe("UpdateQueryBuilder", () => {
 
 		test("wildcard overrides previously configured returning fields", () => {
 			const result = new UpdateQueryBuilder(testTable)
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
 					},
 				])
-				.returning(["post_id", "title"])
-				.returning(["*"])
+				.addReturning(["post_id", "title"])
+				.addReturning(["*"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -413,14 +413,14 @@ describe("UpdateQueryBuilder", () => {
 
 		test("ignores returning fields added after wildcard", () => {
 			const result = new UpdateQueryBuilder(testTable)
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
 					},
 				])
-				.returning(["*"])
-				.returning(["post_id", "title"])
+				.addReturning(["*"])
+				.addReturning(["post_id", "title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -434,14 +434,14 @@ describe("UpdateQueryBuilder", () => {
 
 		test("accumulates returning fields across successive calls", () => {
 			const result = new UpdateQueryBuilder(testTable)
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
 					},
 				])
-				.returning(["post_id"])
-				.returning(["title"])
+				.addReturning(["post_id"])
+				.addReturning(["title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -457,7 +457,7 @@ describe("UpdateQueryBuilder", () => {
 	describe("combined", () => {
 		test("builds an update with multiple fields, conditions, conch scope, and returning fields", () => {
 			const result = new UpdateQueryBuilder(testTable, "conch-123")
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
@@ -467,7 +467,7 @@ describe("UpdateQueryBuilder", () => {
 						value: "archived",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
@@ -479,7 +479,7 @@ describe("UpdateQueryBuilder", () => {
 						value: 5,
 					},
 				])
-				.returning(["post_id", "title", "status"])
+				.addReturning(["post_id", "title", "status"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -489,23 +489,29 @@ describe("UpdateQueryBuilder", () => {
 					status = $2
 					WHERE post_id = $3
 					AND people > $4
-					AND conch_id = 'conch-123'
+					AND conch_id = $5
 					RETURNING post_id, title, status;
 				`),
 			);
 
-			expect(result.values).toEqual(["Updated title", "archived", 10, 5]);
+			expect(result.values).toEqual([
+				"Updated title",
+				"archived",
+				10,
+				5,
+				"conch-123",
+			]);
 		});
 
 		test("uses explicitly provided conch id instead of constructor conch id", () => {
 			const result = new UpdateQueryBuilder(testTable, "conch-123")
-				.addUpdateFields([
+				.addUpdateField([
 					{
 						key: "title",
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "conch_id",
 						operator: "=",

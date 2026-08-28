@@ -228,7 +228,7 @@ describe("CreateQueryBuilder", () => {
 						value: "Test post",
 					},
 				])
-				.returning(["post_id"])
+				.addReturning(["post_id"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -251,7 +251,7 @@ describe("CreateQueryBuilder", () => {
 						value: "Test post",
 					},
 				])
-				.returning(["post_id", "title"])
+				.addReturning(["post_id", "title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -274,7 +274,7 @@ describe("CreateQueryBuilder", () => {
 						value: "Test post",
 					},
 				])
-				.returning(["*"])
+				.addReturning(["*"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -297,8 +297,8 @@ describe("CreateQueryBuilder", () => {
 						value: "Test post",
 					},
 				])
-				.returning(["post_id", "title"])
-				.returning(["*"])
+				.addReturning(["post_id", "title"])
+				.addReturning(["*"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -321,8 +321,8 @@ describe("CreateQueryBuilder", () => {
 						value: "Test post",
 					},
 				])
-				.returning(["*"])
-				.returning(["post_id", "title"])
+				.addReturning(["*"])
+				.addReturning(["post_id", "title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -345,7 +345,7 @@ describe("CreateQueryBuilder", () => {
 						value: "Test post",
 					},
 				])
-				.returning(["post_id", "*", "title"])
+				.addReturning(["post_id", "*", "title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -368,8 +368,8 @@ describe("CreateQueryBuilder", () => {
 						value: "Test post",
 					},
 				])
-				.returning(["post_id"])
-				.returning(["title"])
+				.addReturning(["post_id"])
+				.addReturning(["title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -434,7 +434,7 @@ describe("CreateQueryBuilder", () => {
 						value: "Test post",
 					},
 				])
-				.returning(["post id"])
+				.addReturning(["post id"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -465,7 +465,7 @@ describe("CreateQueryBuilder", () => {
 						value: "active",
 					},
 				])
-				.returning(["post_id", "title", "conch_id"])
+				.addReturning(["post_id", "title", "conch_id"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -486,7 +486,7 @@ describe("CreateQueryBuilder", () => {
 					{ key: "title", value: "Test post" },
 					{ key: "conch_id", value: "conch-456" },
 				])
-				.returning(["*"])
+				.addReturning(["*"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
