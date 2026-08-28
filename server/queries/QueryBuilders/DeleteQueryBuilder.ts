@@ -48,11 +48,10 @@ export class DeleteQueryBuilder extends QueryBuilder {
 			key === "*" ? "*" : format("%I", key),
 		);
 
-		const query =
-			`
+		const query = `
 		${format(`DELETE FROM %I `, this.tableName)}
 		${conditions.length ? "WHERE " : ""}${conditions.join(" AND ")}
-		${returning.length ? "RETURNING " : ""}${returning.join(", ")}`.trim() + ";";
+		${returning.length ? "RETURNING " : ""}${returning.join(", ")}`.trim();
 
 		return {
 			query,

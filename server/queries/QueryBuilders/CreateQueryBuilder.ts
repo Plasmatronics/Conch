@@ -33,10 +33,7 @@ export class CreateQueryBuilder extends QueryBuilder {
 		if (!this.createFields.length)
 			throw new Error("Must insert fields for creation");
 
-		const queryArr: string[] = [];
 		const values: unknown[] = [];
-
-		queryArr.push(format(`INSERT INTO %I `, this.tableName));
 
 		const insertionKeys: string[] = [];
 		const insertionValues: string[] = [];
@@ -59,15 +56,15 @@ export class CreateQueryBuilder extends QueryBuilder {
 			key === "*" ? "*" : format("%I", key),
 		);
 
-		const keysStr = `(${insertionKeys.join(", ")}) `;
-		const valuesStr = `VALUES (${insertionValues.join(", ")})`;
-		queryArr.push(keysStr, valuesStr);
-		if (returning.length) {
-			queryArr.push(` RETURNING ${returning.join(", ")}`);
-		}
+		const query = `
+		${format(`INSERT INTO %I `, this.tableName)}
+		(${insertionKeys.join(", ")}) 
+		VALUES (${insertionValues.join(", ")})
+		${returning.length ? `RETURNING ${returning.join(", ")}` : ""}
+		`.trim();
 
 		return {
-			query: queryArr.join(""),
+			query,
 			values,
 		};
 	}

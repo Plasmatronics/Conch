@@ -70,12 +70,11 @@ export class UpdateQueryBuilder extends QueryBuilder {
 			key === "*" ? "*" : format("%I", key),
 		);
 
-		const query =
-			`
+		const query = `
 		${format(`UPDATE %I SET `, this.tableName)}
 		${updateStrs.join(", ")}
 		${conditions.length ? "WHERE " : ""}${conditions.join(" AND ")}
-		${returning.length ? "RETURNING " : ""}${returning.join(", ")}`.trim() + ";";
+		${returning.length ? "RETURNING " : ""}${returning.join(", ")}`.trim();
 
 		return {
 			query,

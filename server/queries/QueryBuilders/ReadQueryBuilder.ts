@@ -130,12 +130,11 @@ export class ReadQueryBuilder extends QueryBuilder {
 			}
 		}
 
-		const query =
-			`
+		const query = `
 				${format(`SELECT * FROM %I `, this.tableName)}
 				${conditions.length ? "WHERE " : ""}${conditions.join(" AND ")}
 				${orderArr.length ? "ORDER BY " : ""}${orderArr.join(", ")}
-				${this.limit ? `LIMIT ${this.limit}` : ""}`.trim() + ";";
+				${this.limit ? `LIMIT ${this.limit}` : ""}`.trim();
 
 		return { query, values };
 	}

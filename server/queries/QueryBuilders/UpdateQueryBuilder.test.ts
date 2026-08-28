@@ -25,7 +25,7 @@ describe("UpdateQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					UPDATE posts SET
-					title = $1;
+					title = $1
 				`),
 			);
 
@@ -50,7 +50,7 @@ describe("UpdateQueryBuilder", () => {
 				normalizeSql(`
 					UPDATE posts SET
 					title = $1,
-					people = $2;
+					people = $2
 				`),
 			);
 
@@ -77,7 +77,7 @@ describe("UpdateQueryBuilder", () => {
 				normalizeSql(`
 					UPDATE posts SET
 					title = $1,
-					people = $2;
+					people = $2
 				`),
 			);
 
@@ -107,7 +107,7 @@ describe("UpdateQueryBuilder", () => {
 				normalizeSql(`
 					UPDATE posts SET
 					title = $1
-					WHERE post_id = $2;
+					WHERE post_id = $2
 				`),
 			);
 
@@ -141,7 +141,7 @@ describe("UpdateQueryBuilder", () => {
 					UPDATE posts SET
 					title = $1
 					WHERE status = $2
-					AND people > $3;
+					AND people > $3
 				`),
 			);
 
@@ -175,7 +175,7 @@ describe("UpdateQueryBuilder", () => {
 					UPDATE posts SET
 					status = $1
 					WHERE people >= $2
-					AND created_at < $3;
+					AND created_at < $3
 				`),
 			);
 
@@ -211,7 +211,7 @@ describe("UpdateQueryBuilder", () => {
 					UPDATE posts SET
 					title = $1
 					WHERE status = $2
-					AND people > $3;
+					AND people > $3
 				`),
 			);
 
@@ -234,7 +234,7 @@ describe("UpdateQueryBuilder", () => {
 				normalizeSql(`
 					UPDATE posts SET
 					title = $1
-					WHERE conch_id = $2;
+					WHERE conch_id = $2
 				`),
 			);
 
@@ -263,7 +263,7 @@ describe("UpdateQueryBuilder", () => {
 					UPDATE posts SET
 					title = $1
 					WHERE post_id = $2
-					AND conch_id = $3;
+					AND conch_id = $3
 				`),
 			);
 
@@ -289,7 +289,7 @@ describe("UpdateQueryBuilder", () => {
 			const expected = `
 					UPDATE posts SET
 					title = $1
-					WHERE conch_id = $2;`;
+					WHERE conch_id = $2`;
 
 			console.log("ACTUAL:  ", JSON.stringify(result.query));
 			console.log("EXPECTED:", JSON.stringify(expected));
@@ -323,7 +323,7 @@ describe("UpdateQueryBuilder", () => {
 					UPDATE posts SET
 					title = $1
 					WHERE post_id = $2
-					RETURNING post_id;
+					RETURNING post_id
 				`),
 			);
 
@@ -353,7 +353,7 @@ describe("UpdateQueryBuilder", () => {
 					UPDATE posts SET
 					title = $1
 					WHERE post_id = $2
-					RETURNING post_id, title;
+					RETURNING post_id, title
 				`),
 			);
 
@@ -383,7 +383,7 @@ describe("UpdateQueryBuilder", () => {
 					UPDATE posts SET
 					title = $1
 					WHERE post_id = $2
-					RETURNING *;
+					RETURNING *
 				`),
 			);
 
@@ -406,7 +406,7 @@ describe("UpdateQueryBuilder", () => {
 				normalizeSql(`
 					UPDATE posts SET
 					title = $1
-					RETURNING *;
+					RETURNING *
 				`),
 			);
 		});
@@ -427,7 +427,7 @@ describe("UpdateQueryBuilder", () => {
 				normalizeSql(`
 					UPDATE posts SET
 					title = $1
-					RETURNING *;
+					RETURNING *
 				`),
 			);
 		});
@@ -448,7 +448,7 @@ describe("UpdateQueryBuilder", () => {
 				normalizeSql(`
 					UPDATE posts SET
 					title = $1
-					RETURNING post_id, title;
+					RETURNING post_id, title
 				`),
 			);
 		});
@@ -490,7 +490,7 @@ describe("UpdateQueryBuilder", () => {
 					WHERE post_id = $3
 					AND people > $4
 					AND conch_id = $5
-					RETURNING post_id, title, status;
+					RETURNING post_id, title, status
 				`),
 			);
 
@@ -524,7 +524,7 @@ describe("UpdateQueryBuilder", () => {
 				normalizeSql(`
 			UPDATE posts SET
 			title = $1
-			WHERE conch_id = $2;
+			WHERE conch_id = $2
 		`),
 			);
 

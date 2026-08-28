@@ -11,7 +11,7 @@ describe("DeleteQueryBuilder", () => {
 
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
-					DELETE FROM posts;
+					DELETE FROM posts
 				`),
 			);
 
@@ -32,7 +32,7 @@ describe("DeleteQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
-					WHERE post_id = $1;
+					WHERE post_id = $1
 				`),
 			);
 
@@ -59,7 +59,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE status = $1
-					AND people > $2;
+					AND people > $2
 				`),
 			);
 
@@ -86,7 +86,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE people >= $1
-					AND created_at < $2;
+					AND created_at < $2
 				`),
 			);
 
@@ -115,7 +115,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE status = $1
-					AND people > $2;
+					AND people > $2
 				`),
 			);
 
@@ -130,7 +130,7 @@ describe("DeleteQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
-					WHERE conch_id = 'conch-123';
+					WHERE conch_id = 'conch-123'
 				`),
 			);
 
@@ -152,7 +152,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					AND conch_id = 'conch-123';
+					AND conch_id = 'conch-123'
 				`),
 			);
 
@@ -173,7 +173,7 @@ describe("DeleteQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
-					WHERE conch_id = $1;
+					WHERE conch_id = $1
 				`),
 			);
 
@@ -200,7 +200,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					AND conch_id = $2;
+					AND conch_id = $2
 				`),
 			);
 
@@ -225,7 +225,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					RETURNING post_id;
+					RETURNING post_id
 				`),
 			);
 
@@ -248,7 +248,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					RETURNING post_id, title;
+					RETURNING post_id, title
 				`),
 			);
 
@@ -271,7 +271,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					RETURNING *;
+					RETURNING *
 				`),
 			);
 
@@ -295,7 +295,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					RETURNING *;
+					RETURNING *
 				`),
 			);
 
@@ -319,7 +319,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					RETURNING *;
+					RETURNING *
 				`),
 			);
 
@@ -342,7 +342,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					RETURNING *;
+					RETURNING *
 				`),
 			);
 
@@ -366,7 +366,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					RETURNING post_id, title;
+					RETURNING post_id, title
 				`),
 			);
 
@@ -381,7 +381,7 @@ describe("DeleteQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
-					RETURNING post_id;
+					RETURNING post_id
 				`),
 			);
 
@@ -404,7 +404,7 @@ describe("DeleteQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM "post table"
-					WHERE post_id = $1;
+					WHERE post_id = $1
 				`),
 			);
 
@@ -425,7 +425,7 @@ describe("DeleteQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
-					WHERE "post id" = $1;
+					WHERE "post id" = $1
 				`),
 			);
 
@@ -448,7 +448,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					RETURNING "post title";
+					RETURNING "post title"
 				`),
 			);
 
@@ -480,7 +480,7 @@ describe("DeleteQueryBuilder", () => {
 					WHERE status = $1
 					AND people > $2
 					AND conch_id = 'conch-123'
-					RETURNING post_id, title, status;
+					RETURNING post_id, title, status
 				`),
 			);
 
@@ -509,7 +509,7 @@ describe("DeleteQueryBuilder", () => {
 					DELETE FROM posts
 					WHERE status = $1
 					AND conch_id = $2
-					RETURNING *;
+					RETURNING *
 				`),
 			);
 
