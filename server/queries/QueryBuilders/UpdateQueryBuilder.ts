@@ -16,7 +16,7 @@ export class UpdateQueryBuilder extends QueryBuilder {
 		super(tableName, conchId);
 	}
 
-	addUpdateField(fields: KeyValuePair[]) {
+	addUpdateFields(fields: KeyValuePair[]) {
 		this.updateFields.push(...fields);
 		return this;
 	}

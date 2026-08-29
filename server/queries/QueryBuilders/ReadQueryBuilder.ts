@@ -32,7 +32,7 @@ export class ReadQueryBuilder extends QueryBuilder {
 		super(tableName, conchId);
 	}
 
-	addPaginate(options: CursorOptions) {
+	paginate(options: CursorOptions) {
 		if (this.pagination)
 			throw new Error(`Pagination has already been configured`);
 		this.pagination = options;

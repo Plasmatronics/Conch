@@ -10,7 +10,7 @@ describe("ReadQueryBuilder", () => {
 		test("cursor options enforce matching key and value lengths at runtime", () => {
 			expect(() =>
 				new ReadQueryBuilder(testTable)
-					.addPaginate({
+					.paginate({
 						keys: ["created_at", testId],
 						values: [1],
 						lastSeenId: 10,
@@ -21,7 +21,7 @@ describe("ReadQueryBuilder", () => {
 
 		test("uses the provided id cursor value when id is already included", () => {
 			const result = new ReadQueryBuilder(testTable)
-				.addPaginate({
+				.paginate({
 					keys: ["created_at", testId],
 					values: [100, 10],
 					lastSeenId: 999,
@@ -44,7 +44,7 @@ describe("ReadQueryBuilder", () => {
 
 		test("addPaginates using multiple cursors and hydrates id", () => {
 			const result = new ReadQueryBuilder(testTable)
-				.addPaginate({
+				.paginate({
 					keys: ["created_at", "people"],
 					values: [100, 5],
 					lastSeenId: 10,
@@ -76,7 +76,7 @@ describe("ReadQueryBuilder", () => {
 
 		test("addPaginates using a single cursor and hydrates id", () => {
 			const result = new ReadQueryBuilder(testTable)
-				.addPaginate({
+				.paginate({
 					keys: ["created_at"],
 					values: [100],
 					lastSeenId: 10,
@@ -101,7 +101,7 @@ describe("ReadQueryBuilder", () => {
 
 		test("orders by multiple cursors without applying cursor conditions when no values are provided", () => {
 			const result = new ReadQueryBuilder(testTable)
-				.addPaginate({
+				.paginate({
 					keys: ["created_at", "people"],
 				})
 				.build();
@@ -117,7 +117,7 @@ describe("ReadQueryBuilder", () => {
 
 		test("orders by a single cursor without applying cursor conditions when no value is provided", () => {
 			const result = new ReadQueryBuilder(testTable)
-				.addPaginate({
+				.paginate({
 					keys: ["created_at"],
 				})
 				.build();
@@ -133,7 +133,7 @@ describe("ReadQueryBuilder", () => {
 
 		test("adds the table id as a cursor tie breaker when it is not included", () => {
 			const result = new ReadQueryBuilder(testTable)
-				.addPaginate({
+				.paginate({
 					keys: ["created_at"],
 				})
 				.build();
@@ -147,7 +147,7 @@ describe("ReadQueryBuilder", () => {
 
 		test("does not add the table id when it is already included", () => {
 			const result = new ReadQueryBuilder(testTable)
-				.addPaginate({
+				.paginate({
 					keys: ["created_at", testId],
 				})
 				.build();
@@ -161,7 +161,7 @@ describe("ReadQueryBuilder", () => {
 
 		test("addPaginates in ascending order", () => {
 			const result = new ReadQueryBuilder(testTable, null, "ASC")
-				.addPaginate({
+				.paginate({
 					keys: ["created_at"],
 					values: [100],
 					lastSeenId: 10,
@@ -195,8 +195,8 @@ describe("ReadQueryBuilder", () => {
 		test("Throws error on successive pagination", () => {
 			expect(() =>
 				new ReadQueryBuilder(testTable)
-					.addPaginate({ keys: ["created_at", testId] })
-					.addPaginate({ keys: ["created_at", testId] })
+					.paginate({ keys: ["created_at", testId] })
+					.paginate({ keys: ["created_at", testId] })
 					.build(),
 			).toThrow("Pagination has already been configured");
 		});
@@ -211,7 +211,7 @@ describe("ReadQueryBuilder", () => {
 
 			expect(() =>
 				new ReadQueryBuilder("bad_table")
-					.addPaginate({ keys: ["created_at", testId] })
+					.paginate({ keys: ["created_at", testId] })
 					.build(),
 			).toThrow(`No ID column configured for table "bad_table"`);
 		});
@@ -271,7 +271,7 @@ describe("ReadQueryBuilder", () => {
 
 		test("works when no filters are added", () => {
 			const result = new ReadQueryBuilder(testTable)
-				.addPaginate({
+				.paginate({
 					keys: ["created_at"],
 				})
 				.build();
@@ -294,7 +294,7 @@ describe("ReadQueryBuilder", () => {
 						value: "active",
 					},
 				])
-				.addPaginate({
+				.paginate({
 					keys: ["created_at"],
 					values: [100],
 					lastSeenId: 10,
