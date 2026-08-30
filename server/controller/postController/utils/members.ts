@@ -25,13 +25,13 @@ export const createPostMembers = async (
 ): Promise<void> => {
 	if (!memberIds.length) return;
 
-	for (const memberId of memberIds) {
-		const { query, values } = new CreateQueryBuilder(postMembersTableName)
-			.addCreateFields([
+	const { query, values } = new CreateQueryBuilder(postMembersTableName)
+		.addCreateRows(
+			memberIds.map((memberId) => [
 				{ key: membersIdColumnName, value: memberId },
 				{ key: postsIdColumnName, value: createdPostId },
-			])
-			.build();
-		await poolClient.query(query, values);
-	}
+			]),
+		)
+		.build();
+	await poolClient.query(query, values);
 };

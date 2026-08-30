@@ -18,15 +18,15 @@ export const createPostMedia = async (
 ): Promise<void> => {
 	if (!mediaIds.length) return;
 
-	for (const mediaId of mediaIds) {
-		const { query, values } = new CreateQueryBuilder(postMediaTableName)
-			.addCreateFields([
+	const { query, values } = new CreateQueryBuilder(postMediaTableName)
+		.addCreateRows(
+			mediaIds.map((mediaId) => [
 				{ key: mediaIdColumnName, value: mediaId },
 				{ key: postsIdColumnName, value: createdPostId },
-			])
-			.build();
-		await poolClient.query(query, values);
-	}
+			]),
+		)
+		.build();
+	await poolClient.query(query, values);
 };
 
 export const createMedia = async (
@@ -36,24 +36,21 @@ export const createMedia = async (
 ): Promise<number[]> => {
 	if (!media.length) return [];
 
-	const mediaIds: number[] = [];
-	for (const mediaObj of media) {
-		const { query, values } = new CreateQueryBuilder(mediaTableName)
-			.addCreateFields([
+	const { query, values } = new CreateQueryBuilder(mediaTableName)
+		.addCreateRows(
+			media.map((mediaObj) => [
 				{ key: "storage_key", value: mediaObj.storage_key },
 				{ key: "mime_type", value: mediaObj.mime_type },
 				{ key: "media_type", value: mediaObj.media_type },
 				{ key: conchesIdColumnName, value: conchId },
-			])
-			.addReturning([mediaIdColumnName])
-			.build();
-		const result = await poolClient.query(query, values);
-		if (!result.rowCount) {
-			throw new AppError("Failed to create media", 500);
-		}
-
-		mediaIds.push(z.number().parse(result.rows[0][mediaIdColumnName]));
+			]),
+		)
+		.addReturning([mediaIdColumnName])
+		.build();
+	const result = await poolClient.query(query, values);
+	if (result.rowCount !== media.length) {
+		throw new AppError("Failed to create media", 500);
 	}
 
-	return mediaIds;
+	return result.rows.map((row) => z.number().parse(row[mediaIdColumnName]));
 };

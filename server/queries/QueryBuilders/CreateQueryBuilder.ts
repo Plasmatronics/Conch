@@ -5,6 +5,7 @@ import { conchesIdColumnName } from "../../schemas";
 export class CreateQueryBuilder extends QueryBuilder {
 	private returningFields: string[] = [];
 	private createFields: KeyValuePair[] = [];
+	private createRows: KeyValuePair[][] = [];
 
 	constructor(tableName: string, conchId: string | null | number = null) {
 		super(tableName, conchId);
@@ -12,6 +13,11 @@ export class CreateQueryBuilder extends QueryBuilder {
 
 	addCreateFields(fields: KeyValuePair[]) {
 		this.createFields.push(...fields);
+		return this;
+	}
+
+	addCreateRows(rows: KeyValuePair[][]) {
+		this.createRows.push(...rows);
 		return this;
 	}
 
@@ -30,27 +36,38 @@ export class CreateQueryBuilder extends QueryBuilder {
 	}
 
 	build(): BuildQuery {
-		if (!this.createFields.length)
-			throw new Error("Must insert fields for creation");
+		if (this.createFields.length && this.createRows.length)
+			throw new Error("Cannot combine create fields and create rows");
+
+		const rows = this.createRows.length ? this.createRows : [this.createFields];
+		if (!rows[0].length) throw new Error("Must insert fields for creation");
 
 		const values: unknown[] = [];
-
-		const insertionKeys: string[] = [];
-		const insertionValues: string[] = [];
-
-		let isConchIdIncluded = false;
-		for (const { key, value } of this.createFields) {
-			if (key === conchesIdColumnName) isConchIdIncluded = true;
-
-			insertionKeys.push(format("%I", key));
-			insertionValues.push(`$${values.length + 1}`);
-			values.push(value);
-		}
-		if (!isConchIdIncluded && this.conchId !== null) {
+		const insertionKeys = rows[0].map(({ key }) => key);
+		const includesConchId = insertionKeys.includes(conchesIdColumnName);
+		if (!includesConchId && this.conchId !== null)
 			insertionKeys.push(conchesIdColumnName);
-			insertionValues.push(`$${values.length + 1}`);
-			values.push(this.conchId);
-		}
+
+		const insertionValues = rows.map((row) => {
+			if (
+				row.length !== rows[0].length ||
+				row.some(({ key }, index) => key !== rows[0][index].key)
+			) {
+				throw new Error(
+					"All create rows must use the same fields in the same order",
+				);
+			}
+
+			const placeholders = row.map(({ value }) => {
+				values.push(value);
+				return `$${values.length}`;
+			});
+			if (!includesConchId && this.conchId !== null) {
+				values.push(this.conchId);
+				placeholders.push(`$${values.length}`);
+			}
+			return `(${placeholders.join(", ")})`;
+		});
 
 		const returning = this.returningFields.map((key) =>
 			key === "*" ? "*" : format("%I", key),
@@ -58,8 +75,8 @@ export class CreateQueryBuilder extends QueryBuilder {
 
 		const query = `
 		${format(`INSERT INTO %I `, this.tableName)}
-		(${insertionKeys.join(", ")}) 
-		VALUES (${insertionValues.join(", ")})
+		(${insertionKeys.map((key) => format("%I", key)).join(", ")})
+		VALUES ${insertionValues.join(", ")}
 		${returning.length ? `RETURNING ${returning.join(", ")}` : ""}
 		`.trim();
 

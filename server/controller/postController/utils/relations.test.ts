@@ -19,43 +19,38 @@ beforeEach(() => {
 });
 
 describe("post relationship query helpers", () => {
-	test("creates one post-member record per member through CreateQueryBuilder", async () => {
+	test("creates post-member records with one batched insert", async () => {
 		mockPoolClient.query.mockResolvedValue({ rowCount: 1, rows: [] });
 
 		await createPostMembers(poolClient, [11, 12], 44);
 
-		expect(mockPoolClient.query).toHaveBeenCalledTimes(2);
-		expect(mockPoolClient.query.mock.calls).toEqual([
-			[
-				expect.stringContaining(`INSERT INTO ${postMembersTableName}`),
-				[11, 44],
-			],
-			[
-				expect.stringContaining(`INSERT INTO ${postMembersTableName}`),
-				[12, 44],
-			],
-		]);
+		expect(mockPoolClient.query).toHaveBeenCalledOnce();
+		expect(mockPoolClient.query).toHaveBeenCalledWith(
+			expect.stringContaining(`INSERT INTO ${postMembersTableName}`),
+			[11, 44, 12, 44],
+		);
 		expect(normalizeSql(mockPoolClient.query.mock.calls[0][0])).toContain(
-			`(${membersIdColumnName}, ${postsIdColumnName}) VALUES ($1, $2)`,
+			`(${membersIdColumnName}, ${postsIdColumnName}) VALUES ($1, $2), ($3, $4)`,
 		);
 	});
 
-	test("creates one post-media record per media item through CreateQueryBuilder", async () => {
+	test("creates post-media records with one batched insert", async () => {
 		mockPoolClient.query.mockResolvedValue({ rowCount: 1, rows: [] });
 
 		await createPostMedia(poolClient, [21, 22], 44);
 
-		expect(mockPoolClient.query).toHaveBeenCalledTimes(2);
-		expect(mockPoolClient.query.mock.calls).toEqual([
-			[expect.stringContaining(`INSERT INTO ${postMediaTableName}`), [21, 44]],
-			[expect.stringContaining(`INSERT INTO ${postMediaTableName}`), [22, 44]],
-		]);
+		expect(mockPoolClient.query).toHaveBeenCalledWith(
+			expect.stringContaining(`INSERT INTO ${postMediaTableName}`),
+			[21, 44, 22, 44],
+		);
+		expect(mockPoolClient.query).toHaveBeenCalledOnce();
 	});
 
-	test("creates media through CreateQueryBuilder and returns IDs in input order", async () => {
-		mockPoolClient.query
-			.mockResolvedValueOnce({ rowCount: 1, rows: [{ media_id: 31 }] })
-			.mockResolvedValueOnce({ rowCount: 1, rows: [{ media_id: 32 }] });
+	test("creates media with one batched insert and returns IDs in input order", async () => {
+		mockPoolClient.query.mockResolvedValue({
+			rowCount: 2,
+			rows: [{ media_id: 31 }, { media_id: 32 }],
+		});
 
 		const mediaIds = await createMedia(
 			poolClient,
@@ -75,14 +70,18 @@ describe("post relationship query helpers", () => {
 		);
 
 		expect(mediaIds).toEqual([31, 32]);
-		expect(mockPoolClient.query).toHaveBeenCalledTimes(2);
+		expect(mockPoolClient.query).toHaveBeenCalledOnce();
 		expect(normalizeSql(mockPoolClient.query.mock.calls[0][0])).toBe(
-			`INSERT INTO ${mediaTableName} (storage_key, mime_type, media_type, conch_id) VALUES ($1, $2, $3, $4) RETURNING ${mediaIdColumnName}`,
+			`INSERT INTO ${mediaTableName} (storage_key, mime_type, media_type, conch_id) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8) RETURNING ${mediaIdColumnName}`,
 		);
 		expect(mockPoolClient.query.mock.calls[0][1]).toEqual([
 			"one.jpg",
 			"image/jpeg",
 			"image",
+			55,
+			"two.mp3",
+			"audio/mpeg",
+			"audio",
 			55,
 		]);
 	});
@@ -96,6 +95,35 @@ describe("post relationship query helpers", () => {
 				[
 					{
 						storage_key: "missing.jpg",
+						mime_type: "image/jpeg",
+						media_type: "image",
+					},
+				],
+				55,
+			),
+		).rejects.toMatchObject({
+			message: "Failed to create media",
+			statusCode: 500,
+		});
+	});
+
+	test("reports partial batch media creation failures", async () => {
+		mockPoolClient.query.mockResolvedValue({
+			rowCount: 1,
+			rows: [{ media_id: 31 }],
+		});
+
+		await expect(
+			createMedia(
+				poolClient,
+				[
+					{
+						storage_key: "first.jpg",
+						mime_type: "image/jpeg",
+						media_type: "image",
+					},
+					{
+						storage_key: "second.jpg",
 						mime_type: "image/jpeg",
 						media_type: "image",
 					},
