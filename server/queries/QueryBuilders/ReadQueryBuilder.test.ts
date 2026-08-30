@@ -38,13 +38,11 @@ describe("ReadQueryBuilder", () => {
 					AND post_id < '10'
 				)
 			)
-			ORDER BY created_at DESC, post_id DESC
-			LIMIT 25
-		`),
+			ORDER BY created_at DESC, post_id DESC`),
 			);
 		});
 
-		test("paginates using multiple cursors and hydrates id", () => {
+		test("addPaginates using multiple cursors and hydrates id", () => {
 			const result = new ReadQueryBuilder(testTable)
 				.paginate({
 					keys: ["created_at", "people"],
@@ -70,15 +68,13 @@ describe("ReadQueryBuilder", () => {
 								)
 						)
 					)
-					ORDER BY created_at DESC, people DESC, post_id DESC
-					LIMIT 25
-				`),
+					ORDER BY created_at DESC, people DESC, post_id DESC`),
 			);
 
 			expect(result.values).toEqual([]);
 		});
 
-		test("paginates using a single cursor and hydrates id", () => {
+		test("addPaginates using a single cursor and hydrates id", () => {
 			const result = new ReadQueryBuilder(testTable)
 				.paginate({
 					keys: ["created_at"],
@@ -97,9 +93,7 @@ describe("ReadQueryBuilder", () => {
 							AND post_id < '10'
 						)
 					)
-					ORDER BY created_at DESC, post_id DESC
-					LIMIT 25
-				`),
+					ORDER BY created_at DESC, post_id DESC`),
 			);
 
 			expect(result.values).toEqual([]);
@@ -115,9 +109,7 @@ describe("ReadQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					SELECT * FROM posts
-					ORDER BY created_at DESC, people DESC, post_id DESC
-					LIMIT 25
-				`),
+					ORDER BY created_at DESC, people DESC, post_id DESC`),
 			);
 
 			expect(result.values).toEqual([]);
@@ -133,9 +125,7 @@ describe("ReadQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					SELECT * FROM posts
-					ORDER BY created_at DESC, post_id DESC
-					LIMIT 25
-				`),
+					ORDER BY created_at DESC, post_id DESC`),
 			);
 
 			expect(result.values).toEqual([]);
@@ -151,9 +141,7 @@ describe("ReadQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					SELECT * FROM posts
-					ORDER BY created_at DESC, ${testId} DESC
-					LIMIT 25
-				`),
+					ORDER BY created_at DESC, ${testId} DESC`),
 			);
 		});
 
@@ -167,14 +155,12 @@ describe("ReadQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					SELECT * FROM posts
-					ORDER BY created_at DESC, post_id DESC
-					LIMIT 25
-				`),
+					ORDER BY created_at DESC, post_id DESC`),
 			);
 		});
 
-		test("paginates in ascending order", () => {
-			const result = new ReadQueryBuilder(testTable, null, 25, "ASC")
+		test("addPaginates in ascending order", () => {
+			const result = new ReadQueryBuilder(testTable, null, "ASC")
 				.paginate({
 					keys: ["created_at"],
 					values: [100],
@@ -192,9 +178,7 @@ describe("ReadQueryBuilder", () => {
 					AND post_id > '10'
 				)
 			)
-			ORDER BY created_at ASC, post_id ASC
-			LIMIT 25
-		`),
+			ORDER BY created_at ASC, post_id ASC`),
 			);
 
 			expect(result.values).toEqual([]);
@@ -203,9 +187,7 @@ describe("ReadQueryBuilder", () => {
 		test("works when no cursor is provided", () => {
 			const result = new ReadQueryBuilder(testTable).build();
 
-			expect(normalizeSql(result.query)).toBe(
-				`SELECT * FROM ${testTable} LIMIT 25`,
-			);
+			expect(normalizeSql(result.query)).toBe(`SELECT * FROM ${testTable}`);
 
 			expect(result.values).toEqual([]);
 		});
@@ -220,12 +202,12 @@ describe("ReadQueryBuilder", () => {
 		});
 
 		test("Throws error upon pagination if table doesnt have mapped id", () => {
-			const unpaginatedRes = new ReadQueryBuilder("bad_table").build();
+			const unaddPaginatedRes = new ReadQueryBuilder("bad_table").build();
 
-			expect(normalizeSql(unpaginatedRes.query)).toBe(
-				normalizeSql(`SELECT * FROM bad_table LIMIT 25`),
+			expect(normalizeSql(unaddPaginatedRes.query)).toBe(
+				normalizeSql(`SELECT * FROM bad_table`),
 			);
-			expect(unpaginatedRes.values).toEqual([]);
+			expect(unaddPaginatedRes.values).toEqual([]);
 
 			expect(() =>
 				new ReadQueryBuilder("bad_table")
@@ -236,16 +218,14 @@ describe("ReadQueryBuilder", () => {
 	});
 
 	describe("limit", () => {
-		test("uses the default limit", () => {
+		test("uses no limit by default", () => {
 			const result = new ReadQueryBuilder(testTable).build();
 
-			expect(normalizeSql(result.query)).toBe(
-				`SELECT * FROM ${testTable} LIMIT 25`,
-			);
+			expect(normalizeSql(result.query)).toBe(`SELECT * FROM ${testTable}`);
 		});
 
 		test("uses a provided limit within the allowed range", () => {
-			const result = new ReadQueryBuilder(testTable, null, 50).build();
+			const result = new ReadQueryBuilder(testTable, null).addLimit(50).build();
 
 			expect(normalizeSql(result.query)).toBe(
 				`SELECT * FROM ${testTable} LIMIT 50`,
@@ -253,7 +233,9 @@ describe("ReadQueryBuilder", () => {
 		});
 
 		test("clamps a limit above the maximum", () => {
-			const result = new ReadQueryBuilder(testTable, null, 500).build();
+			const result = new ReadQueryBuilder(testTable, null)
+				.addLimit(103)
+				.build();
 
 			expect(normalizeSql(result.query)).toBe(
 				`SELECT * FROM ${testTable} LIMIT 100`,
@@ -261,7 +243,7 @@ describe("ReadQueryBuilder", () => {
 		});
 
 		test("uses the default limit when the provided limit is zero", () => {
-			const result = new ReadQueryBuilder(testTable, null, 0).build();
+			const result = new ReadQueryBuilder(testTable, null).addLimit(0).build();
 
 			expect(normalizeSql(result.query)).toBe(
 				`SELECT * FROM ${testTable} LIMIT 25`,
@@ -269,7 +251,7 @@ describe("ReadQueryBuilder", () => {
 		});
 
 		test("uses the default limit when the provided limit is negative", () => {
-			const result = new ReadQueryBuilder(testTable, null, -10).build();
+			const result = new ReadQueryBuilder(testTable, null).addLimit(-2).build();
 
 			expect(normalizeSql(result.query)).toBe(
 				`SELECT * FROM ${testTable} LIMIT 25`,
@@ -282,7 +264,7 @@ describe("ReadQueryBuilder", () => {
 			const result = new ReadQueryBuilder(testTable).build();
 
 			expect(result).toEqual({
-				query: `SELECT * FROM ${testTable} LIMIT 25`,
+				query: `SELECT * FROM ${testTable}`,
 				values: [],
 			});
 		});
@@ -297,9 +279,7 @@ describe("ReadQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					SELECT * FROM posts
-					ORDER BY created_at DESC, post_id DESC
-					LIMIT 25
-				`),
+					ORDER BY created_at DESC, post_id DESC`),
 			);
 
 			expect(result.values).toEqual([]);
@@ -307,9 +287,10 @@ describe("ReadQueryBuilder", () => {
 
 		test("applies filters before pagination", () => {
 			const result = new ReadQueryBuilder(testTable)
-				.filter([
+				.addConditions([
 					{
-						column: "status",
+						key: "status",
+						operator: "=",
 						value: "active",
 					},
 				])
@@ -331,9 +312,7 @@ describe("ReadQueryBuilder", () => {
 							AND post_id < '10'
 						)
 					)
-					ORDER BY created_at DESC, post_id DESC
-					LIMIT 25
-				`),
+					ORDER BY created_at DESC, post_id DESC`),
 			);
 
 			expect(result.values).toEqual(["active"]);
@@ -341,9 +320,10 @@ describe("ReadQueryBuilder", () => {
 
 		test("filters by a single condition without pagination", () => {
 			const result = new ReadQueryBuilder(testTable)
-				.filter([
+				.addConditions([
 					{
-						column: "status",
+						key: "status",
+						operator: "=",
 						value: "active",
 					},
 				])
@@ -352,9 +332,7 @@ describe("ReadQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 			SELECT * FROM posts
-			WHERE status = $1
-			LIMIT 25
-		`),
+			WHERE status = $1`),
 			);
 
 			expect(result.values).toEqual(["active"]);
@@ -362,13 +340,15 @@ describe("ReadQueryBuilder", () => {
 
 		test("filters by multiple conditions without pagination", () => {
 			const result = new ReadQueryBuilder(testTable)
-				.filter([
+				.addConditions([
 					{
-						column: "status",
+						key: "status",
+						operator: "=",
 						value: "active",
 					},
 					{
-						column: "people",
+						key: "people",
+						operator: "=",
 						value: 5,
 					},
 				])
@@ -378,9 +358,7 @@ describe("ReadQueryBuilder", () => {
 				normalizeSql(`
 			SELECT * FROM posts
 			WHERE status = $1
-			AND people = $2
-			LIMIT 25
-		`),
+			AND people = $2`),
 			);
 
 			expect(result.values).toEqual(["active", 5]);
@@ -388,17 +366,15 @@ describe("ReadQueryBuilder", () => {
 
 		test("accumulates filters across successive filter calls", () => {
 			const result = new ReadQueryBuilder(testTable)
-				.filter([{ column: "status", value: "active" }])
-				.filter([{ column: "people", value: 5 }])
+				.addConditions([{ key: "status", operator: "=", value: "active" }])
+				.addConditions([{ key: "people", operator: "=", value: 5 }])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 			SELECT * FROM posts
 			WHERE status = $1
-			AND people = $2
-			LIMIT 25
-		`),
+			AND people = $2`),
 			);
 
 			expect(result.values).toEqual(["active", 5]);
@@ -406,9 +382,10 @@ describe("ReadQueryBuilder", () => {
 
 		test("filters and scopes by conch without pagination", () => {
 			const result = new ReadQueryBuilder(testTable, "conch-123")
-				.filter([
+				.addConditions([
 					{
-						column: "status",
+						key: "status",
+						operator: "=",
 						value: "active",
 					},
 				])
@@ -418,9 +395,7 @@ describe("ReadQueryBuilder", () => {
 				normalizeSql(`
 			SELECT * FROM posts
 			WHERE status = $1
-			AND conch_id = $2
-			LIMIT 25
-		`),
+			AND conch_id = $2`),
 			);
 
 			expect(result.values).toEqual(["active", "conch-123"]);
@@ -432,9 +407,7 @@ describe("ReadQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 			SELECT * FROM posts
-			WHERE conch_id = $1
-			LIMIT 25
-		`),
+			WHERE conch_id = $1`),
 			);
 
 			expect(result.values).toEqual(["conch-123"]);
@@ -442,9 +415,10 @@ describe("ReadQueryBuilder", () => {
 
 		test("uses explicitly provided conch id instead of constructor conch id", () => {
 			const result = new ReadQueryBuilder(testTable, "conch-123")
-				.filter([
+				.addConditions([
 					{
-						column: "conch_id",
+						key: "conch_id",
+						operator: "=",
 						value: "conch-456",
 					},
 				])
@@ -453,9 +427,7 @@ describe("ReadQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 			SELECT * FROM posts
-			WHERE conch_id = $1
-			LIMIT 25
-		`),
+			WHERE conch_id = $1`),
 			);
 
 			expect(result.values).toEqual(["conch-456"]);

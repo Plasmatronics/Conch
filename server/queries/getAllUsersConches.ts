@@ -1,17 +1,19 @@
 import { Pool } from "pg";
 import { claimsSchema, claimsTableName, usersIdColumnName } from "../schemas";
 import z from "zod";
+import { ReadQueryBuilder } from "./QueryBuilders";
 
 export const getAllUsersConches = async (
 	dbPool: Pool,
 	user_id: number,
 ): Promise<number[]> => {
 	try {
-		const claimsRes = await dbPool.query(
-			`
-		SELECT * FROM ${claimsTableName} WHERE ${usersIdColumnName} = $1`,
-			[user_id],
-		);
+		const { query, values } = new ReadQueryBuilder(claimsTableName)
+			.addConditions([
+				{ key: usersIdColumnName, operator: "=", value: user_id },
+			])
+			.build();
+		const claimsRes = await dbPool.query(query, values);
 		const claims = z.array(claimsSchema).parse(claimsRes.rows);
 
 		const conches = claims.map((claim) => claim.conch_id);

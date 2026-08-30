@@ -14,9 +14,13 @@ import {
 	usersSchema,
 } from "../schemas";
 import { createHash, randomBytes } from "node:crypto";
-import format from "pg-format";
 import { daysToMs } from "../utils";
-import { getAllUsersConches } from "../queries";
+import {
+	CreateQueryBuilder,
+	DeleteQueryBuilder,
+	getAllUsersConches,
+	UpdateQueryBuilder,
+} from "../queries";
 import { appEnvVariables } from "../appEnvVariables";
 
 const EXPIRE_TIME_NUM_DAYS = 30;
@@ -45,16 +49,15 @@ export const createSession =
 				),
 			};
 
-			const columns = Object.keys(sessionPayload);
-			const values = Object.values(sessionPayload);
-
-			const formattedCreateSessionQuery = format(
-				`INSERT INTO %I (%I) VALUES (%L)`,
-				sessionsTableName,
-				columns,
-				values,
-			);
-			const createSessionRes = await dbPool.query(formattedCreateSessionQuery);
+			const { query, values } = new CreateQueryBuilder(sessionsTableName)
+				.addCreateFields(
+					Object.entries(sessionPayload).map(([key, value]) => ({
+						key,
+						value,
+					})),
+				)
+				.build();
+			const createSessionRes = await dbPool.query(query, values);
 			if (!createSessionRes.rowCount) {
 				throw new Error("Failed to create session");
 			}
@@ -109,14 +112,19 @@ export const verifySession =
 			const refreshedSessionExpireTimeDate = new Date(
 				refreshedSessionExpireTimeSeconds,
 			);
-			const refreshExpireTimeRes = await dbPool.query(
-				`
-  			UPDATE ${sessionsTableName}
-  			SET expire_time = $1
-  			WHERE ${sessionsIdColumnName} = $2
-  			`,
-				[refreshedSessionExpireTimeDate, session[sessionsIdColumnName]],
-			);
+			const { query, values } = new UpdateQueryBuilder(sessionsTableName)
+				.addUpdateFields([
+					{ key: "expire_time", value: refreshedSessionExpireTimeDate },
+				])
+				.addConditions([
+					{
+						key: sessionsIdColumnName,
+						operator: "=",
+						value: session[sessionsIdColumnName],
+					},
+				])
+				.build();
+			const refreshExpireTimeRes = await dbPool.query(query, values);
 			if (!refreshExpireTimeRes.rowCount)
 				return res.status(500).json({ message: "Could not refresh session" });
 
@@ -144,11 +152,16 @@ export const revokeSession =
 			if (sessionToken) {
 				const sessionTokenHash = hashSessionToken(sessionToken);
 
-				await dbPool.query(
-					`DELETE FROM ${sessionsTableName}
-         WHERE session_token_hash = $1`,
-					[sessionTokenHash],
-				);
+				const { query, values } = new DeleteQueryBuilder(sessionsTableName)
+					.addConditions([
+						{
+							key: "session_token_hash",
+							operator: "=",
+							value: sessionTokenHash,
+						},
+					])
+					.build();
+				await dbPool.query(query, values);
 			}
 			res.clearCookie(SESSION_COOKIE_TOKEN_NAME, {
 				...SESSION_COOKIE_CONFIG,

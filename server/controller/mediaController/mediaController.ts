@@ -14,7 +14,7 @@ import {
 	idSchema,
 } from "../../schemas";
 import { ControllerFactory } from "../controllerFactory";
-import { CRUDFactory } from "../../queries";
+import { CRUDFactory, DeleteQueryBuilder } from "../../queries";
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../../errors";
 import z from "zod";
@@ -63,12 +63,17 @@ export const deletePostMedia =
 					throw new AppError("Could not find resource to delete", 404);
 				}
 
-				const mediaDeleteRes = await poolClient.query(
-					`
-					DELETE FROM ${mediaTableName} WHERE ${mediaIdColumnName} = $1 AND ${conchesIdColumnName} = $2
-					`,
-					[id, parsedConchId],
-				);
+				const { query, values } = new DeleteQueryBuilder(mediaTableName)
+					.addConditions([
+						{ key: mediaIdColumnName, operator: "=", value: id },
+						{
+							key: conchesIdColumnName,
+							operator: "=",
+							value: parsedConchId,
+						},
+					])
+					.build();
+				const mediaDeleteRes = await poolClient.query(query, values);
 				if (!mediaDeleteRes.rowCount) {
 					throw new AppError("Could not find resource to delete", 404);
 				}

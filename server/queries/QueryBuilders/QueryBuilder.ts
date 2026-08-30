@@ -11,14 +11,14 @@ export interface KeyValuePair {
 	value: unknown;
 }
 
-export interface UpdateDeleteCondition extends KeyValuePair {
+export interface Condition extends KeyValuePair {
 	operator: UpdateDeleteOperator;
 }
 
 export abstract class QueryBuilder {
 	constructor(
 		protected tableName: string,
-		protected conchId: string | null = null,
+		protected conchId: string | number | null = null,
 	) {}
 
 	abstract build(): BuildQuery;

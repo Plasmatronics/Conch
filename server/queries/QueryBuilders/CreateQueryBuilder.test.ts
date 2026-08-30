@@ -131,6 +131,75 @@ describe("CreateQueryBuilder", () => {
 		});
 	});
 
+	describe("create rows", () => {
+		test("creates multiple rows with one parameterized insert", () => {
+			const result = new CreateQueryBuilder(testTable)
+				.addCreateRows([
+					[
+						{ key: "title", value: "First post" },
+						{ key: "people", value: 1 },
+					],
+					[
+						{ key: "title", value: "Second post" },
+						{ key: "people", value: 2 },
+					],
+				])
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+					INSERT INTO posts
+					(title, people)
+					VALUES ($1, $2), ($3, $4)
+				`),
+			);
+			expect(result.values).toEqual(["First post", 1, "Second post", 2]);
+		});
+
+		test("adds the configured conch id to every row", () => {
+			const result = new CreateQueryBuilder(testTable, "conch-123")
+				.addCreateRows([
+					[{ key: "title", value: "First post" }],
+					[{ key: "title", value: "Second post" }],
+				])
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				normalizeSql(`
+					INSERT INTO posts
+					(title, conch_id)
+					VALUES ($1, $2), ($3, $4)
+				`),
+			);
+			expect(result.values).toEqual([
+				"First post",
+				"conch-123",
+				"Second post",
+				"conch-123",
+			]);
+		});
+
+		test("rejects rows with inconsistent fields", () => {
+			expect(() =>
+				new CreateQueryBuilder(testTable)
+					.addCreateRows([
+						[{ key: "title", value: "First post" }],
+						[{ key: "people", value: 2 }],
+					])
+					.build(),
+			).toThrow("All create rows must use the same fields in the same order");
+		});
+
+		test("rejects mixing a single row with multiple rows", () => {
+			expect(() =>
+				new CreateQueryBuilder(testTable)
+					.addCreateFields([{ key: "title", value: "First post" }])
+					.addCreateRows([[{ key: "title", value: "Second post" }]])
+					.build(),
+			).toThrow("Cannot combine create fields and create rows");
+		});
+	});
+
 	describe("conch id", () => {
 		test("automatically inserts conch id when provided", () => {
 			const result = new CreateQueryBuilder(testTable, "conch-123")
@@ -228,7 +297,7 @@ describe("CreateQueryBuilder", () => {
 						value: "Test post",
 					},
 				])
-				.returning(["post_id"])
+				.addReturning(["post_id"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -251,7 +320,7 @@ describe("CreateQueryBuilder", () => {
 						value: "Test post",
 					},
 				])
-				.returning(["post_id", "title"])
+				.addReturning(["post_id", "title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -274,7 +343,7 @@ describe("CreateQueryBuilder", () => {
 						value: "Test post",
 					},
 				])
-				.returning(["*"])
+				.addReturning(["*"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -297,8 +366,8 @@ describe("CreateQueryBuilder", () => {
 						value: "Test post",
 					},
 				])
-				.returning(["post_id", "title"])
-				.returning(["*"])
+				.addReturning(["post_id", "title"])
+				.addReturning(["*"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -321,8 +390,8 @@ describe("CreateQueryBuilder", () => {
 						value: "Test post",
 					},
 				])
-				.returning(["*"])
-				.returning(["post_id", "title"])
+				.addReturning(["*"])
+				.addReturning(["post_id", "title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -345,7 +414,7 @@ describe("CreateQueryBuilder", () => {
 						value: "Test post",
 					},
 				])
-				.returning(["post_id", "*", "title"])
+				.addReturning(["post_id", "*", "title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -368,8 +437,8 @@ describe("CreateQueryBuilder", () => {
 						value: "Test post",
 					},
 				])
-				.returning(["post_id"])
-				.returning(["title"])
+				.addReturning(["post_id"])
+				.addReturning(["title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -434,7 +503,7 @@ describe("CreateQueryBuilder", () => {
 						value: "Test post",
 					},
 				])
-				.returning(["post id"])
+				.addReturning(["post id"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -465,7 +534,7 @@ describe("CreateQueryBuilder", () => {
 						value: "active",
 					},
 				])
-				.returning(["post_id", "title", "conch_id"])
+				.addReturning(["post_id", "title", "conch_id"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -486,7 +555,7 @@ describe("CreateQueryBuilder", () => {
 					{ key: "title", value: "Test post" },
 					{ key: "conch_id", value: "conch-456" },
 				])
-				.returning(["*"])
+				.addReturning(["*"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(

@@ -331,10 +331,9 @@ describe("Patch User", () => {
 			normalizeSql(`UPDATE ${usersTableName}`),
 		);
 		expect(normalizedSQLCall).toContain(
-			normalizeSql(
-				`WHERE ${usersIdColumnName} = '${mockUser[usersIdColumnName]}'`,
-			),
+			normalizeSql(`WHERE ${usersIdColumnName} = $3`),
 		);
+		expect(mockPool.query.mock.calls[0][1][2]).toBe(976341942);
 	});
 
 	test("Password hash is omitted from return", async () => {

@@ -11,7 +11,7 @@ describe("DeleteQueryBuilder", () => {
 
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
-					DELETE FROM posts;
+					DELETE FROM posts
 				`),
 			);
 
@@ -20,7 +20,7 @@ describe("DeleteQueryBuilder", () => {
 
 		test("deletes using a single condition", () => {
 			const result = new DeleteQueryBuilder(testTable)
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
@@ -32,7 +32,7 @@ describe("DeleteQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
-					WHERE post_id = $1;
+					WHERE post_id = $1
 				`),
 			);
 
@@ -41,7 +41,7 @@ describe("DeleteQueryBuilder", () => {
 
 		test("deletes using multiple conditions", () => {
 			const result = new DeleteQueryBuilder(testTable)
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "status",
 						operator: "=",
@@ -59,7 +59,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE status = $1
-					AND people > $2;
+					AND people > $2
 				`),
 			);
 
@@ -68,7 +68,7 @@ describe("DeleteQueryBuilder", () => {
 
 		test("supports different condition operators", () => {
 			const result = new DeleteQueryBuilder(testTable)
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "people",
 						operator: ">=",
@@ -86,7 +86,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE people >= $1
-					AND created_at < $2;
+					AND created_at < $2
 				`),
 			);
 
@@ -95,14 +95,14 @@ describe("DeleteQueryBuilder", () => {
 
 		test("accumulates conditions across successive calls", () => {
 			const result = new DeleteQueryBuilder(testTable)
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "status",
 						operator: "=",
 						value: "archived",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "people",
 						operator: ">",
@@ -115,7 +115,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE status = $1
-					AND people > $2;
+					AND people > $2
 				`),
 			);
 
@@ -130,16 +130,16 @@ describe("DeleteQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
-					WHERE conch_id = 'conch-123';
+					WHERE conch_id = $1
 				`),
 			);
 
-			expect(result.values).toEqual([]);
+			expect(result.values).toEqual(["conch-123"]);
 		});
 
 		test("adds conch id alongside other conditions", () => {
 			const result = new DeleteQueryBuilder(testTable, "conch-123")
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
@@ -152,16 +152,16 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					AND conch_id = 'conch-123';
+					AND conch_id = $2
 				`),
 			);
 
-			expect(result.values).toEqual([10]);
+			expect(result.values).toEqual([10, "conch-123"]);
 		});
 
 		test("does not add constructor conch id when condition explicitly includes conch id", () => {
 			const result = new DeleteQueryBuilder(testTable, "conch-123")
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "conch_id",
 						operator: "=",
@@ -173,7 +173,7 @@ describe("DeleteQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
-					WHERE conch_id = $1;
+					WHERE conch_id = $1
 				`),
 			);
 
@@ -182,7 +182,7 @@ describe("DeleteQueryBuilder", () => {
 
 		test("preserves explicit conch condition alongside other conditions", () => {
 			const result = new DeleteQueryBuilder(testTable, "conch-123")
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
@@ -200,7 +200,7 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					AND conch_id = $2;
+					AND conch_id = $2
 				`),
 			);
 
@@ -211,21 +211,21 @@ describe("DeleteQueryBuilder", () => {
 	describe("returning", () => {
 		test("returns a single field", () => {
 			const result = new DeleteQueryBuilder(testTable)
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
 						value: 10,
 					},
 				])
-				.returning(["post_id"])
+				.addReturning(["post_id"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					RETURNING post_id;
+					RETURNING post_id
 				`),
 			);
 
@@ -234,21 +234,21 @@ describe("DeleteQueryBuilder", () => {
 
 		test("returns multiple fields", () => {
 			const result = new DeleteQueryBuilder(testTable)
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
 						value: 10,
 					},
 				])
-				.returning(["post_id", "title"])
+				.addReturning(["post_id", "title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					RETURNING post_id, title;
+					RETURNING post_id, title
 				`),
 			);
 
@@ -257,21 +257,21 @@ describe("DeleteQueryBuilder", () => {
 
 		test("returns all fields using wildcard", () => {
 			const result = new DeleteQueryBuilder(testTable)
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
 						value: 10,
 					},
 				])
-				.returning(["*"])
+				.addReturning(["*"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					RETURNING *;
+					RETURNING *
 				`),
 			);
 
@@ -280,22 +280,22 @@ describe("DeleteQueryBuilder", () => {
 
 		test("wildcard overrides previously configured returning fields", () => {
 			const result = new DeleteQueryBuilder(testTable)
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
 						value: 10,
 					},
 				])
-				.returning(["post_id", "title"])
-				.returning(["*"])
+				.addReturning(["post_id", "title"])
+				.addReturning(["*"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					RETURNING *;
+					RETURNING *
 				`),
 			);
 
@@ -304,22 +304,22 @@ describe("DeleteQueryBuilder", () => {
 
 		test("ignores returning fields added after wildcard", () => {
 			const result = new DeleteQueryBuilder(testTable)
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
 						value: 10,
 					},
 				])
-				.returning(["*"])
-				.returning(["post_id", "title"])
+				.addReturning(["*"])
+				.addReturning(["post_id", "title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					RETURNING *;
+					RETURNING *
 				`),
 			);
 
@@ -328,21 +328,21 @@ describe("DeleteQueryBuilder", () => {
 
 		test("wildcard overrides other fields in the same returning call", () => {
 			const result = new DeleteQueryBuilder(testTable)
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
 						value: 10,
 					},
 				])
-				.returning(["post_id", "*", "title"])
+				.addReturning(["post_id", "*", "title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					RETURNING *;
+					RETURNING *
 				`),
 			);
 
@@ -351,22 +351,22 @@ describe("DeleteQueryBuilder", () => {
 
 		test("accumulates returning fields across successive calls", () => {
 			const result = new DeleteQueryBuilder(testTable)
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
 						value: 10,
 					},
 				])
-				.returning(["post_id"])
-				.returning(["title"])
+				.addReturning(["post_id"])
+				.addReturning(["title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					RETURNING post_id, title;
+					RETURNING post_id, title
 				`),
 			);
 
@@ -375,13 +375,13 @@ describe("DeleteQueryBuilder", () => {
 
 		test("supports returning without conditions", () => {
 			const result = new DeleteQueryBuilder(testTable)
-				.returning(["post_id"])
+				.addReturning(["post_id"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
-					RETURNING post_id;
+					RETURNING post_id
 				`),
 			);
 
@@ -392,7 +392,7 @@ describe("DeleteQueryBuilder", () => {
 	describe("identifiers", () => {
 		test("escapes the table name", () => {
 			const result = new DeleteQueryBuilder("post table")
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
@@ -404,7 +404,7 @@ describe("DeleteQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM "post table"
-					WHERE post_id = $1;
+					WHERE post_id = $1
 				`),
 			);
 
@@ -413,7 +413,7 @@ describe("DeleteQueryBuilder", () => {
 
 		test("escapes condition field identifiers", () => {
 			const result = new DeleteQueryBuilder(testTable)
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post id",
 						operator: "=",
@@ -425,7 +425,7 @@ describe("DeleteQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
-					WHERE "post id" = $1;
+					WHERE "post id" = $1
 				`),
 			);
 
@@ -434,21 +434,21 @@ describe("DeleteQueryBuilder", () => {
 
 		test("escapes returning field identifiers", () => {
 			const result = new DeleteQueryBuilder(testTable)
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
 						value: 10,
 					},
 				])
-				.returning(["post title"])
+				.addReturning(["post title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					RETURNING "post title";
+					RETURNING "post title"
 				`),
 			);
 
@@ -459,7 +459,7 @@ describe("DeleteQueryBuilder", () => {
 	describe("combined", () => {
 		test("builds a delete query with multiple conditions, conch scope, and returning fields", () => {
 			const result = new DeleteQueryBuilder(testTable, "conch-123")
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "status",
 						operator: "=",
@@ -471,7 +471,7 @@ describe("DeleteQueryBuilder", () => {
 						value: 5,
 					},
 				])
-				.returning(["post_id", "title", "status"])
+				.addReturning(["post_id", "title", "status"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -479,17 +479,17 @@ describe("DeleteQueryBuilder", () => {
 					DELETE FROM posts
 					WHERE status = $1
 					AND people > $2
-					AND conch_id = 'conch-123'
-					RETURNING post_id, title, status;
+					AND conch_id = $3
+					RETURNING post_id, title, status
 				`),
 			);
 
-			expect(result.values).toEqual(["archived", 5]);
+			expect(result.values).toEqual(["archived", 5, "conch-123"]);
 		});
 
 		test("uses explicitly provided conch id in combined query", () => {
 			const result = new DeleteQueryBuilder(testTable, "conch-123")
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "status",
 						operator: "=",
@@ -501,7 +501,7 @@ describe("DeleteQueryBuilder", () => {
 						value: "conch-456",
 					},
 				])
-				.returning(["*"])
+				.addReturning(["*"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -509,7 +509,7 @@ describe("DeleteQueryBuilder", () => {
 					DELETE FROM posts
 					WHERE status = $1
 					AND conch_id = $2
-					RETURNING *;
+					RETURNING *
 				`),
 			);
 

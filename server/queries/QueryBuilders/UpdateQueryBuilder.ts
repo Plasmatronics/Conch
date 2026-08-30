@@ -3,16 +3,16 @@ import {
 	BuildQuery,
 	KeyValuePair,
 	QueryBuilder,
-	UpdateDeleteCondition,
+	Condition,
 } from "./QueryBuilder";
 import { conchesIdColumnName } from "../../schemas";
 
 export class UpdateQueryBuilder extends QueryBuilder {
 	private returningFields: string[] = [];
 	private updateFields: KeyValuePair[] = [];
-	private conditionFields: UpdateDeleteCondition[] = [];
+	private conditions: Condition[] = [];
 
-	constructor(tableName: string, conchId: string | null = null) {
+	constructor(tableName: string, conchId: string | null | number = null) {
 		super(tableName, conchId);
 	}
 
@@ -21,12 +21,12 @@ export class UpdateQueryBuilder extends QueryBuilder {
 		return this;
 	}
 
-	addConditionFields(fields: UpdateDeleteCondition[]) {
-		this.conditionFields.push(...fields);
+	addConditions(fields: Condition[]) {
+		this.conditions.push(...fields);
 		return this;
 	}
 
-	returning(keys: string[]) {
+	addReturning(keys: string[]) {
 		if (this.returningFields[0] === "*") return this;
 
 		for (const key of keys) {
@@ -55,26 +55,26 @@ export class UpdateQueryBuilder extends QueryBuilder {
 
 		const conditions: string[] = [];
 		let isConchIdIncluded = false;
-		for (const { key, operator, value } of this.conditionFields) {
+		for (const { key, operator, value } of this.conditions) {
 			if (key === conchesIdColumnName) isConchIdIncluded = true;
 			const conditionStr = format(`%I ${operator} $${values.length + 1}`, key);
 			conditions.push(conditionStr);
 			values.push(value);
 		}
 		if (!isConchIdIncluded && this.conchId !== null) {
-			conditions.push(format(`${conchesIdColumnName} = %L`, this.conchId));
+			conditions.push(`${conchesIdColumnName} = $${values.length + 1}`);
+			values.push(this.conchId);
 		}
 
 		const returning = this.returningFields.map((key) =>
 			key === "*" ? "*" : format("%I", key),
 		);
 
-		const query =
-			`
+		const query = `
 		${format(`UPDATE %I SET `, this.tableName)}
 		${updateStrs.join(", ")}
 		${conditions.length ? "WHERE " : ""}${conditions.join(" AND ")}
-		${returning.length ? "RETURNING " : ""}${returning.join(", ")}`.trim() + ";";
+		${returning.length ? "RETURNING " : ""}${returning.join(", ")}`.trim();
 
 		return {
 			query,

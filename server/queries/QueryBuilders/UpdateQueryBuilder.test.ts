@@ -25,7 +25,7 @@ describe("UpdateQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					UPDATE posts SET
-					title = $1;
+					title = $1
 				`),
 			);
 
@@ -50,7 +50,7 @@ describe("UpdateQueryBuilder", () => {
 				normalizeSql(`
 					UPDATE posts SET
 					title = $1,
-					people = $2;
+					people = $2
 				`),
 			);
 
@@ -77,7 +77,7 @@ describe("UpdateQueryBuilder", () => {
 				normalizeSql(`
 					UPDATE posts SET
 					title = $1,
-					people = $2;
+					people = $2
 				`),
 			);
 
@@ -94,7 +94,7 @@ describe("UpdateQueryBuilder", () => {
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
@@ -107,7 +107,7 @@ describe("UpdateQueryBuilder", () => {
 				normalizeSql(`
 					UPDATE posts SET
 					title = $1
-					WHERE post_id = $2;
+					WHERE post_id = $2
 				`),
 			);
 
@@ -122,7 +122,7 @@ describe("UpdateQueryBuilder", () => {
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "status",
 						operator: "=",
@@ -141,7 +141,7 @@ describe("UpdateQueryBuilder", () => {
 					UPDATE posts SET
 					title = $1
 					WHERE status = $2
-					AND people > $3;
+					AND people > $3
 				`),
 			);
 
@@ -156,7 +156,7 @@ describe("UpdateQueryBuilder", () => {
 						value: "archived",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "people",
 						operator: ">=",
@@ -175,7 +175,7 @@ describe("UpdateQueryBuilder", () => {
 					UPDATE posts SET
 					status = $1
 					WHERE people >= $2
-					AND created_at < $3;
+					AND created_at < $3
 				`),
 			);
 
@@ -190,14 +190,14 @@ describe("UpdateQueryBuilder", () => {
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "status",
 						operator: "=",
 						value: "active",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "people",
 						operator: ">",
@@ -211,7 +211,7 @@ describe("UpdateQueryBuilder", () => {
 					UPDATE posts SET
 					title = $1
 					WHERE status = $2
-					AND people > $3;
+					AND people > $3
 				`),
 			);
 
@@ -234,11 +234,11 @@ describe("UpdateQueryBuilder", () => {
 				normalizeSql(`
 					UPDATE posts SET
 					title = $1
-					WHERE conch_id = 'conch-123';
+					WHERE conch_id = $2
 				`),
 			);
 
-			expect(result.values).toEqual(["Updated title"]);
+			expect(result.values).toEqual(["Updated title", "conch-123"]);
 		});
 
 		test("adds conch id alongside other conditions", () => {
@@ -249,7 +249,7 @@ describe("UpdateQueryBuilder", () => {
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
@@ -263,11 +263,11 @@ describe("UpdateQueryBuilder", () => {
 					UPDATE posts SET
 					title = $1
 					WHERE post_id = $2
-					AND conch_id = 'conch-123';
+					AND conch_id = $3
 				`),
 			);
 
-			expect(result.values).toEqual(["Updated title", 10]);
+			expect(result.values).toEqual(["Updated title", 10, "conch-123"]);
 		});
 
 		test("does not add constructor conch id when condition explicitly includes conch id", () => {
@@ -278,7 +278,7 @@ describe("UpdateQueryBuilder", () => {
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "conch_id",
 						operator: "=",
@@ -289,10 +289,8 @@ describe("UpdateQueryBuilder", () => {
 			const expected = `
 					UPDATE posts SET
 					title = $1
-					WHERE conch_id = $2;`;
+					WHERE conch_id = $2`;
 
-			console.log("ACTUAL:  ", JSON.stringify(result.query));
-			console.log("EXPECTED:", JSON.stringify(expected));
 			expect(normalizeSql(result.query)).toBe(normalizeSql(expected));
 
 			expect(result.values).toEqual(["Updated title", "conch-456"]);
@@ -308,14 +306,14 @@ describe("UpdateQueryBuilder", () => {
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
 						value: 10,
 					},
 				])
-				.returning(["post_id"])
+				.addReturning(["post_id"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -323,7 +321,7 @@ describe("UpdateQueryBuilder", () => {
 					UPDATE posts SET
 					title = $1
 					WHERE post_id = $2
-					RETURNING post_id;
+					RETURNING post_id
 				`),
 			);
 
@@ -338,14 +336,14 @@ describe("UpdateQueryBuilder", () => {
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
 						value: 10,
 					},
 				])
-				.returning(["post_id", "title"])
+				.addReturning(["post_id", "title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -353,7 +351,7 @@ describe("UpdateQueryBuilder", () => {
 					UPDATE posts SET
 					title = $1
 					WHERE post_id = $2
-					RETURNING post_id, title;
+					RETURNING post_id, title
 				`),
 			);
 
@@ -368,14 +366,14 @@ describe("UpdateQueryBuilder", () => {
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
 						value: 10,
 					},
 				])
-				.returning(["*"])
+				.addReturning(["*"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -383,7 +381,7 @@ describe("UpdateQueryBuilder", () => {
 					UPDATE posts SET
 					title = $1
 					WHERE post_id = $2
-					RETURNING *;
+					RETURNING *
 				`),
 			);
 
@@ -398,15 +396,15 @@ describe("UpdateQueryBuilder", () => {
 						value: "Updated title",
 					},
 				])
-				.returning(["post_id", "title"])
-				.returning(["*"])
+				.addReturning(["post_id", "title"])
+				.addReturning(["*"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					UPDATE posts SET
 					title = $1
-					RETURNING *;
+					RETURNING *
 				`),
 			);
 		});
@@ -419,15 +417,15 @@ describe("UpdateQueryBuilder", () => {
 						value: "Updated title",
 					},
 				])
-				.returning(["*"])
-				.returning(["post_id", "title"])
+				.addReturning(["*"])
+				.addReturning(["post_id", "title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					UPDATE posts SET
 					title = $1
-					RETURNING *;
+					RETURNING *
 				`),
 			);
 		});
@@ -440,15 +438,15 @@ describe("UpdateQueryBuilder", () => {
 						value: "Updated title",
 					},
 				])
-				.returning(["post_id"])
-				.returning(["title"])
+				.addReturning(["post_id"])
+				.addReturning(["title"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					UPDATE posts SET
 					title = $1
-					RETURNING post_id, title;
+					RETURNING post_id, title
 				`),
 			);
 		});
@@ -467,7 +465,7 @@ describe("UpdateQueryBuilder", () => {
 						value: "archived",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "post_id",
 						operator: "=",
@@ -479,7 +477,7 @@ describe("UpdateQueryBuilder", () => {
 						value: 5,
 					},
 				])
-				.returning(["post_id", "title", "status"])
+				.addReturning(["post_id", "title", "status"])
 				.build();
 
 			expect(normalizeSql(result.query)).toBe(
@@ -489,12 +487,18 @@ describe("UpdateQueryBuilder", () => {
 					status = $2
 					WHERE post_id = $3
 					AND people > $4
-					AND conch_id = 'conch-123'
-					RETURNING post_id, title, status;
+					AND conch_id = $5
+					RETURNING post_id, title, status
 				`),
 			);
 
-			expect(result.values).toEqual(["Updated title", "archived", 10, 5]);
+			expect(result.values).toEqual([
+				"Updated title",
+				"archived",
+				10,
+				5,
+				"conch-123",
+			]);
 		});
 
 		test("uses explicitly provided conch id instead of constructor conch id", () => {
@@ -505,7 +509,7 @@ describe("UpdateQueryBuilder", () => {
 						value: "Updated title",
 					},
 				])
-				.addConditionFields([
+				.addConditions([
 					{
 						key: "conch_id",
 						operator: "=",
@@ -518,7 +522,7 @@ describe("UpdateQueryBuilder", () => {
 				normalizeSql(`
 			UPDATE posts SET
 			title = $1
-			WHERE conch_id = $2;
+			WHERE conch_id = $2
 		`),
 			);
 

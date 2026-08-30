@@ -1,6 +1,6 @@
 import format from "pg-format";
 import { conchesIdColumnName, tableNameToIdColumnMap } from "../../schemas";
-import { BuildQuery, QueryBuilder } from "./QueryBuilder";
+import { BuildQuery, Condition, QueryBuilder } from "./QueryBuilder";
 
 type SortDirection = "ASC" | "DESC";
 
@@ -16,27 +16,20 @@ type CursorOptions =
 			lastSeenId: number;
 	  };
 
-export type FilterOptions = {
-	column: string;
-	value: unknown;
-};
-
 const DEFAULT_LIMIT = 25;
 const MAX_LIMIT = 100;
 
 export class ReadQueryBuilder extends QueryBuilder {
-	private filters: FilterOptions[] = [];
+	private conditions: Condition[] = [];
 	private pagination: CursorOptions | null = null;
+	private limit: number | null = null;
 
 	constructor(
 		tableName: string,
-		conchId: string | null = null,
-		private clampedLimit: number = DEFAULT_LIMIT,
+		conchId: string | null | number = null,
 		private sortDirection: SortDirection = "DESC",
 	) {
 		super(tableName, conchId);
-		if (this.clampedLimit > MAX_LIMIT) this.clampedLimit = MAX_LIMIT;
-		else if (this.clampedLimit <= 0) this.clampedLimit = DEFAULT_LIMIT;
 	}
 
 	paginate(options: CursorOptions) {
@@ -46,8 +39,16 @@ export class ReadQueryBuilder extends QueryBuilder {
 		return this;
 	}
 
-	filter(options: FilterOptions[]) {
-		this.filters.push(...options);
+	addConditions(options: Condition[]) {
+		this.conditions.push(...options);
+		return this;
+	}
+
+	addLimit(limitAmt: number = DEFAULT_LIMIT) {
+		if (limitAmt > MAX_LIMIT) this.limit = MAX_LIMIT;
+		else if (limitAmt <= 0) this.limit = DEFAULT_LIMIT;
+		else this.limit = limitAmt;
+
 		return this;
 	}
 
@@ -72,23 +73,19 @@ export class ReadQueryBuilder extends QueryBuilder {
 	}
 
 	build(): BuildQuery {
-		const queryArr: string[] = [];
 		const values: unknown[] = [];
-		let curPlaceholder = 1;
-
-		queryArr.push(format(`SELECT * FROM %I`, this.tableName));
 
 		const conditions: string[] = [];
 
 		let isConchIdIncluded = false;
-		this.filters.forEach((filter) => {
-			if (filter.column === conchesIdColumnName) isConchIdIncluded = true;
-			conditions.push(format(`%I = $${curPlaceholder++}`, filter.column));
-			values.push(filter.value);
-		});
-
-		if (this.conchId !== null && !isConchIdIncluded) {
-			conditions.push(`${conchesIdColumnName} = $${curPlaceholder++}`);
+		for (const { key, operator, value } of this.conditions) {
+			if (key === conchesIdColumnName) isConchIdIncluded = true;
+			const conditionStr = format(`%I ${operator} $${values.length + 1}`, key);
+			conditions.push(conditionStr);
+			values.push(value);
+		}
+		if (!isConchIdIncluded && this.conchId !== null) {
+			conditions.push(`${conchesIdColumnName} = $${values.length + 1}`);
 			values.push(this.conchId);
 		}
 
@@ -133,16 +130,12 @@ export class ReadQueryBuilder extends QueryBuilder {
 			}
 		}
 
-		if (conditions.length) {
-			queryArr.push(`WHERE ${conditions.join(" AND ")}`);
-		}
+		const query = `
+				${format(`SELECT * FROM %I `, this.tableName)}
+				${conditions.length ? "WHERE " : ""}${conditions.join(" AND ")}
+				${orderArr.length ? "ORDER BY " : ""}${orderArr.join(", ")}
+				${this.limit ? `LIMIT ${this.limit}` : ""}`.trim();
 
-		if (orderArr.length) {
-			queryArr.push(`ORDER BY ${orderArr.join(", ")}`);
-		}
-
-		queryArr.push(`LIMIT ${this.clampedLimit}`);
-
-		return { query: queryArr.join(" "), values };
+		return { query, values };
 	}
 }
