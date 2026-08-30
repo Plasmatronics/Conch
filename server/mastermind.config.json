@@ -1,0 +1,6 @@
+{
+	"checkCommand": "npm run lint && npm run typecheck",
+	"testCommand": "npm test",
+	"storybook": false,
+	"reviewAutoPost": true
+}
