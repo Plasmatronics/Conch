@@ -41,7 +41,8 @@ export class DeleteQueryBuilder extends QueryBuilder {
 			values.push(value);
 		}
 		if (!isConchIdIncluded && this.conchId !== null) {
-			conditions.push(format(`${conchesIdColumnName} = %L`, this.conchId));
+			conditions.push(`${conchesIdColumnName} = $${values.length + 1}`);
+			values.push(this.conchId);
 		}
 
 		const returning = this.returningFields.map((key) =>

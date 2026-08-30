@@ -130,11 +130,11 @@ describe("DeleteQueryBuilder", () => {
 			expect(normalizeSql(result.query)).toBe(
 				normalizeSql(`
 					DELETE FROM posts
-					WHERE conch_id = 'conch-123'
+					WHERE conch_id = $1
 				`),
 			);
 
-			expect(result.values).toEqual([]);
+			expect(result.values).toEqual(["conch-123"]);
 		});
 
 		test("adds conch id alongside other conditions", () => {
@@ -152,11 +152,11 @@ describe("DeleteQueryBuilder", () => {
 				normalizeSql(`
 					DELETE FROM posts
 					WHERE post_id = $1
-					AND conch_id = 'conch-123'
+					AND conch_id = $2
 				`),
 			);
 
-			expect(result.values).toEqual([10]);
+			expect(result.values).toEqual([10, "conch-123"]);
 		});
 
 		test("does not add constructor conch id when condition explicitly includes conch id", () => {
@@ -479,12 +479,12 @@ describe("DeleteQueryBuilder", () => {
 					DELETE FROM posts
 					WHERE status = $1
 					AND people > $2
-					AND conch_id = 'conch-123'
+					AND conch_id = $3
 					RETURNING post_id, title, status
 				`),
 			);
 
-			expect(result.values).toEqual(["archived", 5]);
+			expect(result.values).toEqual(["archived", 5, "conch-123"]);
 		});
 
 		test("uses explicitly provided conch id in combined query", () => {

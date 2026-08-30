@@ -291,8 +291,6 @@ describe("UpdateQueryBuilder", () => {
 					title = $1
 					WHERE conch_id = $2`;
 
-			console.log("ACTUAL:  ", JSON.stringify(result.query));
-			console.log("EXPECTED:", JSON.stringify(expected));
 			expect(normalizeSql(result.query)).toBe(normalizeSql(expected));
 
 			expect(result.values).toEqual(["Updated title", "conch-456"]);
