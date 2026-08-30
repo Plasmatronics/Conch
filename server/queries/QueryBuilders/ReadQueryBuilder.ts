@@ -26,7 +26,7 @@ export class ReadQueryBuilder extends QueryBuilder {
 
 	constructor(
 		tableName: string,
-		conchId: string | null = null,
+		conchId: string | null | number = null,
 		private sortDirection: SortDirection = "DESC",
 	) {
 		super(tableName, conchId);

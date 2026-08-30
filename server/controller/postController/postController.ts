@@ -21,7 +21,11 @@ import {
 	getMemberHydratedPostsQuery,
 } from "./utils";
 import { idSchema } from "../../schemas";
-import format from "pg-format";
+import {
+	CreateQueryBuilder,
+	DeleteQueryBuilder,
+	UpdateQueryBuilder,
+} from "../../queries";
 
 export const getPost =
 	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {
@@ -51,30 +55,19 @@ export const patchPost =
 			const parsedConchId = idSchema.parse(conchId);
 			const parsedBody = postsUpdateSchema.parse(req.body);
 
-			const updateKeys = Object.keys(parsedBody);
-			const updateValues = Object.values(parsedBody);
-
-			const updatePlaceholders = updateKeys
-				.map((_, idx) => `%I = $${idx + 1}`)
-				.join(", ");
-
-			const formattedUpdatePostQuery = format(
-				`
-    UPDATE %I
-    SET ${updatePlaceholders}
-    WHERE %I = $${updateValues.length + 1}
-    AND ${conchesIdColumnName} = $${updateValues.length + 2}
-    `,
+			const { query, values } = new UpdateQueryBuilder(
 				postsTableName,
-				...updateKeys,
-				postsIdColumnName,
-			);
-
-			const updatePostRes = await dbPool.query(formattedUpdatePostQuery, [
-				...updateValues,
-				parsedPostId,
 				parsedConchId,
-			]);
+			)
+				.addUpdateFields(
+					Object.entries(parsedBody).map(([key, value]) => ({ key, value })),
+				)
+				.addConditions([
+					{ key: postsIdColumnName, operator: "=", value: parsedPostId },
+				])
+				.build();
+
+			const updatePostRes = await dbPool.query(query, values);
 
 			if (!updatePostRes.rowCount)
 				throw new AppError("Could not find this post to update", 404);
@@ -103,13 +96,17 @@ export const deletePost =
 			const parsedConchId = idSchema.parse(conchId);
 			const parsedPostId = idSchema.parse(postId);
 
-			const deletePostRes = await dbPool.query(
-				`
-				DELETE FROM ${postsTableName}
-				WHERE conch_id = $1
-				AND ${postsIdColumnName} = $2`,
-				[parsedConchId, parsedPostId],
-			);
+			const { query, values } = new DeleteQueryBuilder(postsTableName)
+				.addConditions([
+					{
+						key: conchesIdColumnName,
+						operator: "=",
+						value: parsedConchId,
+					},
+					{ key: postsIdColumnName, operator: "=", value: parsedPostId },
+				])
+				.build();
+			const deletePostRes = await dbPool.query(query, values);
 
 			if (!deletePostRes.rowCount)
 				throw new AppError("Could not find this post to delete", 404);
@@ -147,35 +144,16 @@ export const createPost =
 
 			await poolClient.query("BEGIN");
 
-			const postCreationRes = await poolClient.query(
-				`
-                INSERT INTO ${postsTableName} (
-                    title,
-                    body_text,
-                    location,
-                    date,
-                    author_id,
-                    ${conchesIdColumnName}
-                )
-                VALUES (
-                    $1,
-                    $2,
-                    $3,
-                    $4,
-                    $5,
-                    $6
-                )
-                RETURNING *;
-                `,
-				[
-					postCreationObj.title,
-					postCreationObj.body_text,
-					postCreationObj.location,
-					postCreationObj.date,
-					postCreationObj.author_id,
-					postCreationObj.conch_id,
-				],
-			);
+			const { query, values } = new CreateQueryBuilder(postsTableName)
+				.addCreateFields(
+					Object.entries(postCreationObj).map(([key, value]) => ({
+						key,
+						value,
+					})),
+				)
+				.addReturning(["*"])
+				.build();
+			const postCreationRes = await poolClient.query(query, values);
 			if (!postCreationRes.rowCount) {
 				throw new AppError("Failed to create post", 500);
 			}

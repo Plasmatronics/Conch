@@ -12,7 +12,7 @@ export class UpdateQueryBuilder extends QueryBuilder {
 	private updateFields: KeyValuePair[] = [];
 	private conditions: Condition[] = [];
 
-	constructor(tableName: string, conchId: string | null = null) {
+	constructor(tableName: string, conchId: string | null | number = null) {
 		super(tableName, conchId);
 	}
 

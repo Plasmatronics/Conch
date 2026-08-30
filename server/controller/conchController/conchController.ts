@@ -8,9 +8,13 @@ import {
 	conchesUpdateSchema,
 	usersIdColumnName,
 } from "../../schemas";
-import format from "pg-format";
 import z from "zod";
-import { getConchFromDb } from "../../queries";
+import {
+	CreateQueryBuilder,
+	DeleteQueryBuilder,
+	getConchFromDb,
+	UpdateQueryBuilder,
+} from "../../queries";
 import { AppError } from "../../errors";
 
 export const createConch =
@@ -19,19 +23,19 @@ export const createConch =
 			const entries = Object.entries(conchesCreateSchema.parse(req.body));
 			entries.push(["admin_id", req.user![usersIdColumnName]]);
 
-			const columnPlaceholders = entries.map(() => `%I`).join(", ");
-			const columns = entries.map(([key]) => key);
+			const { query, values } = new CreateQueryBuilder(conchesTableName)
+				.addCreateFields(
+					entries.map(([key, value]) => {
+						return {
+							key,
+							value,
+						};
+					}),
+				)
+				.addReturning(["*"])
+				.build();
 
-			const valuePlaceholders = entries.map(() => `%L`).join(", ");
-			const values = entries.map(([_key, value]) => value);
-
-			const conchCreationQuery = format(
-				`INSERT INTO ${conchesTableName} (${columnPlaceholders}) VALUES (${valuePlaceholders}) RETURNING *`,
-				...columns,
-				...values,
-			);
-
-			const conchCreationRes = await dbPool.query(conchCreationQuery);
+			const conchCreationRes = await dbPool.query(query, values);
 			const createdConch = conchesSchema.parse(conchCreationRes.rows[0]);
 			return res.status(201).json(createdConch);
 		} catch (err) {
@@ -81,21 +85,18 @@ export const updateConch =
 			if (conch.admin_id !== req.user![usersIdColumnName])
 				throw new AppError("Only admins of this conch can update it. ", 403);
 
-			const columns = entries.map(([key]) => key);
-			const columnsPlaceholder = columns.map(() => "%I").join(",");
-			const values = entries.map(([_key, value]) => value);
-			const valuesPlaceholder = values.map(() => "%L").join(",");
-
-			const updateConchQuery = format(
-				`UPDATE ${conchesTableName} 
-				SET (${columnsPlaceholder}) = (${valuesPlaceholder}) 
-				WHERE ${conchesIdColumnName} = %L
-				RETURNING *`,
-				...columns,
-				...values,
-				res.locals.conchId,
-			);
-			const updateConchRes = await dbPool.query(updateConchQuery);
+			const { query, values } = new UpdateQueryBuilder(conchesTableName)
+				.addUpdateFields(entries.map(([key, value]) => ({ key, value })))
+				.addConditions([
+					{
+						key: conchesIdColumnName,
+						operator: "=",
+						value: res.locals.conchId,
+					},
+				])
+				.addReturning(["*"])
+				.build();
+			const updateConchRes = await dbPool.query(query, values);
 
 			const updatedConch = conchesSchema.parse(updateConchRes.rows[0]);
 			return res.status(200).json(updatedConch);
@@ -108,11 +109,16 @@ export const deleteConch =
 	(dbPool: Pool) =>
 	async (_req: Request, res: Response, next: NextFunction) => {
 		try {
-			const deleteConchRes = await dbPool.query(
-				`DELETE from ${conchesTableName} WHERE
-				${conchesIdColumnName} = $1`,
-				[res.locals.conchId],
-			);
+			const { query, values } = new DeleteQueryBuilder(conchesTableName)
+				.addConditions([
+					{
+						key: conchesIdColumnName,
+						operator: "=",
+						value: res.locals.conchId,
+					},
+				])
+				.build();
+			const deleteConchRes = await dbPool.query(query, values);
 			const deletedRows = deleteConchRes.rowCount;
 			if (!deletedRows) throw new AppError("Could not delete any rows", 404);
 

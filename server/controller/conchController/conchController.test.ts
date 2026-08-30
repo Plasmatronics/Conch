@@ -113,11 +113,16 @@ describe("conchController", () => {
 			INSERT INTO ${conchesTableName}
 				(conch_name, confirmations_needed_for_referrals, admin_id)
 			VALUES
-				('Test Conch', '2', '${mockUserId}')
+				($1, $2, $3)
 			RETURNING *
 		`),
 			);
 
+			expect(mockPool.query.mock.calls[0][1]).toEqual([
+				"Test Conch",
+				2,
+				mockUserId,
+			]);
 			expect(mockResponse.status).toHaveBeenCalledWith(201);
 			expect(mockResponse.json).toHaveBeenCalledWith({
 				...mockConch,
@@ -361,11 +366,16 @@ describe("conchController", () => {
 			expect(normalizeSql(query)).toBe(
 				normalizeSql(`
 		UPDATE ${conchesTableName}
-		SET (conch_name,confirmations_needed_for_referrals) = ('Updated Conch','2')
-		WHERE ${conchesIdColumnName} = '${mockConchId}'
+		SET conch_name = $1, confirmations_needed_for_referrals = $2
+		WHERE ${conchesIdColumnName} = $3
 		RETURNING *
 	`),
 			);
+			expect(mockPool.query.mock.calls[0][1]).toEqual([
+				"Updated Conch",
+				2,
+				mockConchId,
+			]);
 
 			expect(mockResponse.status).toHaveBeenCalledWith(200);
 			expect(mockResponse.json).toHaveBeenCalledWith({
@@ -559,7 +569,7 @@ describe("conchController", () => {
 			await deleteConchHandler(mockRequest, mockResponse, mockNextFunction);
 
 			expect(mockPool.query).toHaveBeenCalledWith(
-				expect.stringContaining(`DELETE from ${conchesTableName}`),
+				expect.stringContaining(`DELETE FROM ${conchesTableName}`),
 				[mockConchId],
 			);
 

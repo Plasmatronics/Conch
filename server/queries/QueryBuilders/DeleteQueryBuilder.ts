@@ -6,7 +6,7 @@ export class DeleteQueryBuilder extends QueryBuilder {
 	private returningFields: string[] = [];
 	private conditions: Condition[] = [];
 
-	constructor(tableName: string, conchId: string | null = null) {
+	constructor(tableName: string, conchId: string | null | number = null) {
 		super(tableName, conchId);
 	}
 

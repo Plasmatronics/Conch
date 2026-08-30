@@ -4,6 +4,7 @@ import {
 	postMembersTableName,
 	postsIdColumnName,
 } from "../../../schemas";
+import { CreateQueryBuilder } from "../../../queries";
 import { createHydratedPostsQuery } from "./posts";
 
 export const getMemberHydratedPostsQuery = createHydratedPostsQuery(`
@@ -24,23 +25,13 @@ export const createPostMembers = async (
 ): Promise<void> => {
 	if (!memberIds.length) return;
 
-	const placeholders = memberIds
-		.map((_, index) => {
-			const offset = index * 2;
-			return `($${offset + 1}, $${offset + 2})`;
-		})
-		.join(", ");
-
-	const values = memberIds.flatMap((memberId) => [memberId, createdPostId]);
-
-	await poolClient.query(
-		`
-        INSERT INTO ${postMembersTableName} (
-            ${membersIdColumnName},
-            ${postsIdColumnName}
-        )
-        VALUES ${placeholders};
-        `,
-		values,
-	);
+	for (const memberId of memberIds) {
+		const { query, values } = new CreateQueryBuilder(postMembersTableName)
+			.addCreateFields([
+				{ key: membersIdColumnName, value: memberId },
+				{ key: postsIdColumnName, value: createdPostId },
+			])
+			.build();
+		await poolClient.query(query, values);
+	}
 };

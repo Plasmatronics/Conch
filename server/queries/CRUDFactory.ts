@@ -1,6 +1,10 @@
 import { QueryConfig } from "pg";
-import format from "pg-format";
-import { conchesIdColumnName } from "../schemas";
+import {
+	CreateQueryBuilder,
+	DeleteQueryBuilder,
+	ReadQueryBuilder,
+	UpdateQueryBuilder,
+} from "./QueryBuilders";
 
 interface CRUDFactoryConfig {
 	tableName: string;
@@ -16,30 +20,30 @@ export class CRUDFactory {
 		this.idColumnName = idColumnName;
 	}
 
-	generateGetAll(conchId?: number): QueryConfig {
-		const whereClause = !conchId ? "" : ` WHERE ${conchesIdColumnName} = $1`;
-		const parameterizedQuery = format(
-			`SELECT * FROM %I${whereClause}`,
-			this.tableName,
-		);
+	private toQueryConfig({
+		query: text,
+		values,
+	}: {
+		query: string;
+		values: unknown[];
+	}): QueryConfig {
+		return { text: text.replace(/\s+/g, " ").trim(), values };
+	}
 
-		return {
-			text: parameterizedQuery,
-			values: !conchId ? [] : [conchId],
-		};
+	generateGetAll(conchId?: number): QueryConfig {
+		return this.toQueryConfig(
+			new ReadQueryBuilder(this.tableName, conchId ?? null).build(),
+		);
 	}
 
 	generateGetOne(resourceId: number, conchId?: number): QueryConfig {
-		const conchClause = !conchId ? "" : ` AND ${conchesIdColumnName} = $2`;
-		const paramterizedQuery = format(
-			`SELECT * FROM %I WHERE %I = $1${conchClause}`,
-			this.tableName,
-			this.idColumnName,
+		return this.toQueryConfig(
+			new ReadQueryBuilder(this.tableName, conchId ?? null)
+				.addConditions([
+					{ key: this.idColumnName, operator: "=", value: resourceId },
+				])
+				.build(),
 		);
-		return {
-			text: paramterizedQuery,
-			values: !conchId ? [resourceId] : [resourceId, conchId],
-		};
 	}
 
 	generateUpdateOne(
@@ -51,40 +55,26 @@ export class CRUDFactory {
 		if (!entries.length)
 			throw new Error("No columns for updates were entered.");
 
-		const setClause = entries
-			.map(([key], i) => format("%I = $%s", key, i + 1))
-			.join(", ");
-
-		const conchClause = !conchId
-			? ""
-			: ` AND ${conchesIdColumnName} = $${entries.length + 2}`;
-
-		const query = format(
-			`UPDATE %I SET %s WHERE %I = $%s${conchClause} RETURNING *`,
-			this.tableName,
-			setClause,
-			this.idColumnName,
-			entries.length + 1,
+		return this.toQueryConfig(
+			new UpdateQueryBuilder(this.tableName, conchId ?? null)
+				.addUpdateFields(entries.map(([key, value]) => ({ key, value })))
+				.addConditions([
+					{ key: this.idColumnName, operator: "=", value: resourceId },
+				])
+				.addReturning(["*"])
+				.build(),
 		);
-
-		const values = [...entries.map(([, value]) => value), resourceId];
-		if (conchId !== undefined) values.push(conchId);
-
-		return { text: query, values };
 	}
 
 	generateDeleteOne(resourceId: number, conchId?: number): QueryConfig {
-		const conchClause = !conchId ? "" : ` AND ${conchesIdColumnName} = $2`;
-		const paramterizedQuery = format(
-			`DELETE FROM %I WHERE %I = $1${conchClause} RETURNING *`,
-			this.tableName,
-			this.idColumnName,
+		return this.toQueryConfig(
+			new DeleteQueryBuilder(this.tableName, conchId ?? null)
+				.addConditions([
+					{ key: this.idColumnName, operator: "=", value: resourceId },
+				])
+				.addReturning(["*"])
+				.build(),
 		);
-
-		return {
-			text: paramterizedQuery,
-			values: !conchId ? [resourceId] : [resourceId, conchId],
-		};
 	}
 
 	generateCreateOne(
@@ -94,19 +84,12 @@ export class CRUDFactory {
 		const entries = Object.entries(valueMap);
 		if (!entries.length && conchId === undefined)
 			throw new Error("No columns for creation were entered.");
-		if (conchId) entries.push([conchesIdColumnName, conchId]);
 
-		const columns = entries.map(([key]) => format("%I", key)).join(", ");
-		const placeholders = entries.map((_, i) => `$${i + 1}`).join(", ");
-
-		const text = format(
-			"INSERT INTO %I (%s) VALUES (%s) RETURNING *",
-			this.tableName,
-			columns,
-			placeholders,
+		return this.toQueryConfig(
+			new CreateQueryBuilder(this.tableName, conchId ?? null)
+				.addCreateFields(entries.map(([key, value]) => ({ key, value })))
+				.addReturning(["*"])
+				.build(),
 		);
-
-		const values = entries.map(([, valueIdx]) => valueIdx);
-		return { text, values };
 	}
 }

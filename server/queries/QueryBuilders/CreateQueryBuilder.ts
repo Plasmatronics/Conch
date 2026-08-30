@@ -6,7 +6,7 @@ export class CreateQueryBuilder extends QueryBuilder {
 	private returningFields: string[] = [];
 	private createFields: KeyValuePair[] = [];
 
-	constructor(tableName: string, conchId: string | null = null) {
+	constructor(tableName: string, conchId: string | null | number = null) {
 		super(tableName, conchId);
 	}
 

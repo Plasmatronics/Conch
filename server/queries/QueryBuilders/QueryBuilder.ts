@@ -18,7 +18,7 @@ export interface Condition extends KeyValuePair {
 export abstract class QueryBuilder {
 	constructor(
 		protected tableName: string,
-		protected conchId: string | null = null,
+		protected conchId: string | number | null = null,
 	) {}
 
 	abstract build(): BuildQuery;

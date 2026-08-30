@@ -8,6 +8,7 @@ import {
 	postsIdColumnName,
 } from "../../../schemas";
 import { AppError } from "../../../errors";
+import { CreateQueryBuilder } from "../../../queries";
 import z from "zod";
 
 export const createPostMedia = async (
@@ -17,25 +18,15 @@ export const createPostMedia = async (
 ): Promise<void> => {
 	if (!mediaIds.length) return;
 
-	const placeholders = mediaIds
-		.map((_, index) => {
-			const offset = index * 2;
-			return `($${offset + 1}, $${offset + 2})`;
-		})
-		.join(", ");
-
-	const values = mediaIds.flatMap((mediaId) => [mediaId, createdPostId]);
-
-	await poolClient.query(
-		`
-        INSERT INTO ${postMediaTableName} (
-            ${mediaIdColumnName},
-            ${postsIdColumnName}
-        )
-        VALUES ${placeholders};
-        `,
-		values,
-	);
+	for (const mediaId of mediaIds) {
+		const { query, values } = new CreateQueryBuilder(postMediaTableName)
+			.addCreateFields([
+				{ key: mediaIdColumnName, value: mediaId },
+				{ key: postsIdColumnName, value: createdPostId },
+			])
+			.build();
+		await poolClient.query(query, values);
+	}
 };
 
 export const createMedia = async (
@@ -45,41 +36,24 @@ export const createMedia = async (
 ): Promise<number[]> => {
 	if (!media.length) return [];
 
-	const placeholders = media
-		.map((_, index) => {
-			const offset = index * 4;
+	const mediaIds: number[] = [];
+	for (const mediaObj of media) {
+		const { query, values } = new CreateQueryBuilder(mediaTableName)
+			.addCreateFields([
+				{ key: "storage_key", value: mediaObj.storage_key },
+				{ key: "mime_type", value: mediaObj.mime_type },
+				{ key: "media_type", value: mediaObj.media_type },
+				{ key: conchesIdColumnName, value: conchId },
+			])
+			.addReturning([mediaIdColumnName])
+			.build();
+		const result = await poolClient.query(query, values);
+		if (!result.rowCount) {
+			throw new AppError("Failed to create media", 500);
+		}
 
-			return `(
-                $${offset + 1},
-                $${offset + 2},
-                $${offset + 3},
-                $${offset + 4}
-            )`;
-		})
-		.join(", ");
-	const values = media.flatMap((mediaObj) => [
-		mediaObj.storage_key,
-		mediaObj.mime_type,
-		mediaObj.media_type,
-		conchId,
-	]);
-
-	const result = await poolClient.query(
-		`
-        INSERT INTO ${mediaTableName} (
-            storage_key,
-            mime_type,
-            media_type,
-			${conchesIdColumnName}
-        )
-        VALUES ${placeholders}
-        RETURNING ${mediaIdColumnName};
-        `,
-		values,
-	);
-	if (!result.rowCount) {
-		throw new AppError("Failed to create media", 500);
+		mediaIds.push(z.number().parse(result.rows[0][mediaIdColumnName]));
 	}
 
-	return result.rows.map((row) => z.number().parse(row[mediaIdColumnName]));
+	return mediaIds;
 };
