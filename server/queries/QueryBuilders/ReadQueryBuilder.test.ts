@@ -433,4 +433,111 @@ describe("ReadQueryBuilder", () => {
 			expect(result.values).toEqual(["conch-456"]);
 		});
 	});
+
+	describe("query composition", () => {
+		test("joins tables with one or more column conditions", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.addAlias("p")
+				.addJoin({
+					tableName: "users",
+					alias: "u",
+					on: [
+						{
+							left: { tableAlias: "p", key: "author_id" },
+							right: { tableAlias: "u", key: "user_id" },
+						},
+						{
+							left: { tableAlias: "p", key: "conch_id" },
+							right: { tableAlias: "u", key: "conch_id" },
+						},
+					],
+				})
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				"SELECT * FROM posts AS p INNER JOIN users AS u ON p.author_id = u.user_id AND p.conch_id = u.conch_id",
+			);
+		});
+
+		test("supports left joins", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.addAlias("p")
+				.addJoin({
+					tableName: "media",
+					alias: "photo",
+					type: "LEFT",
+					on: [
+						{
+							left: { tableAlias: "p", key: "photo_id" },
+							right: { tableAlias: "photo", key: "media_id" },
+						},
+					],
+				})
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				"SELECT * FROM posts AS p LEFT JOIN media AS photo ON p.photo_id = photo.media_id",
+			);
+		});
+
+		test("rejects joins without conditions", () => {
+			expect(() =>
+				new ReadQueryBuilder(testTable).addJoin({
+					tableName: "users",
+					alias: "u",
+					on: [],
+				}),
+			).toThrow("A join must include at least one condition");
+		});
+
+		test("selects aliased fields from an aliased table", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.addAlias("p")
+				.addSelectFields([
+					{ tableAlias: "p", key: "post_id", alias: "id" },
+					{ tableAlias: "p", key: "title" },
+				])
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				"SELECT p.post_id AS id, p.title FROM posts AS p",
+			);
+		});
+
+		test("qualifies explicit and automatic conch predicates", () => {
+			const result = new ReadQueryBuilder(testTable, "conch-123")
+				.addAlias("p")
+				.addConditions([
+					{ tableAlias: "p", key: "status", operator: "=", value: "active" },
+				])
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				"SELECT * FROM posts AS p WHERE p.status = $1 AND p.conch_id = $2",
+			);
+			expect(result.values).toEqual(["active", "conch-123"]);
+		});
+
+		test("builds IN and ANY predicates with bound values", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.addInConditions([{ key: "status", values: ["active", "draft"] }])
+				.addAnyConditions([{ key: "author_id", values: [1, 2, 3] }])
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				"SELECT * FROM posts WHERE status IN ($1, $2) AND author_id = ANY($3)",
+			);
+			expect(result.values).toEqual(["active", "draft", [1, 2, 3]]);
+		});
+
+		test("uses false for an empty IN predicate", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.addInConditions([{ key: "post_id", values: [] }])
+				.build();
+
+			expect(normalizeSql(result.query)).toBe(
+				"SELECT * FROM posts WHERE FALSE",
+			);
+		});
+	});
 });

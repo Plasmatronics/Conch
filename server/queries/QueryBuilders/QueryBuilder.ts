@@ -1,5 +1,4 @@
-export type UpdateDeleteOperator =
-	"=" | "!=" | ">" | ">=" | "<" | "<=" | "LIKE";
+export type ConditionOperator = "=" | "!=" | ">" | ">=" | "<" | "<=" | "LIKE";
 
 export type BuildQuery = {
 	query: string;
@@ -12,7 +11,7 @@ export interface KeyValuePair {
 }
 
 export interface Condition extends KeyValuePair {
-	operator: UpdateDeleteOperator;
+	operator: ConditionOperator;
 }
 
 export abstract class QueryBuilder {

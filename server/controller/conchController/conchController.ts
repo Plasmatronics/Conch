@@ -13,6 +13,7 @@ import {
 	CreateQueryBuilder,
 	DeleteQueryBuilder,
 	getConchFromDb,
+	ReadQueryBuilder,
 	UpdateQueryBuilder,
 } from "../../queries";
 import { AppError } from "../../errors";
@@ -47,11 +48,15 @@ export const getAllPersonalConches =
 	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const personalConchesIds = req.user!.serverIds;
-			const getPersonalConchesRes = await dbPool.query(
-				`SELECT * FROM ${conchesTableName}
-  				 WHERE ${conchesIdColumnName} = ANY($1)`,
-				[personalConchesIds],
-			);
+			const { query, values } = new ReadQueryBuilder(conchesTableName)
+				.addAnyConditions([
+					{
+						key: conchesIdColumnName,
+						values: personalConchesIds,
+					},
+				])
+				.build();
+			const getPersonalConchesRes = await dbPool.query(query, values);
 
 			const personalConches = z
 				.array(conchesSchema)
