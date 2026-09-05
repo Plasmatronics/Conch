@@ -1,5 +1,5 @@
 ---
-name: state-resilience
+name: server-state-resilience
 description: Implement operations that may be retried, restarted, or replayed, including startup, migrations, webhooks, and stateful scripts.
 ---
 
