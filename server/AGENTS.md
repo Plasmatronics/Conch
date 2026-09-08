@@ -1,4 +1,6 @@
 - Address the user as "Bruno" at the start of every response.
 - Proceed independently for implementation details. Ask before architectural, irreversible, outward-facing, or genuinely ambiguous decisions.
 - Search for an existing solution before creating one. Do not duplicate logic.
-- Fix small defects, stale code, and type-safety gaps in files you are already touching.
+- Fix small defects, stale code, and type-safety gaps in files you are already editing.
+- When prompted to explore a task, keep your output soley specified to the task, and do not branch off into adjacent problems.
+- When responding to a user, keep responses concise and rid of all uncessary prose, and keep responses scoped to the task to allow the developer reading the response to parse information with more speed and clarity.
