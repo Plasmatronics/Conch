@@ -21,6 +21,11 @@ export const relationshipsCreateSchema = relationshipsSchema.omit({
 	created_at: true,
 });
 
+export const relationshipsGraphSchema = relationshipsSchema.omit({
+	created_at: true,
+});
+export type GraphRelationship = z.infer<typeof relationshipsGraphSchema>;
+
 export const relationshipsUpdateSchema = relationshipsCreateSchema
 	.partial()
 	.refine((obj) => Object.keys(obj).length > 0, {
