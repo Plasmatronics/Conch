@@ -349,7 +349,64 @@ describe("ConchFamilyGraph", () => {
 		});
 	});
 
-	test("throws if ", () => {
+	describe("getRelationship", () => {
+		test("returns the relationship between two members", () => {
+			const graph = new ConchFamilyGraph({
+				memberIds: [1, 2, 3],
+				relationships: [
+					relationship(1, "child", 1, 2),
+					relationship(2, "child", 2, 3),
+				],
+			});
+
+			expect(graph.getRelationship(1, 2)).toBe("Child");
+			expect(graph.getRelationship(2, 1)).toBe("Parent");
+			expect(graph.getRelationship(1, 3)).toBe("Grandchild");
+			expect(graph.getRelationship(3, 1)).toBe("Grandparent");
+		});
+
+		test("returns Self when source and target are the same member", () => {
+			const graph = new ConchFamilyGraph({
+				memberIds: [1],
+				relationships: [],
+			});
+
+			expect(graph.getRelationship(1, 1)).toBe("Self");
+		});
+
+		test("returns Unknown when members have no documented familial path", () => {
+			const graph = new ConchFamilyGraph({
+				memberIds: [1, 2],
+				relationships: [],
+			});
+
+			expect(graph.getRelationship(1, 2)).toBe("Unknown");
+		});
+
+		test("throws when the source member does not exist in the Conch", () => {
+			const graph = new ConchFamilyGraph({
+				memberIds: [1, 2],
+				relationships: [],
+			});
+
+			expect(() => graph.getRelationship(999, 1)).toThrow(
+				"Member does not have any documented relationships inside this Conch.",
+			);
+		});
+
+		test("throws when the target member does not exist in the Conch", () => {
+			const graph = new ConchFamilyGraph({
+				memberIds: [1, 2],
+				relationships: [],
+			});
+
+			expect(() => graph.getRelationship(1, 999)).toThrow(
+				"Member does not have any documented relationship to specified target member inside this Conch.",
+			);
+		});
+	});
+
+	test("throws if invariant of a non blood member having only one conch blood spouse is violated", () => {
 		expect(
 			() =>
 				new ConchFamilyGraph({
