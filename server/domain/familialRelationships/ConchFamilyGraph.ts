@@ -33,6 +33,12 @@ export class ConchFamilyGraph {
 				if (!(source_member_id in this.bloodToSpouseMap))
 					this.bloodToSpouseMap[source_member_id] = [];
 				this.bloodToSpouseMap[source_member_id].push(target_member_id);
+
+				if (target_member_id in this.nonBloodToSpouseMap) {
+					throw new Error(
+						"A non-blood member cannot be associated with multiple blood spouses.",
+					);
+				}
 				this.nonBloodToSpouseMap[target_member_id] = source_member_id;
 			}
 		}
