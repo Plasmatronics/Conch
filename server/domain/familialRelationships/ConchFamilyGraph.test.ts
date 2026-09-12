@@ -349,20 +349,17 @@ describe("ConchFamilyGraph", () => {
 		});
 	});
 
-	test("retains every spouse when a member is the target of multiple relationships", () => {
-		const graph = new ConchFamilyGraph({
-			memberIds: [1, 2, 3],
-			relationships: [
-				relationship(1, "spouse", 1, 2),
-				relationship(2, "spouse", 3, 2),
-			],
-		});
-
-		expect(graph.getRelationships(2)).toEqual({
-			1: "Spouse",
-			2: "Self",
-			3: "Spouse",
-		});
+	test("throws if ", () => {
+		expect(
+			() =>
+				new ConchFamilyGraph({
+					memberIds: [1, 2, 3],
+					relationships: [
+						relationship(1, "spouse", 1, 2),
+						relationship(2, "spouse", 3, 2),
+					],
+				}),
+		).toThrow();
 	});
 
 	test("treats spouse edges as symmetric in either stored direction", () => {
