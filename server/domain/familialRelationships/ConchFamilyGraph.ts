@@ -2,6 +2,7 @@ import { Queue } from "mnemonist";
 import {
 	ConchFamilyGraphInput,
 	FamilyRelation,
+	NonFamilialRelationships,
 	PathFamilyRelation,
 } from "./types";
 
@@ -12,11 +13,15 @@ export class ConchFamilyGraph {
 	private bloodToSpouseMap: Record<number, number[]> = {};
 	private nonBloodToSpouseMap: Record<number, number> = {};
 	private relationshipMap: Record<number, Record<number, FamilyRelation>> = {};
+	private currentMarriageMap: Record<string, boolean> = {};
+	private nonFamilialRelationships: Record<number, NonFamilialRelationships> =
+		{};
 
 	constructor({ memberIds, relationships }: ConchFamilyGraphInput) {
 		this.memberIds = [...memberIds];
 
 		for (const {
+			is_current,
 			relationship_type,
 			source_member_id,
 			target_member_id,
@@ -39,7 +44,20 @@ export class ConchFamilyGraph {
 						"A non-blood member cannot be associated with multiple blood spouses.",
 					);
 				}
+
 				this.nonBloodToSpouseMap[target_member_id] = source_member_id;
+
+				const key = `${source_member_id}-${target_member_id}`;
+				const isMarriageActive = this.currentMarriageMap[key];
+				if (isMarriageActive !== undefined && isMarriageActive !== is_current)
+					throw new Error(
+						"A marriage must reflect the same current state bidirectionally.",
+					);
+
+				this.currentMarriageMap[key] = is_current;
+			} else {
+				this.nonFamilialRelationships[target_member_id] =
+					relationship_type === "friend" ? "Family Friend" : "Family Pet";
 			}
 		}
 
@@ -100,6 +118,24 @@ export class ConchFamilyGraph {
 		return ancestorSteps;
 	}
 
+	private checkIsInMarriage(
+		memberA: number,
+		memberB: number,
+	): { isMarried: boolean; isActive: boolean } {
+		const keyA = `${memberA}-${memberB}`;
+		const keyB = `${memberB}-${memberA}`;
+		const isMarried =
+			this.currentMarriageMap[keyA] !== undefined ||
+			this.currentMarriageMap[keyB] !== undefined;
+		const isActive =
+			this.currentMarriageMap[keyA] || this.currentMarriageMap[keyB];
+
+		return {
+			isMarried,
+			isActive,
+		};
+	}
+
 	private resolveRelationship(
 		sourceMemberId: number,
 		targetMemberId: number,
@@ -107,19 +143,30 @@ export class ConchFamilyGraph {
 	): FamilyRelation {
 		if (sourceMemberId === targetMemberId) return "Self";
 
-		const areSpouses =
-			this.bloodToSpouseMap[sourceMemberId]?.includes(targetMemberId) ||
-			this.nonBloodToSpouseMap[targetMemberId] === sourceMemberId ||
-			this.bloodToSpouseMap[targetMemberId]?.includes(sourceMemberId) ||
-			this.nonBloodToSpouseMap[sourceMemberId] === targetMemberId;
+		const { isMarried, isActive } = this.checkIsInMarriage(
+			sourceMemberId,
+			targetMemberId,
+		);
+		if (isMarried) return isActive ? "Spouse" : "Ex-Spouse";
 
-		if (areSpouses) return "Spouse";
+		const areEskimoSiblings =
+			this.nonBloodToSpouseMap[sourceMemberId] !== undefined &&
+			this.nonBloodToSpouseMap[targetMemberId] !== undefined &&
+			this.nonBloodToSpouseMap[sourceMemberId] ===
+				this.nonBloodToSpouseMap[targetMemberId];
 
-		if (this.parentToChildMap[sourceMemberId]?.includes(targetMemberId))
-			return "Child";
+		if (areEskimoSiblings) {
+			const sharedSpouse = this.nonBloodToSpouseMap[sourceMemberId];
+			const { isActive: isSourceActive, isMarried: sourceMar } =
+				this.checkIsInMarriage(sourceMemberId, sharedSpouse);
+			const { isActive: isTargetActive, isMarried: targetMar } =
+				this.checkIsInMarriage(targetMemberId, sharedSpouse);
 
-		if (this.childToParentMap[sourceMemberId]?.includes(targetMemberId))
-			return "Parent";
+			if (isSourceActive)
+				return isTargetActive ? "Spouse's Spouse" : "Spouse's Ex-Spouse";
+			else
+				return isTargetActive ? "Ex-Spouse's Spouse" : "Ex-Spouse's Ex-Spouse";
+		}
 
 		const sourceBloodMemberId =
 			this.nonBloodToSpouseMap[sourceMemberId] ?? sourceMemberId;
@@ -135,11 +182,16 @@ export class ConchFamilyGraph {
 			targetAncestorSteps,
 		);
 
-		return this.pathToFamilyRelationResolver(
-			shortestPath,
-			sourceBloodMemberId === sourceMemberId,
-			targetBloodMemberId === targetMemberId,
-		);
+		if (shortestPath && !shortestPath[0] && shortestPath[1] === 1)
+			return this.resolveChildRelationship(sourceMemberId, targetMemberId);
+		if (shortestPath && shortestPath[0] === 1 && !shortestPath[1])
+			return this.resolveParentRelationship(sourceMemberId, targetMemberId);
+		else
+			return this.pathToFamilyRelationResolver(
+				shortestPath,
+				sourceBloodMemberId === sourceMemberId,
+				targetBloodMemberId === targetMemberId,
+			);
 	}
 
 	private findShortestPath(
@@ -156,12 +208,46 @@ export class ConchFamilyGraph {
 			if (
 				!shortestPath ||
 				upSteps + downSteps < shortestPath[0] + shortestPath[1]
-			) {
+			)
 				shortestPath = [upSteps, downSteps];
-			}
 		}
 
 		return shortestPath;
+	}
+
+	private resolveChildRelationship(
+		sourceMemberId: number,
+		targetMemberId: number,
+	): FamilyRelation {
+		if (this.parentToChildMap[sourceMemberId]?.includes(targetMemberId))
+			return "Child";
+
+		const { isMarried, isActive } = this.checkIsInMarriage(
+			this.nonBloodToSpouseMap[sourceMemberId],
+			sourceMemberId,
+		);
+		if (!isMarried) return "Unknown";
+
+		return isActive ? "Spouse's Child" : "Ex-Spouse's Child";
+	}
+
+	private resolveParentRelationship(
+		sourceMemberId: number,
+		targetMemberId: number,
+	): FamilyRelation {
+		if (this.childToParentMap[sourceMemberId]?.includes(targetMemberId))
+			return "Parent";
+
+		if (this.nonBloodToSpouseMap[sourceMemberId] !== undefined)
+			return "Parent In Law";
+
+		const { isMarried, isActive } = this.checkIsInMarriage(
+			this.nonBloodToSpouseMap[targetMemberId],
+			targetMemberId,
+		);
+		if (!isMarried) return "Unknown";
+
+		return isActive ? "Parent's Spouse" : "Parent's Ex-Spouse";
 	}
 
 	private pathToFamilyRelationResolver(
@@ -223,7 +309,10 @@ export class ConchFamilyGraph {
 				"Member does not have any documented relationships inside this Conch.",
 			);
 
-		return { ...this.relationshipMap[member_id] };
+		return {
+			...this.relationshipMap[member_id],
+			...this.nonFamilialRelationships,
+		};
 	}
 
 	getRelationship(member_id: number, target_member_id: number): FamilyRelation {
@@ -231,12 +320,17 @@ export class ConchFamilyGraph {
 			throw new Error(
 				"Member does not have any documented relationships inside this Conch.",
 			);
-		const relationship = this.relationshipMap[member_id][target_member_id];
-		if (!relationship)
+		const nonFamlialRelationship =
+			this.nonFamilialRelationships[target_member_id];
+		if (nonFamlialRelationship) return nonFamlialRelationship;
+
+		const familialRelationship =
+			this.relationshipMap[member_id][target_member_id];
+		if (!familialRelationship)
 			throw new Error(
 				"Member does not have any documented relationship to specified target member inside this Conch.",
 			);
 
-		return relationship;
+		return familialRelationship;
 	}
 }

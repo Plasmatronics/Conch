@@ -14,6 +14,7 @@ export const relationshipsSchema = z.object({
 	created_at: apiDateSchema,
 	source_member_id: z.number(),
 	target_member_id: z.number(),
+	is_current: z.boolean(),
 });
 
 export const relationshipsCreateSchema = relationshipsSchema.omit({
@@ -47,5 +48,6 @@ CREATE TABLE ${relationshipsTableName} (
 	relationship_type relationship NOT NULL,
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	source_member_id integer NOT NULL REFERENCES ${membersTableName},
-	target_member_id integer NOT NULL REFERENCES ${membersTableName}
+	target_member_id integer NOT NULL REFERENCES ${membersTableName},
+	is_current boolean DEFAULT true;
 );`;
