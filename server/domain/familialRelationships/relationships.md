@@ -1,3 +1,5 @@
+Only family within one degree of a blood member are permitted to be within any given Conch.
+
 We only display the following relationship types:
 
 - Ancestor
@@ -17,6 +19,15 @@ We only display the following relationship types:
 - Aunt/Uncle
 - Cousin
 
-Minor label variations are allowed, such as `X's Spouse` or `X In Law`.
+Some minor label variations are allowed, these include the following variations:
+
+- `{Family Relation}'s {Family Relation}`
+- `Spouse's {Family Relation}`
+- `{Family Relation} In Law`
+- `Ex-Spouse`
+
+Family Friend and Pet relationships are also permitted
 
 We intentionally generalize more distant relationships. For example, aunt, great-aunt, and more distant aunt/uncle relationships are all displayed as `Aunt/Uncle`.
+We intentionally continue to classify a divorced non-blood member as having an `In-Law` tie to the rest of the blood family.
+We intentionally compress half and step siblings to `sibling`.

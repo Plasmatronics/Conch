@@ -8,11 +8,13 @@ const relationship = (
 	relationship_type: Relationship,
 	source_member_id: number,
 	target_member_id: number,
+	is_current: boolean = true,
 ): GraphRelationship => ({
 	relationship_id,
 	relationship_type,
 	source_member_id,
 	target_member_id,
+	is_current,
 });
 
 const incestuousFamily: ConchFamilyGraphInput = {
@@ -26,22 +28,6 @@ const incestuousFamily: ConchFamilyGraphInput = {
 		relationship(6, "spouse", 1, 2),
 		relationship(7, "child", 1, 5),
 		relationship(8, "child", 2, 5),
-	],
-};
-
-const multipleSpouseFamily: ConchFamilyGraphInput = {
-	memberIds: [1, 2, 3, 4, 5, 6, 7],
-	relationships: [
-		relationship(1, "spouse", 1, 2),
-		relationship(2, "spouse", 1, 3),
-		relationship(3, "child", 1, 4),
-		relationship(4, "child", 2, 4),
-		relationship(5, "child", 1, 5),
-		relationship(6, "child", 2, 5),
-		relationship(7, "child", 1, 6),
-		relationship(8, "child", 3, 6),
-		relationship(9, "child", 1, 7),
-		relationship(10, "child", 3, 7),
 	],
 };
 
@@ -292,6 +278,21 @@ describe("ConchFamilyGraph", () => {
 	});
 
 	test("resolves a family with multiple spouses from each perspective", () => {
+		const multipleSpouseFamily: ConchFamilyGraphInput = {
+			memberIds: [1, 2, 3, 4, 5, 6, 7],
+			relationships: [
+				relationship(1, "spouse", 1, 2),
+				relationship(2, "spouse", 1, 3),
+				relationship(3, "child", 1, 4),
+				relationship(4, "child", 2, 4),
+				relationship(5, "child", 1, 5),
+				relationship(6, "child", 2, 5),
+				relationship(7, "child", 1, 6),
+				relationship(8, "child", 3, 6),
+				relationship(9, "child", 1, 7),
+				relationship(10, "child", 3, 7),
+			],
+		};
 		const graph = new ConchFamilyGraph(multipleSpouseFamily);
 
 		expect({
@@ -313,7 +314,7 @@ describe("ConchFamilyGraph", () => {
 			firstSpouse: {
 				1: "Spouse",
 				2: "Self",
-				3: "Unknown",
+				3: "Spouse's Spouse",
 				4: "Child",
 				5: "Child",
 				6: "Spouse's Child",
@@ -321,7 +322,7 @@ describe("ConchFamilyGraph", () => {
 			},
 			secondSpouse: {
 				1: "Spouse",
-				2: "Unknown",
+				2: "Spouse's Spouse",
 				3: "Self",
 				4: "Spouse's Child",
 				5: "Spouse's Child",
@@ -437,22 +438,181 @@ describe("ConchFamilyGraph", () => {
 		]).toEqual(["Spouse", "Spouse", "Spouse", "Spouse"]);
 	});
 
-	test("ignores friend and pet relationships", () => {
-		const friendGraph = new ConchFamilyGraph({
-			memberIds: [1, 2],
-			relationships: [relationship(1, "friend", 1, 2)],
-		});
-		const petGraph = new ConchFamilyGraph({
-			memberIds: [1, 2],
-			relationships: [relationship(1, "pet", 1, 2)],
+	test("Resolves friend and pet relationships", () => {
+		const friendAndPetGraph = new ConchFamilyGraph({
+			memberIds: [1, 2, 3, 4, 5],
+			relationships: [
+				relationship(1, "friend", 1, 2),
+				relationship(1, "pet", 1, 3),
+				relationship(1, "spouse", 1, 4),
+				relationship(1, "child", 1, 5),
+				relationship(1, "child", 4, 5),
+			],
 		});
 
 		expect([
-			friendGraph.getRelationships(1),
-			petGraph.getRelationships(1),
+			friendAndPetGraph.getRelationships(1),
+			friendAndPetGraph.getRelationships(4),
+			friendAndPetGraph.getRelationships(5),
 		]).toEqual([
-			{ 1: "Self", 2: "Unknown" },
-			{ 1: "Self", 2: "Unknown" },
+			{
+				1: "Self",
+				2: "Family Friend",
+				3: "Family Pet",
+				4: "Spouse",
+				5: "Child",
+			},
+			{
+				1: "Spouse",
+				2: "Family Friend",
+				3: "Family Pet",
+				4: "Self",
+				5: "Child",
+			},
+			{
+				1: "Parent",
+				2: "Family Friend",
+				3: "Family Pet",
+				4: "Parent",
+				5: "Self",
+			},
 		]);
+	});
+
+	test("Resolves current and ex wives", () => {
+		const multiSpousalFamily: ConchFamilyGraphInput = {
+			memberIds: [1, 2, 3, 4, 5, 6, 7],
+			relationships: [
+				relationship(1, "spouse", 1, 2, false),
+				relationship(2, "spouse", 1, 3),
+				relationship(3, "child", 1, 4),
+				relationship(4, "child", 2, 4),
+				relationship(5, "child", 1, 5),
+				relationship(6, "child", 2, 5),
+				relationship(7, "child", 1, 6),
+				relationship(8, "child", 3, 6),
+				relationship(9, "child", 1, 7),
+				relationship(10, "child", 3, 7),
+			],
+		};
+		const graph = new ConchFamilyGraph(multiSpousalFamily);
+
+		expect({
+			bloodMember: graph.getRelationships(1),
+			firstSpouse: graph.getRelationships(2),
+			secondSpouse: graph.getRelationships(3),
+			firstSpouseChild: graph.getRelationships(4),
+			secondSpouseChild: graph.getRelationships(6),
+		}).toEqual({
+			bloodMember: {
+				1: "Self",
+				2: "Ex-Spouse",
+				3: "Spouse",
+				4: "Child",
+				5: "Child",
+				6: "Child",
+				7: "Child",
+			},
+			firstSpouse: {
+				1: "Ex-Spouse",
+				2: "Self",
+				3: "Ex-Spouse's Spouse",
+				4: "Child",
+				5: "Child",
+				6: "Ex-Spouse's Child",
+				7: "Ex-Spouse's Child",
+			},
+			secondSpouse: {
+				1: "Spouse",
+				2: "Spouse's Ex-Spouse",
+				3: "Self",
+				4: "Spouse's Child",
+				5: "Spouse's Child",
+				6: "Child",
+				7: "Child",
+			},
+			firstSpouseChild: {
+				1: "Parent",
+				2: "Parent",
+				3: "Parent's Spouse",
+				4: "Self",
+				5: "Sibling",
+				6: "Sibling",
+				7: "Sibling",
+			},
+			secondSpouseChild: {
+				1: "Parent",
+				2: "Parent's Ex-Spouse",
+				3: "Parent",
+				4: "Sibling",
+				5: "Sibling",
+				6: "Self",
+				7: "Sibling",
+			},
+		});
+	});
+
+	test("Resolves multiple ex wives", () => {
+		const multiSpousalFamily: ConchFamilyGraphInput = {
+			memberIds: [1, 2, 3, 5, 7],
+			/*
+			3  ----ex----  1  ----ex----  2
+						   /               /
+			     	      7				   5
+			*/
+			relationships: [
+				relationship(1, "spouse", 1, 2, false),
+				relationship(2, "spouse", 1, 3, false),
+				relationship(5, "child", 1, 5),
+				relationship(6, "child", 2, 5),
+				relationship(9, "child", 1, 7),
+				relationship(10, "child", 3, 7),
+			],
+		};
+		const graph = new ConchFamilyGraph(multiSpousalFamily);
+
+		expect({
+			bloodMember: graph.getRelationships(1),
+			firstSpouse: graph.getRelationships(2),
+			secondSpouse: graph.getRelationships(3),
+			firstSpouseChild: graph.getRelationships(5),
+			secondSpouseChild: graph.getRelationships(7),
+		}).toEqual({
+			bloodMember: {
+				1: "Self",
+				2: "Ex-Spouse",
+				3: "Ex-Spouse",
+				5: "Child",
+				7: "Child",
+			},
+			firstSpouse: {
+				1: "Ex-Spouse",
+				2: "Self",
+				3: "Ex-Spouse's Ex-Spouse",
+				5: "Child",
+				7: "Ex-Spouse's Child",
+			},
+			secondSpouse: {
+				1: "Ex-Spouse",
+				2: "Ex-Spouse's Ex-Spouse",
+				3: "Self",
+				5: "Ex-Spouse's Child",
+				7: "Child",
+			},
+			firstSpouseChild: {
+				1: "Parent",
+				2: "Parent",
+				3: "Parent's Ex-Spouse",
+				5: "Self",
+				7: "Sibling",
+			},
+			secondSpouseChild: {
+				1: "Parent",
+				2: "Parent's Ex-Spouse",
+				3: "Parent",
+				5: "Sibling",
+				7: "Self",
+			},
+		});
 	});
 });

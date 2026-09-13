@@ -29,11 +29,27 @@ type NonBloodFamilyRelation = `${Exclude<
 	"Self" | "Unknown" | "In Law"
 >} In Law`;
 
+type CurrentSpousalFamilyRelation =
+	| "Parent's Spouse"
+	| "Ancestor's Spouse"
+	| "Spouse's Child"
+	| "Spouse's Spouse"
+	| "Spouse's Ex-Spouse";
+type ExSpousalFamilyRelation =
+	| "Parent's Ex-Spouse"
+	| "Ancestor's Ex-Spouse"
+	| "Ex-Spouse's Child"
+	| "Ex-Spouse"
+	| "Ex-Spouse's Spouse"
+	| "Ex-Spouse's Ex-Spouse";
 type SpousalFamilyRelation =
-	"Parent's Spouse" | "Ancestor's Spouse" | "Spouse's Child";
+	CurrentSpousalFamilyRelation | ExSpousalFamilyRelation;
+
+export type NonFamilialRelationships = "Family Friend" | "Family Pet";
 
 export type FamilyRelation =
 	| GeneralFamilyRelation
 	| IntimateFamilyRelation
 	| NonBloodFamilyRelation
-	| SpousalFamilyRelation;
+	| SpousalFamilyRelation
+	| NonFamilialRelationships;
