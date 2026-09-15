@@ -1,23 +1,35 @@
 import { Queue } from "mnemonist";
 import {
+	AllFamilyRelations,
 	ConchFamilyGraphInput,
 	FamilyRelation,
+	MembersFamilyRelations,
 	NonFamilialRelationships,
 	PathFamilyRelation,
-} from "./types";
+} from "./ConchFamilyGraph.types";
+import z from "zod";
+import { relationshipsGraphSchema } from "../../schemas";
+
+export const ConchFamilyGraphInputSchema = z.object({
+	relationships: z.array(relationshipsGraphSchema),
+	memberIds: z.array(z.number()),
+});
 
 export class ConchFamilyGraph {
-	private memberIds: number[];
+	private memberIds: number[] = [];
 	private parentToChildMap: Record<number, number[]> = {};
 	private childToParentMap: Record<number, number[]> = {};
 	private bloodToSpouseMap: Record<number, number[]> = {};
 	private nonBloodToSpouseMap: Record<number, number> = {};
-	private relationshipMap: Record<number, Record<number, FamilyRelation>> = {};
+	private relationshipMap: AllFamilyRelations = {};
 	private currentMarriageMap: Record<string, boolean> = {};
 	private nonFamilialRelationships: Record<number, NonFamilialRelationships> =
 		{};
 
-	constructor({ memberIds, relationships }: ConchFamilyGraphInput) {
+	buildRelationshipMap({
+		memberIds,
+		relationships,
+	}: ConchFamilyGraphInput): void {
 		this.memberIds = [...memberIds];
 
 		for (const {
@@ -60,11 +72,6 @@ export class ConchFamilyGraph {
 					relationship_type === "friend" ? "Family Friend" : "Family Pet";
 			}
 		}
-
-		this.buildRelationshipMap();
-	}
-
-	private buildRelationshipMap(): void {
 		const ancestorStepsByMember = this.buildAncestorStepsByMember();
 
 		for (const sourceMemberId of this.memberIds) {
@@ -79,6 +86,37 @@ export class ConchFamilyGraph {
 					);
 			}
 		}
+	}
+
+	getRelationships(member_id: number): MembersFamilyRelations {
+		if (!(member_id in this.relationshipMap))
+			throw new Error(
+				"Member does not have any documented relationships inside this Conch.",
+			);
+
+		return {
+			...this.relationshipMap[member_id],
+			...this.nonFamilialRelationships,
+		};
+	}
+
+	getRelationship(member_id: number, target_member_id: number): FamilyRelation {
+		if (!(member_id in this.relationshipMap))
+			throw new Error(
+				"Member does not have any documented relationships inside this Conch.",
+			);
+		const nonFamlialRelationship =
+			this.nonFamilialRelationships[target_member_id];
+		if (nonFamlialRelationship) return nonFamlialRelationship;
+
+		const familialRelationship =
+			this.relationshipMap[member_id][target_member_id];
+		if (!familialRelationship)
+			throw new Error(
+				"Member does not have any documented relationship to specified target member inside this Conch.",
+			);
+
+		return familialRelationship;
 	}
 
 	private buildAncestorStepsByMember(): Record<number, Record<number, number>> {
@@ -302,35 +340,10 @@ export class ConchFamilyGraph {
 
 		return relation;
 	}
+}
 
-	getRelationships(member_id: number): Record<number, FamilyRelation> {
-		if (!(member_id in this.relationshipMap))
-			throw new Error(
-				"Member does not have any documented relationships inside this Conch.",
-			);
-
-		return {
-			...this.relationshipMap[member_id],
-			...this.nonFamilialRelationships,
-		};
-	}
-
-	getRelationship(member_id: number, target_member_id: number): FamilyRelation {
-		if (!(member_id in this.relationshipMap))
-			throw new Error(
-				"Member does not have any documented relationships inside this Conch.",
-			);
-		const nonFamlialRelationship =
-			this.nonFamilialRelationships[target_member_id];
-		if (nonFamlialRelationship) return nonFamlialRelationship;
-
-		const familialRelationship =
-			this.relationshipMap[member_id][target_member_id];
-		if (!familialRelationship)
-			throw new Error(
-				"Member does not have any documented relationship to specified target member inside this Conch.",
-			);
-
-		return familialRelationship;
+export class ConchFamilyGraphFactory {
+	createConchFamilyGraph(): ConchFamilyGraph {
+		return new ConchFamilyGraph();
 	}
 }

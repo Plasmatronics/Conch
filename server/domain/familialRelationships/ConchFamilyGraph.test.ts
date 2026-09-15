@@ -33,8 +33,8 @@ const incestuousFamily: ConchFamilyGraphInput = {
 
 describe("ConchFamilyGraph", () => {
 	test("stores one relationship per member in an incestuous family", () => {
-		const graph = new ConchFamilyGraph(incestuousFamily);
-
+		const graph = new ConchFamilyGraph();
+		graph.buildRelationshipMap(incestuousFamily);
 		expect(
 			incestuousFamily.memberIds.map(
 				(memberId) => Object.keys(graph.getRelationships(memberId)).length,
@@ -43,8 +43,8 @@ describe("ConchFamilyGraph", () => {
 	});
 
 	test("resolves overlapping ancestry paths in an incestuous family", () => {
-		const graph = new ConchFamilyGraph(incestuousFamily);
-
+		const graph = new ConchFamilyGraph();
+		graph.buildRelationshipMap(incestuousFamily);
 		expect(graph.getRelationships(3)).toEqual({
 			1: "Child",
 			2: "Child",
@@ -55,21 +55,22 @@ describe("ConchFamilyGraph", () => {
 	});
 
 	test("detects ancestry cycles", () => {
-		expect(
-			() =>
-				new ConchFamilyGraph({
-					memberIds: [1, 2, 3],
-					relationships: [
-						relationship(1, "child", 1, 2),
-						relationship(2, "child", 2, 3),
-						relationship(3, "child", 3, 1),
-					],
-				}),
-		).toThrow(/cycle/i);
+		expect(() => {
+			const graph = new ConchFamilyGraph();
+			graph.buildRelationshipMap({
+				memberIds: [1, 2, 3],
+				relationships: [
+					relationship(1, "child", 1, 2),
+					relationship(2, "child", 2, 3),
+					relationship(3, "child", 3, 1),
+				],
+			});
+		}).toThrow(/cycle/i);
 	});
 
 	test("resolves every relationship in a small family", () => {
-		const graph = new ConchFamilyGraph({
+		const graph = new ConchFamilyGraph();
+		graph.buildRelationshipMap({
 			memberIds: [1, 2, 3],
 			relationships: [
 				relationship(1, "child", 1, 2),
@@ -89,7 +90,8 @@ describe("ConchFamilyGraph", () => {
 	});
 
 	test("resolves direct, extended, and in-law relationships in a medium family", () => {
-		const graph = new ConchFamilyGraph({
+		const graph = new ConchFamilyGraph();
+		graph.buildRelationshipMap({
 			memberIds: [1, 2, 3, 4, 5, 6, 7, 8],
 			relationships: [
 				relationship(1, "child", 1, 2),
@@ -115,7 +117,8 @@ describe("ConchFamilyGraph", () => {
 	});
 
 	test("resolves distant ancestry and branches in a large family", () => {
-		const graph = new ConchFamilyGraph({
+		const graph = new ConchFamilyGraph();
+		graph.buildRelationshipMap({
 			memberIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
 			relationships: [
 				relationship(1, "child", 1, 2),
@@ -171,7 +174,8 @@ describe("ConchFamilyGraph", () => {
 	});
 
 	test("resolves relationships across a very wide family tree", () => {
-		const graph = new ConchFamilyGraph({
+		const graph = new ConchFamilyGraph();
+		graph.buildRelationshipMap({
 			memberIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
 			relationships: [
 				relationship(1, "child", 1, 2),
@@ -207,7 +211,8 @@ describe("ConchFamilyGraph", () => {
 	});
 
 	test("resolves distant ancestral and extended relationships", () => {
-		const graph = new ConchFamilyGraph({
+		const graph = new ConchFamilyGraph();
+		graph.buildRelationshipMap({
 			memberIds: [1, 2, 3, 4, 5, 6, 7],
 			relationships: [
 				relationship(1, "child", 1, 2),
@@ -237,7 +242,8 @@ describe("ConchFamilyGraph", () => {
 	});
 
 	test("retrieves relationships for a member that exists", () => {
-		const graph = new ConchFamilyGraph({
+		const graph = new ConchFamilyGraph();
+		graph.buildRelationshipMap({
 			memberIds: [1, 2],
 			relationships: [relationship(1, "spouse", 1, 2)],
 		});
@@ -246,15 +252,16 @@ describe("ConchFamilyGraph", () => {
 	});
 
 	test("rejects relationship retrieval for a member that does not exist", () => {
-		const graph = new ConchFamilyGraph({ memberIds: [1], relationships: [] });
-
+		const graph = new ConchFamilyGraph();
+		graph.buildRelationshipMap({ memberIds: [1], relationships: [] });
 		expect(() => graph.getRelationships(2)).toThrow(
 			"Member does not have any documented relationships inside this Conch.",
 		);
 	});
 
 	test("marks members in separate graph components as unknown", () => {
-		const graph = new ConchFamilyGraph({
+		const graph = new ConchFamilyGraph();
+		graph.buildRelationshipMap({
 			memberIds: [1, 2, 3, 4, 5],
 			relationships: [
 				relationship(1, "child", 1, 2),
@@ -293,7 +300,8 @@ describe("ConchFamilyGraph", () => {
 				relationship(10, "child", 3, 7),
 			],
 		};
-		const graph = new ConchFamilyGraph(multipleSpouseFamily);
+		const graph = new ConchFamilyGraph();
+		graph.buildRelationshipMap(multipleSpouseFamily);
 
 		expect({
 			bloodMember: graph.getRelationships(1),
@@ -352,7 +360,8 @@ describe("ConchFamilyGraph", () => {
 
 	describe("getRelationship", () => {
 		test("returns the relationship between two members", () => {
-			const graph = new ConchFamilyGraph({
+			const graph = new ConchFamilyGraph();
+			graph.buildRelationshipMap({
 				memberIds: [1, 2, 3],
 				relationships: [
 					relationship(1, "child", 1, 2),
@@ -367,7 +376,8 @@ describe("ConchFamilyGraph", () => {
 		});
 
 		test("returns Self when source and target are the same member", () => {
-			const graph = new ConchFamilyGraph({
+			const graph = new ConchFamilyGraph();
+			graph.buildRelationshipMap({
 				memberIds: [1],
 				relationships: [],
 			});
@@ -376,7 +386,8 @@ describe("ConchFamilyGraph", () => {
 		});
 
 		test("returns Unknown when members have no documented familial path", () => {
-			const graph = new ConchFamilyGraph({
+			const graph = new ConchFamilyGraph();
+			graph.buildRelationshipMap({
 				memberIds: [1, 2],
 				relationships: [],
 			});
@@ -385,7 +396,8 @@ describe("ConchFamilyGraph", () => {
 		});
 
 		test("throws when the source member does not exist in the Conch", () => {
-			const graph = new ConchFamilyGraph({
+			const graph = new ConchFamilyGraph();
+			graph.buildRelationshipMap({
 				memberIds: [1, 2],
 				relationships: [],
 			});
@@ -396,7 +408,8 @@ describe("ConchFamilyGraph", () => {
 		});
 
 		test("throws when the target member does not exist in the Conch", () => {
-			const graph = new ConchFamilyGraph({
+			const graph = new ConchFamilyGraph();
+			graph.buildRelationshipMap({
 				memberIds: [1, 2],
 				relationships: [],
 			});
@@ -408,24 +421,26 @@ describe("ConchFamilyGraph", () => {
 	});
 
 	test("throws if invariant of a non blood member having only one conch blood spouse is violated", () => {
-		expect(
-			() =>
-				new ConchFamilyGraph({
-					memberIds: [1, 2, 3],
-					relationships: [
-						relationship(1, "spouse", 1, 2),
-						relationship(2, "spouse", 3, 2),
-					],
-				}),
-		).toThrow();
+		expect(() => {
+			const graph = new ConchFamilyGraph();
+			graph.buildRelationshipMap({
+				memberIds: [1, 2, 3],
+				relationships: [
+					relationship(1, "spouse", 1, 2),
+					relationship(2, "spouse", 3, 2),
+				],
+			});
+		}).toThrow();
 	});
 
 	test("treats spouse edges as symmetric in either stored direction", () => {
-		const forwardGraph = new ConchFamilyGraph({
+		const forwardGraph = new ConchFamilyGraph();
+		forwardGraph.buildRelationshipMap({
 			memberIds: [1, 2],
 			relationships: [relationship(1, "spouse", 1, 2)],
 		});
-		const reverseGraph = new ConchFamilyGraph({
+		const reverseGraph = new ConchFamilyGraph();
+		reverseGraph.buildRelationshipMap({
 			memberIds: [1, 2],
 			relationships: [relationship(1, "spouse", 2, 1)],
 		});
@@ -439,7 +454,8 @@ describe("ConchFamilyGraph", () => {
 	});
 
 	test("Resolves friend and pet relationships", () => {
-		const friendAndPetGraph = new ConchFamilyGraph({
+		const friendAndPetGraph = new ConchFamilyGraph();
+		friendAndPetGraph.buildRelationshipMap({
 			memberIds: [1, 2, 3, 4, 5],
 			relationships: [
 				relationship(1, "friend", 1, 2),
@@ -495,7 +511,8 @@ describe("ConchFamilyGraph", () => {
 				relationship(10, "child", 3, 7),
 			],
 		};
-		const graph = new ConchFamilyGraph(multiSpousalFamily);
+		const graph = new ConchFamilyGraph();
+		graph.buildRelationshipMap(multiSpousalFamily);
 
 		expect({
 			bloodMember: graph.getRelationships(1),
@@ -555,11 +572,6 @@ describe("ConchFamilyGraph", () => {
 	test("Resolves multiple ex wives", () => {
 		const multiSpousalFamily: ConchFamilyGraphInput = {
 			memberIds: [1, 2, 3, 5, 7],
-			/*
-			3  ----ex----  1  ----ex----  2
-						   /               /
-			     	      7				   5
-			*/
 			relationships: [
 				relationship(1, "spouse", 1, 2, false),
 				relationship(2, "spouse", 1, 3, false),
@@ -569,7 +581,8 @@ describe("ConchFamilyGraph", () => {
 				relationship(10, "child", 3, 7),
 			],
 		};
-		const graph = new ConchFamilyGraph(multiSpousalFamily);
+		const graph = new ConchFamilyGraph();
+		graph.buildRelationshipMap(multiSpousalFamily);
 
 		expect({
 			bloodMember: graph.getRelationships(1),
