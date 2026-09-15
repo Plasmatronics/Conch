@@ -3,6 +3,9 @@ import { ConchService } from "./types";
 import { appEnvVariables } from "./appEnvVariables";
 import { createConchDBService, runStartupHealthCheck } from "./services";
 import { mountApp } from "./app";
+import { ConchFamilyCache } from "./cache";
+import { LRUCacheWithDelete } from "mnemonist";
+import { AllFamilyRelations, ConchFamilyGraphFactory } from "./domain";
 
 const startServer = async (): Promise<void> => {
 	const {
@@ -15,6 +18,7 @@ const startServer = async (): Promise<void> => {
 		region,
 		caCertPath,
 		devPort,
+		conchFamilyCacheCapacity,
 	} = appEnvVariables;
 
 	const dbPoolClient = createConchDBService({
@@ -31,11 +35,21 @@ const startServer = async (): Promise<void> => {
 
 	const dbPool = await dbPoolClient.initializePool();
 
+	const lruCache = new LRUCacheWithDelete<number, AllFamilyRelations>(
+		Number(conchFamilyCacheCapacity),
+	);
+	const conchFamilyGraphFactory = new ConchFamilyGraphFactory();
+	const conchFamilyCache = new ConchFamilyCache(
+		dbPool,
+		conchFamilyGraphFactory,
+		lruCache,
+	);
+
 	const vitalServices: ConchService[] = [dbPoolClient];
 	await runStartupHealthCheck(vitalServices);
 
 	const app: Express = express();
-	mountApp(app, dbPool, vitalServices);
+	mountApp(app, dbPool, vitalServices, conchFamilyCache);
 
 	const server = app.listen(devPort ?? 4000, () => {
 		console.log(`Listening on port ${devPort ?? 4000}`);

@@ -21,6 +21,7 @@ const loadEnvVariables = (): ConchServerEnvConfig => {
 		CA_CERT_PATH: caCertPath,
 		API_PREFIX: apiPrefix,
 		NODE_ENV: nodeEnv,
+		CONCH_FAMILY_CACHE_CAPACITY: conchFamilyCacheCapacity,
 	} = process.env;
 
 	if (!region) throw new Error("Missing AWS_REGION");
@@ -37,6 +38,13 @@ const loadEnvVariables = (): ConchServerEnvConfig => {
 		throw new Error(`Invalid RDS_PORT: ${rdsPortStr}`);
 	if (!devPort || Number.isNaN(Number(devPort)))
 		throw new Error(`Invalid RDS_PORT: ${devPort}`);
+	if (
+		!conchFamilyCacheCapacity ||
+		Number.isNaN(Number(conchFamilyCacheCapacity))
+	)
+		throw new Error(
+			`Invalid CONCH_FAMILY_CACHE_CAPACITY: ${conchFamilyCacheCapacity}`,
+		);
 
 	return {
 		devPort,
@@ -50,6 +58,7 @@ const loadEnvVariables = (): ConchServerEnvConfig => {
 		caCertPath,
 		apiPrefix,
 		nodeEnv,
+		conchFamilyCacheCapacity,
 	};
 };
 
