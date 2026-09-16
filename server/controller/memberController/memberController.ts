@@ -11,12 +11,79 @@ import {
 	postsTableName,
 	conchesIdColumnName,
 	idSchema,
+	membersCreateSchema,
 } from "../../schemas";
 import { ControllerFactory } from "../controllerFactory";
-import { CRUDFactory } from "../../queries";
+import {
+	CreateQueryBuilder,
+	CRUDFactory,
+	DeleteQueryBuilder,
+} from "../../queries";
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../../errors";
 import z from "zod";
+
+const addMember =
+	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const conchId = req.params.conchId;
+			const parsedConchId = idSchema.parse(conchId);
+
+			const creationObj = membersCreateSchema.parse(req.body);
+			const { query, values } = new CreateQueryBuilder(
+				membersTableName,
+				parsedConchId,
+			)
+				.addCreateFields(
+					Object.entries(creationObj).map(([key, value]) => {
+						return {
+							key,
+							value,
+						};
+					}),
+				)
+				.addReturning(["*"])
+				.build();
+
+			const queryResponse = await dbPool.query(query, values);
+			const row = membersSchema.parse(queryResponse.rows[0]);
+
+			return res.status(201).json(row);
+		} catch (err: unknown) {
+			return next(err);
+		}
+	};
+
+const deleteMember =
+	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const memberId = idSchema.parse(req.params[membersIdColumnName]);
+			const parsedConchId = idSchema.parse(req.params.conchId);
+
+			const { query, values } = new DeleteQueryBuilder(
+				membersTableName,
+				parsedConchId,
+			)
+				.addConditions([
+					{
+						key: membersIdColumnName,
+						value: memberId,
+						operator: "=",
+					},
+				])
+				.addReturning(["*"])
+				.build();
+
+			const queryResponse = await dbPool.query(query, values);
+			if (!queryResponse.rowCount)
+				throw new AppError(`Resource with ID ${memberId} not found.`, 404);
+			const row = membersSchema.parse(queryResponse.rows[0]);
+
+			return res.status(200).json(row);
+		} catch (err: unknown) {
+			return next(err);
+		}
+	};
 
 export const membersControllers = (dbPool: Pool) => {
 	const crudFactory = new CRUDFactory({
@@ -34,7 +101,21 @@ export const membersControllers = (dbPool: Pool) => {
 		idParamName: "memberId",
 	});
 
-	return memberControllerFactory.createControllers();
+	const {
+		getAll: getAllController,
+		get: getController,
+		patch: patchController,
+		post: _postController,
+		delete: _deleteController,
+	} = memberControllerFactory.createControllers();
+
+	return {
+		getAll: getAllController,
+		get: getController,
+		patch: patchController,
+		post: addMember(dbPool),
+		delete: deleteMember(dbPool),
+	};
 };
 
 export const deletePostMembers =
