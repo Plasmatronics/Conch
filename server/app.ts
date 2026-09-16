@@ -17,11 +17,13 @@ import {
 import { ConchService } from "./types";
 import { appEnvVariables } from "./appEnvVariables";
 import { errorHandlerMiddleware } from "./middleware";
+import { ConchFamilyCache } from "./cache";
 
 export const mountApp = (
 	app: Express,
 	dbPool: Pool,
 	vitalServices: ConchService[],
+	_conchFamilyCache: ConchFamilyCache,
 ) => {
 	const { apiPrefix } = appEnvVariables;
 	app.use(express.json());

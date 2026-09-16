@@ -53,3 +53,6 @@ export type FamilyRelation =
 	| NonBloodFamilyRelation
 	| SpousalFamilyRelation
 	| NonFamilialRelationships;
+
+export type MembersFamilyRelations = Record<number, FamilyRelation>;
+export type AllFamilyRelations = Record<number, MembersFamilyRelations>;
