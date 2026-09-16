@@ -6,6 +6,7 @@ import {
 	conchesSchema,
 	conchesTableName,
 	conchesUpdateSchema,
+	idSchema,
 	usersIdColumnName,
 } from "../../schemas";
 import z from "zod";
@@ -71,7 +72,10 @@ export const getAllPersonalConches =
 export const getConch =
 	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const conch = await getConchFromDb(dbPool, res.locals.conchId);
+			const conchId = req.params.conchId;
+			const parsedConchId = idSchema.parse(conchId);
+
+			const conch = await getConchFromDb(dbPool, parsedConchId);
 			if (!conch) throw new AppError("Could not retrieve Conch", 404);
 
 			return res.status(200).json(conch);
@@ -85,7 +89,10 @@ export const updateConch =
 		try {
 			const entries = Object.entries(conchesUpdateSchema.parse(req.body));
 
-			const conch = await getConchFromDb(dbPool, res.locals.conchId);
+			const conchId = req.params.conchId;
+			const parsedConchId = idSchema.parse(conchId);
+
+			const conch = await getConchFromDb(dbPool, parsedConchId);
 			if (!conch) throw new AppError("Could not retrieve Conch", 404);
 			if (conch.admin_id !== req.user![usersIdColumnName])
 				throw new AppError("Only admins of this conch can update it. ", 403);
@@ -96,7 +103,7 @@ export const updateConch =
 					{
 						key: conchesIdColumnName,
 						operator: "=",
-						value: res.locals.conchId,
+						value: parsedConchId,
 					},
 				])
 				.addReturning(["*"])
@@ -111,15 +118,17 @@ export const updateConch =
 	};
 
 export const deleteConch =
-	(dbPool: Pool) =>
-	async (_req: Request, res: Response, next: NextFunction) => {
+	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const conchId = req.params.conchId;
+			const parsedConchId = idSchema.parse(conchId);
+
 			const { query, values } = new DeleteQueryBuilder(conchesTableName)
 				.addConditions([
 					{
 						key: conchesIdColumnName,
 						operator: "=",
-						value: res.locals.conchId,
+						value: parsedConchId,
 					},
 				])
 				.build();

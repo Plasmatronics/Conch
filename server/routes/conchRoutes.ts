@@ -27,16 +27,6 @@ export const createConchRoutes = (dbPool: Pool): Router => {
 		createConch(dbPool),
 	);
 
-	conchRouter.param("conchId", (_req, res, next, conchId) => {
-		try {
-			const parsedConchId = z.string().regex(/^\d+$/).parse(conchId);
-			res.locals.conchId = Number(parsedConchId);
-			next();
-		} catch (err) {
-			next(err);
-		}
-	});
-
 	conchRouter.patch(
 		"/:conchId",
 		verifySession(dbPool),

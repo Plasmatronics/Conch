@@ -49,6 +49,9 @@ const mockConch = {
 
 const mockRequest = {
 	body: {},
+	params: {
+		conchId: mockConchId.toString(),
+	},
 	user: {
 		[usersIdColumnName]: mockUserId,
 		serverIds: [1, 2, 3],
@@ -57,9 +60,6 @@ const mockRequest = {
 
 const mockResponse = {
 	...defaultResponse,
-	locals: {
-		conchId: mockConchId,
-	},
 } as unknown as Response;
 
 beforeEach(() => {
@@ -294,7 +294,7 @@ describe("conchController", () => {
 	});
 
 	describe("getConch", () => {
-		test("retrieves the conch using res.locals.conchId", async () => {
+		test("retrieves the conch using req.params.conchId", async () => {
 			await getConchHandler(mockRequest, mockResponse, mockNextFunction);
 
 			expect(mockGetConchFromDb).toHaveBeenCalledWith(mockPool, mockConchId);
@@ -560,7 +560,7 @@ describe("conchController", () => {
 	});
 
 	describe("deleteConch", () => {
-		test("deletes the conch identified by res.locals.conchId", async () => {
+		test("deletes the conch identified by req.params.conchId", async () => {
 			mockPool.query.mockResolvedValue({
 				rows: [],
 				rowCount: 1,
