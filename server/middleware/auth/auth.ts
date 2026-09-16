@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { RouteAccess } from "../types";
+import { RouteAccess } from "../../types";
+import { idSchema } from "../../schemas";
 
 const unauthorized = (res: Response) => {
 	return res.status(401).json({ message: "Unauthorized" });
@@ -18,7 +19,10 @@ export const auth = (access: RouteAccess) => {
 
 		if (user.app_role !== "admin") {
 			if (access === "admin") return forbidden(res);
-			if (access === "member" && !user.serverIds.includes(res.locals.conchId))
+
+			const conchId = req.params.conchId;
+			const parsedConchId = idSchema.parse(conchId);
+			if (access === "member" && !user.serverIds.includes(parsedConchId))
 				return forbidden(res);
 		}
 
