@@ -12,16 +12,16 @@ import {
 	sessionsIdColumnName,
 	usersIdColumnName,
 	usersSchema,
-} from "../schemas";
+} from "../../schemas";
 import { createHash, randomBytes } from "node:crypto";
-import { daysToMs } from "../utils";
+import { daysToMs } from "../../utils";
 import {
 	CreateQueryBuilder,
 	DeleteQueryBuilder,
 	getAllUsersConches,
 	UpdateQueryBuilder,
-} from "../queries";
-import { appEnvVariables } from "../appEnvVariables";
+} from "../../queries";
+import { appEnvVariables } from "../../appEnvVariables";
 
 const EXPIRE_TIME_NUM_DAYS = 30;
 const ABSOLUTE_EXPIRE_TIME_NUM_DAYS = 90;
