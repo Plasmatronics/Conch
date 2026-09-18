@@ -2,10 +2,10 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import * as session from "./session";
 import { Response } from "express";
 
-import { sessionsIdColumnName, sessionsTableName } from "../schemas";
+import { sessionsIdColumnName, sessionsTableName } from "../../schemas";
 
 import { Pool } from "pg";
-import { daysToMs } from "../utils/daysToMs";
+import { daysToMs } from "../../utils/daysToMs";
 import {
 	mockNextFunction,
 	mockRequest,
@@ -16,7 +16,7 @@ import {
 	usersParseSpy,
 	normalizeSql,
 	mockParsedUser,
-} from "../vitest.setup";
+} from "../../vitest.setup";
 
 const mockPool = {
 	query: vi.fn(),

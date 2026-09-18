@@ -63,23 +63,23 @@ beforeEach(() => {
 	mockPool.query.mockResolvedValue({ rows: [resource], rowCount: 1 });
 
 	vi.mocked(mockCrudFactory.generateGetAll).mockReturnValue({
-		text: "SELECT * FROM users",
+		query: "SELECT * FROM users",
 		values: [conchId],
 	});
 	vi.mocked(mockCrudFactory.generateGetOne).mockReturnValue({
-		text: "SELECT * FROM users WHERE user_id = $1",
+		query: "SELECT * FROM users WHERE user_id = $1",
 		values: [resourceId, conchId],
 	});
 	vi.mocked(mockCrudFactory.generateCreateOne).mockReturnValue({
-		text: "INSERT INTO users (name) VALUES ($1) RETURNING *",
+		query: "INSERT INTO users (name) VALUES ($1) RETURNING *",
 		values: ["John", conchId],
 	});
 	vi.mocked(mockCrudFactory.generateUpdateOne).mockReturnValue({
-		text: "UPDATE users SET name = $1 WHERE user_id = $2 RETURNING *",
+		query: "UPDATE users SET name = $1 WHERE user_id = $2 RETURNING *",
 		values: ["John", resourceId, conchId],
 	});
 	vi.mocked(mockCrudFactory.generateDeleteOne).mockReturnValue({
-		text: "DELETE FROM users WHERE user_id = $1 RETURNING *",
+		query: "DELETE FROM users WHERE user_id = $1 RETURNING *",
 		values: [resourceId, conchId],
 	});
 });

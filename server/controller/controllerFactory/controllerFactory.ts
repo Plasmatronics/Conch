@@ -57,9 +57,9 @@ export class ControllerFactory {
 		) => {
 			try {
 				const conchId = this.parseConchId(req);
-				const { text, values } = this.crudFactory.generateGetAll(conchId);
+				const { query, values } = this.crudFactory.generateGetAll(conchId);
 
-				const queryResponse = await this.dbPool.query(text, values);
+				const queryResponse = await this.dbPool.query(query, values);
 				const rows = this.tableSchema.array().parse(queryResponse.rows);
 
 				return res.status(200).json(rows);
@@ -77,12 +77,12 @@ export class ControllerFactory {
 				const tableUpdates = this.createSchema.parse(req.body);
 				const conchId = this.parseConchId(req);
 
-				const { text, values } = this.crudFactory.generateCreateOne(
+				const { query, values } = this.crudFactory.generateCreateOne(
 					tableUpdates,
 					conchId,
 				);
 
-				const queryResponse = await this.dbPool.query(text, values);
+				const queryResponse = await this.dbPool.query(query, values);
 				const row = this.tableSchema.parse(queryResponse.rows[0]);
 
 				return res.status(201).json(row);
@@ -100,12 +100,12 @@ export class ControllerFactory {
 				const resourceId = idSchema.parse(req.params[this.idParamName]);
 				const conchId = this.parseConchId(req);
 
-				const { text, values } = this.crudFactory.generateGetOne(
+				const { query, values } = this.crudFactory.generateGetOne(
 					resourceId,
 					conchId,
 				);
 
-				const queryResponse = await this.dbPool.query(text, values);
+				const queryResponse = await this.dbPool.query(query, values);
 				if (!queryResponse.rowCount)
 					throw new AppError(`Resource with ID ${resourceId} not found.`, 404);
 				const row = this.tableSchema.parse(queryResponse.rows[0]);
@@ -127,12 +127,12 @@ export class ControllerFactory {
 
 				const tableUpdates = this.updateSchema.parse(req.body);
 
-				const { text, values } = this.crudFactory.generateUpdateOne(
+				const { query, values } = this.crudFactory.generateUpdateOne(
 					tableUpdates,
 					resourceId,
 					conchId,
 				);
-				const queryResponse = await this.dbPool.query(text, values);
+				const queryResponse = await this.dbPool.query(query, values);
 				if (!queryResponse.rowCount)
 					throw new AppError(`Resource with ID ${resourceId} not found.`, 404);
 
@@ -152,11 +152,11 @@ export class ControllerFactory {
 				const resourceId = idSchema.parse(req.params[this.idParamName]);
 				const conchId = this.parseConchId(req);
 
-				const { text, values } = this.crudFactory.generateDeleteOne(
+				const { query, values } = this.crudFactory.generateDeleteOne(
 					resourceId,
 					conchId,
 				);
-				const queryResponse = await this.dbPool.query(text, values);
+				const queryResponse = await this.dbPool.query(query, values);
 				if (!queryResponse.rowCount)
 					throw new AppError(`Resource with ID ${resourceId} not found.`, 404);
 				const row = this.tableSchema.parse(queryResponse.rows[0]);
