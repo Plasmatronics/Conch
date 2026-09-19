@@ -11,3 +11,4 @@ We should test happy paths, sad paths, malformed/null input paths, concurrency s
 Mock modules/services only when and to the extent necessary.
 Before implementing any mocks or normilization functions yourself, you should first check the vitest setup files and leverage these.
 Prefer vitest 'test' over 'it' conventions.
+Do not omit or change tests simply because they don't pass a use case, especially if it reveals a problem in production code.

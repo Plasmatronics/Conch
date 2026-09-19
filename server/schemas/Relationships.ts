@@ -17,17 +17,23 @@ export const relationshipsSchema = z.object({
 	is_current: z.boolean(),
 });
 
-export const relationshipsCreateSchema = relationshipsSchema.omit({
-	[relationshipsIdColumnName]: true,
-	created_at: true,
-});
+export const relationshipsCreateSchema = relationshipsSchema
+	.omit({
+		[relationshipsIdColumnName]: true,
+		created_at: true,
+		is_current: true,
+	})
+	.extend({
+		is_current: z.boolean().default(true),
+	});
 
 export const relationshipsGraphSchema = relationshipsSchema.omit({
 	created_at: true,
 });
 export type GraphRelationship = z.infer<typeof relationshipsGraphSchema>;
 
-export const relationshipsUpdateSchema = relationshipsCreateSchema
+export const relationshipsUpdateSchema = relationshipsGraphSchema
+	.omit({ [relationshipsIdColumnName]: true })
 	.partial()
 	.refine((obj) => Object.keys(obj).length > 0, {
 		message: "At least one field must be provided",

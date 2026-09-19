@@ -8,7 +8,6 @@ import {
 	deleteConch,
 } from "../controller";
 import { auth, verifySession } from "../middleware";
-import z from "zod";
 
 export const createConchRoutes = (dbPool: Pool): Router => {
 	const conchRouter = Router();

@@ -5,3 +5,4 @@ export * from "./postController";
 export * from "./controllerFactory";
 export * from "./mediaController";
 export * from "./memberController";
+export * from "./relationshipController";
