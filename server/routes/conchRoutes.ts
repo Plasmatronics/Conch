@@ -8,7 +8,6 @@ import {
 	deleteConch,
 } from "../controller";
 import { auth, verifySession } from "../middleware";
-import z from "zod";
 
 export const createConchRoutes = (dbPool: Pool): Router => {
 	const conchRouter = Router();
@@ -26,16 +25,6 @@ export const createConchRoutes = (dbPool: Pool): Router => {
 		auth("authenticated"),
 		createConch(dbPool),
 	);
-
-	conchRouter.param("conchId", (_req, res, next, conchId) => {
-		try {
-			const parsedConchId = z.string().regex(/^\d+$/).parse(conchId);
-			res.locals.conchId = Number(parsedConchId);
-			next();
-		} catch (err) {
-			next(err);
-		}
-	});
 
 	conchRouter.patch(
 		"/:conchId",

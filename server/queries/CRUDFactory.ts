@@ -1,10 +1,10 @@
-import { QueryConfig } from "pg";
 import {
 	CreateQueryBuilder,
 	DeleteQueryBuilder,
 	ReadQueryBuilder,
 	UpdateQueryBuilder,
 } from "./QueryBuilders";
+import { BuildQuery } from "./QueryBuilders/QueryBuilder";
 
 interface CRUDFactoryConfig {
 	tableName: string;
@@ -20,76 +20,56 @@ export class CRUDFactory {
 		this.idColumnName = idColumnName;
 	}
 
-	private toQueryConfig({
-		query: text,
-		values,
-	}: {
-		query: string;
-		values: unknown[];
-	}): QueryConfig {
-		return { text: text.replace(/\s+/g, " ").trim(), values };
+	generateGetAll(conchId?: number): BuildQuery {
+		return new ReadQueryBuilder(this.tableName, conchId ?? null).build();
 	}
 
-	generateGetAll(conchId?: number): QueryConfig {
-		return this.toQueryConfig(
-			new ReadQueryBuilder(this.tableName, conchId ?? null).build(),
-		);
-	}
-
-	generateGetOne(resourceId: number, conchId?: number): QueryConfig {
-		return this.toQueryConfig(
-			new ReadQueryBuilder(this.tableName, conchId ?? null)
-				.addConditions([
-					{ key: this.idColumnName, operator: "=", value: resourceId },
-				])
-				.build(),
-		);
+	generateGetOne(resourceId: number, conchId?: number): BuildQuery {
+		return new ReadQueryBuilder(this.tableName, conchId ?? null)
+			.addConditions([
+				{ key: this.idColumnName, operator: "=", value: resourceId },
+			])
+			.build();
 	}
 
 	generateUpdateOne(
 		valueMap: Record<string, unknown>,
 		resourceId: number,
 		conchId?: number,
-	): QueryConfig {
+	): BuildQuery {
 		const entries = Object.entries(valueMap);
 		if (!entries.length)
 			throw new Error("No columns for updates were entered.");
 
-		return this.toQueryConfig(
-			new UpdateQueryBuilder(this.tableName, conchId ?? null)
-				.addUpdateFields(entries.map(([key, value]) => ({ key, value })))
-				.addConditions([
-					{ key: this.idColumnName, operator: "=", value: resourceId },
-				])
-				.addReturning(["*"])
-				.build(),
-		);
+		return new UpdateQueryBuilder(this.tableName, conchId ?? null)
+			.addUpdateFields(entries.map(([key, value]) => ({ key, value })))
+			.addConditions([
+				{ key: this.idColumnName, operator: "=", value: resourceId },
+			])
+			.addReturning(["*"])
+			.build();
 	}
 
-	generateDeleteOne(resourceId: number, conchId?: number): QueryConfig {
-		return this.toQueryConfig(
-			new DeleteQueryBuilder(this.tableName, conchId ?? null)
-				.addConditions([
-					{ key: this.idColumnName, operator: "=", value: resourceId },
-				])
-				.addReturning(["*"])
-				.build(),
-		);
+	generateDeleteOne(resourceId: number, conchId?: number): BuildQuery {
+		return new DeleteQueryBuilder(this.tableName, conchId ?? null)
+			.addConditions([
+				{ key: this.idColumnName, operator: "=", value: resourceId },
+			])
+			.addReturning(["*"])
+			.build();
 	}
 
 	generateCreateOne(
 		valueMap: Record<string, unknown>,
 		conchId?: number,
-	): QueryConfig {
+	): BuildQuery {
 		const entries = Object.entries(valueMap);
 		if (!entries.length && conchId === undefined)
 			throw new Error("No columns for creation were entered.");
 
-		return this.toQueryConfig(
-			new CreateQueryBuilder(this.tableName, conchId ?? null)
-				.addCreateFields(entries.map(([key, value]) => ({ key, value })))
-				.addReturning(["*"])
-				.build(),
-		);
+		return new CreateQueryBuilder(this.tableName, conchId ?? null)
+			.addCreateFields(entries.map(([key, value]) => ({ key, value })))
+			.addReturning(["*"])
+			.build();
 	}
 }

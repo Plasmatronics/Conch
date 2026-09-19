@@ -1,4 +1,8 @@
+# Familial Relationships
+
 Only family within one degree of a blood member are permitted to be within any given Conch.
+
+## Relationship Types
 
 We only display the following relationship types:
 
@@ -27,6 +31,8 @@ Some minor label variations are allowed, these include the following variations:
 - `Ex-Spouse`
 
 Family Friend and Pet relationships are also permitted
+
+## App's Opinionated Decisions
 
 We intentionally generalize more distant relationships. For example, aunt, great-aunt, and more distant aunt/uncle relationships are all displayed as `Aunt/Uncle`.
 We intentionally continue to classify a divorced non-blood member as having an `In-Law` tie to the rest of the blood family.

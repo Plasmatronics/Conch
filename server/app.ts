@@ -23,7 +23,7 @@ export const mountApp = (
 	app: Express,
 	dbPool: Pool,
 	vitalServices: ConchService[],
-	_conchFamilyCache: ConchFamilyCache,
+	conchFamilyCache: ConchFamilyCache,
 ) => {
 	const { apiPrefix } = appEnvVariables;
 	app.use(express.json());
@@ -44,13 +44,13 @@ export const mountApp = (
 		memberReferralRoutes,
 	);
 
-	const memberRoutes = createMemberRoutes(dbPool);
+	const memberRoutes = createMemberRoutes(dbPool, conchFamilyCache);
 	app.use(`${apiPrefix}/conches/:conchId/members`, memberRoutes);
 
 	const postRoutes = createPostRoutes(dbPool);
 	app.use(`${apiPrefix}/conches/:conchId/posts`, postRoutes);
 
-	const relationshipRoutes = createRelationshipRoutes(dbPool);
+	const relationshipRoutes = createRelationshipRoutes(dbPool, conchFamilyCache);
 	app.use(`${apiPrefix}/conches/:conchId/relationships`, relationshipRoutes);
 
 	const userReferralRoutes = createUserReferralRoutes(dbPool);

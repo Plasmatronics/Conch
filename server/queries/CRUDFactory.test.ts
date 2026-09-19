@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { CRUDFactory } from "./CRUDFactory";
+import { normalizeSql } from "../vitest.setup";
 
 const crudFactory = new CRUDFactory({
 	tableName: "users",
@@ -12,7 +13,7 @@ describe("crudFactory", () => {
 			const result = crudFactory.generateGetAll(7);
 
 			expect(result).toEqual({
-				text: "SELECT * FROM users WHERE conch_id = $1",
+				query: "SELECT * FROM users WHERE conch_id = $1",
 				values: [7],
 			});
 		});
@@ -21,7 +22,7 @@ describe("crudFactory", () => {
 			const result = crudFactory.generateGetAll();
 
 			expect(result).toEqual({
-				text: "SELECT * FROM users",
+				query: "SELECT * FROM users",
 				values: [],
 			});
 		});
@@ -33,7 +34,7 @@ describe("crudFactory", () => {
 			}).generateGetAll();
 
 			expect(result).toEqual({
-				text: 'SELECT * FROM "user accounts"',
+				query: 'SELECT * FROM "user accounts"',
 				values: [],
 			});
 		});
@@ -47,7 +48,7 @@ describe("crudFactory", () => {
 			}).generateGetOne(123, 7);
 
 			expect(result).toEqual({
-				text: "SELECT * FROM members WHERE member_id = $1 AND conch_id = $2",
+				query: "SELECT * FROM members WHERE member_id = $1 AND conch_id = $2",
 				values: [123, 7],
 			});
 		});
@@ -56,7 +57,7 @@ describe("crudFactory", () => {
 			const result = crudFactory.generateGetOne(123);
 
 			expect(result).toEqual({
-				text: "SELECT * FROM users WHERE user_id = $1",
+				query: "SELECT * FROM users WHERE user_id = $1",
 				values: [123],
 			});
 		});
@@ -68,7 +69,7 @@ describe("crudFactory", () => {
 			}).generateGetOne(123);
 
 			expect(result).toEqual({
-				text: 'SELECT * FROM "user accounts" WHERE "user id" = $1',
+				query: 'SELECT * FROM "user accounts" WHERE "user id" = $1',
 				values: [123],
 			});
 		});
@@ -78,9 +79,9 @@ describe("crudFactory", () => {
 
 			const result = crudFactory.generateGetOne(maliciousId);
 
-			expect(result.text).toBe("SELECT * FROM users WHERE user_id = $1");
+			expect(result.query).toBe("SELECT * FROM users WHERE user_id = $1");
 			expect(result.values).toEqual([maliciousId]);
-			expect(result.text).not.toContain(maliciousId);
+			expect(result.query).not.toContain(maliciousId);
 		});
 	});
 
@@ -91,8 +92,8 @@ describe("crudFactory", () => {
 				idColumnName: "member_id",
 			}).generateUpdateOne({ first_name: "John" }, 123, 7);
 
-			expect(result).toEqual({
-				text:
+			expect({ ...result, query: normalizeSql(result.query) }).toEqual({
+				query:
 					"UPDATE members SET first_name = $1 " +
 					"WHERE member_id = $2 AND conch_id = $3 RETURNING *",
 				values: ["John", 123, 7],
@@ -102,8 +103,9 @@ describe("crudFactory", () => {
 		test("generates a parameterized update query for one column", () => {
 			const result = crudFactory.generateUpdateOne({ first_name: "John" }, 123);
 
-			expect(result).toEqual({
-				text: "UPDATE users SET first_name = $1 WHERE user_id = $2 RETURNING *",
+			expect({ ...result, query: normalizeSql(result.query) }).toEqual({
+				query:
+					"UPDATE users SET first_name = $1 WHERE user_id = $2 RETURNING *",
 				values: ["John", 123],
 			});
 		});
@@ -118,8 +120,8 @@ describe("crudFactory", () => {
 				123,
 			);
 
-			expect(result).toEqual({
-				text:
+			expect({ ...result, query: normalizeSql(result.query) }).toEqual({
+				query:
 					"UPDATE users SET first_name = $1, last_name = $2, email = $3 " +
 					"WHERE user_id = $4 RETURNING *",
 				values: ["John", "Doe", "john@example.com", 123],
@@ -136,8 +138,8 @@ describe("crudFactory", () => {
 				123,
 			);
 
-			expect(result).toEqual({
-				text:
+			expect({ ...result, query: normalizeSql(result.query) }).toEqual({
+				query:
 					"UPDATE users SET age = $1, is_active = $2, nickname = $3 " +
 					"WHERE user_id = $4 RETURNING *",
 				values: [25, true, null, 123],
@@ -155,8 +157,8 @@ describe("crudFactory", () => {
 				123,
 			);
 
-			expect(result).toEqual({
-				text:
+			expect({ ...result, query: normalizeSql(result.query) }).toEqual({
+				query:
 					'UPDATE "user accounts" SET "display name" = $1 ' +
 					'WHERE "user id" = $2 RETURNING *',
 				values: ["John", 123],
@@ -171,11 +173,11 @@ describe("crudFactory", () => {
 				123,
 			);
 
-			expect(result.text).toBe(
+			expect(normalizeSql(result.query)).toBe(
 				"UPDATE users SET first_name = $1 WHERE user_id = $2 RETURNING *",
 			);
 			expect(result.values).toEqual([maliciousValue, 123]);
-			expect(result.text).not.toContain(maliciousValue);
+			expect(result.query).not.toContain(maliciousValue);
 		});
 
 		test("throws when no columns are provided for updating", () => {
@@ -192,8 +194,9 @@ describe("crudFactory", () => {
 				idColumnName: "member_id",
 			}).generateDeleteOne(123, 7);
 
-			expect(result).toEqual({
-				text: "DELETE FROM members WHERE member_id = $1 AND conch_id = $2 RETURNING *",
+			expect({ ...result, query: normalizeSql(result.query) }).toEqual({
+				query:
+					"DELETE FROM members WHERE member_id = $1 AND conch_id = $2 RETURNING *",
 				values: [123, 7],
 			});
 		});
@@ -201,8 +204,8 @@ describe("crudFactory", () => {
 		test("generates a parameterized delete query", () => {
 			const result = crudFactory.generateDeleteOne(123);
 
-			expect(result).toEqual({
-				text: "DELETE FROM users WHERE user_id = $1 RETURNING *",
+			expect({ ...result, query: normalizeSql(result.query) }).toEqual({
+				query: "DELETE FROM users WHERE user_id = $1 RETURNING *",
 				values: [123],
 			});
 		});
@@ -213,8 +216,8 @@ describe("crudFactory", () => {
 				idColumnName: "user id",
 			}).generateDeleteOne(123);
 
-			expect(result).toEqual({
-				text: 'DELETE FROM "user accounts" WHERE "user id" = $1 RETURNING *',
+			expect({ ...result, query: normalizeSql(result.query) }).toEqual({
+				query: 'DELETE FROM "user accounts" WHERE "user id" = $1 RETURNING *',
 				values: [123],
 			});
 		});
@@ -224,11 +227,11 @@ describe("crudFactory", () => {
 
 			const result = crudFactory.generateDeleteOne(maliciousId);
 
-			expect(result.text).toBe(
+			expect(normalizeSql(result.query)).toBe(
 				"DELETE FROM users WHERE user_id = $1 RETURNING *",
 			);
 			expect(result.values).toEqual([maliciousId]);
-			expect(result.text).not.toContain(maliciousId);
+			expect(result.query).not.toContain(maliciousId);
 		});
 	});
 
@@ -236,8 +239,8 @@ describe("crudFactory", () => {
 		test("generates a parameterized insert query for one column", () => {
 			const result = crudFactory.generateCreateOne({ first_name: "John" });
 
-			expect(result).toEqual({
-				text: "INSERT INTO users (first_name) VALUES ($1) RETURNING *",
+			expect({ ...result, query: normalizeSql(result.query) }).toEqual({
+				query: "INSERT INTO users (first_name) VALUES ($1) RETURNING *",
 				values: ["John"],
 			});
 		});
@@ -249,8 +252,8 @@ describe("crudFactory", () => {
 				email: "john@example.com",
 			});
 
-			expect(result).toEqual({
-				text:
+			expect({ ...result, query: normalizeSql(result.query) }).toEqual({
+				query:
 					"INSERT INTO users (first_name, last_name, email) " +
 					"VALUES ($1, $2, $3) RETURNING *",
 				values: ["John", "Doe", "john@example.com"],
@@ -264,8 +267,8 @@ describe("crudFactory", () => {
 				nickname: null,
 			});
 
-			expect(result).toEqual({
-				text:
+			expect({ ...result, query: normalizeSql(result.query) }).toEqual({
+				query:
 					"INSERT INTO users (age, is_active, nickname) " +
 					"VALUES ($1, $2, $3) RETURNING *",
 				values: [25, true, null],
@@ -278,8 +281,8 @@ describe("crudFactory", () => {
 				idColumnName: "user_id",
 			}).generateCreateOne({ "display name": "John" });
 
-			expect(result).toEqual({
-				text:
+			expect({ ...result, query: normalizeSql(result.query) }).toEqual({
+				query:
 					'INSERT INTO "user accounts" ("display name") ' +
 					"VALUES ($1) RETURNING *",
 				values: ["John"],
@@ -293,11 +296,11 @@ describe("crudFactory", () => {
 				first_name: maliciousValue,
 			});
 
-			expect(result.text).toBe(
+			expect(normalizeSql(result.query)).toBe(
 				"INSERT INTO users (first_name) VALUES ($1) RETURNING *",
 			);
 			expect(result.values).toEqual([maliciousValue]);
-			expect(result.text).not.toContain(maliciousValue);
+			expect(result.query).not.toContain(maliciousValue);
 		});
 
 		test("throws when no columns are provided for creation", () => {

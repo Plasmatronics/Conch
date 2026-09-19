@@ -1,41 +1,57 @@
 import { Router } from "express";
 import { Pool } from "pg";
-import { RouteFactory } from "./RouteFactory";
-import { CRUDFactory } from "../queries";
+import { ConchFamilyCache } from "../cache";
+import { auth, buildCacheEntry, verifySession } from "../middleware";
 import {
-	relationshipsTableName,
-	relationshipsIdColumnName,
-	relationshipsSchema,
-	relationshipsCreateSchema,
-	relationshipsUpdateSchema,
-} from "../schemas";
-import { ControllerFactory } from "../controller";
+	addRelationship,
+	deleteRelationship,
+	getAllRelationships,
+	updateRelationship,
+} from "../controller";
 
-export const createRelationshipRoutes = (dbPool: Pool): Router => {
-	const crudFactory = new CRUDFactory({
-		tableName: relationshipsTableName,
-		idColumnName: relationshipsIdColumnName,
-	});
+export const createRelationshipRoutes = (
+	dbPool: Pool,
+	cache: ConchFamilyCache,
+): Router => {
+	const relationshipRouter = Router();
 
-	const controllers = new ControllerFactory({
-		dbPool,
-		crudFactory,
-		createSchema: relationshipsCreateSchema,
-		updateSchema: relationshipsUpdateSchema,
-		tableSchema: relationshipsSchema,
-		conchScoped: true,
-		idParamName: "relationshipId",
-	});
-	const relationshipRouteFactory = new RouteFactory(dbPool);
-
-	return relationshipRouteFactory.createRoutes(
-		{
-			getAll: "member",
-			get: "member",
-			post: "member",
-			patch: "member",
-			delete: "member",
-		},
-		controllers.createControllers(),
+	relationshipRouter.get(
+		"/",
+		verifySession(dbPool),
+		auth("member"),
+		getAllRelationships(dbPool),
 	);
+
+	relationshipRouter.post(
+		"",
+		verifySession(dbPool),
+		auth("member"),
+		addRelationship(dbPool),
+		buildCacheEntry(cache),
+	);
+
+	relationshipRouter.patch(
+		"/:relationshipId",
+		verifySession(dbPool),
+		auth("member"),
+		updateRelationship(dbPool),
+		buildCacheEntry(cache),
+	);
+
+	relationshipRouter.delete(
+		"/:relationshipId",
+		verifySession(dbPool),
+		auth("member"),
+		deleteRelationship(dbPool),
+		buildCacheEntry(cache),
+	);
+
+	relationshipRouter.get(
+		"/:relationshipId",
+		verifySession(dbPool),
+		auth("member"),
+		deleteRelationship(dbPool),
+	);
+
+	return relationshipRouter;
 };
