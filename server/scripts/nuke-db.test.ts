@@ -1,11 +1,11 @@
 import { afterAll, beforeEach, describe, expect, test, vi } from "vitest";
 
-import { createConchDBService } from "../services";
-import type { ConchDBService } from "../services";
+import { createConchDBService } from "../integrations";
+import type { ConchDBService } from "../integrations";
 import { nukeDb } from "./nuke-db";
 import { mockPool } from "../vitest.setup";
 
-vi.mock("../services", () => ({
+vi.mock("../integrations", () => ({
 	createConchDBService: vi.fn(),
 }));
 

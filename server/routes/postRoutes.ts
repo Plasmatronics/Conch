@@ -17,7 +17,6 @@ import { auth, verifySession } from "../middleware";
 export const createPostRoutes = (dbPool: Pool): Router => {
 	const postRouter = Router();
 
-	//Get Member Posts
 	postRouter.get(
 		"/members/:memberId",
 		verifySession(dbPool),
@@ -25,7 +24,6 @@ export const createPostRoutes = (dbPool: Pool): Router => {
 		getMemberPosts(dbPool),
 	);
 
-	//Nested Resource Operations
 	postRouter.post(
 		"/:postId/members",
 		verifySession(dbPool),
@@ -51,7 +49,6 @@ export const createPostRoutes = (dbPool: Pool): Router => {
 		deletePostMedia,
 	);
 
-	//Resource Id Operarations
 	postRouter.get(
 		"/:postId",
 		verifySession(dbPool),
@@ -72,7 +69,6 @@ export const createPostRoutes = (dbPool: Pool): Router => {
 		deletePost(dbPool),
 	);
 
-	//No Resource Id
 	postRouter.post(
 		"",
 		verifySession(dbPool),

@@ -1,13 +1,13 @@
 import { afterAll, beforeEach, describe, expect, test, vi } from "vitest";
 
-import { createConchDBService } from "../services";
-import type { ConchDBService } from "../services";
+import { createConchDBService } from "../integrations";
+import type { ConchDBService } from "../integrations";
 import { determineTopologicalOrderingOfTableCreation } from "./utils";
 import { enumCreationQueries, nodeToCreationQueryMap } from "../schemas";
 import { injectTablesIntoDB } from "./init-db";
 import { mockPool, mockPoolClient } from "../vitest.setup";
 
-vi.mock("../services", () => ({
+vi.mock("../integrations", () => ({
 	createConchDBService: vi.fn(),
 }));
 const mockCreateConchDBService = vi.mocked(createConchDBService);

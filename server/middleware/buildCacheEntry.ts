@@ -6,9 +6,7 @@ export const buildCacheEntry =
 	(cache: ConchFamilyCache) =>
 	async (req: Request, _res: Response, next: NextFunction) => {
 		try {
-			const conchId = req.params.conchId;
-			const parsedConchId = idSchema.parse(conchId);
-
+			const parsedConchId = idSchema.parse(req.params.conchId);
 			await cache.rebuildCacheEntry(parsedConchId);
 
 			return next();

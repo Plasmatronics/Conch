@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { healthCheck } from "../../services";
+import { healthCheck } from "../../integrations";
 import { ConchService } from "../../types";
 import { AppError } from "../../errors";
 

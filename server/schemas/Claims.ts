@@ -19,6 +19,16 @@ export const claimsSchema = z.object({
 	[membersIdColumnName]: z.number(),
 });
 
+/*
+// - configured filters
+// - search
+// - limit
+// - cursor
+// - sortBy
+// - sortDir
+
+*/
+
 export const claimsCreateSchema = claimsSchema.omit({
 	[claimsIdColumnName]: true,
 	created_at: true,

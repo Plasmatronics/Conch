@@ -56,6 +56,8 @@ export class ControllerFactory {
 			next: NextFunction,
 		) => {
 			try {
+				//req.query----> filterable where clauses, limit, sortDir, last seenId
+
 				const conchId = this.parseConchId(req);
 				const { query, values } = this.crudFactory.generateGetAll(conchId);
 

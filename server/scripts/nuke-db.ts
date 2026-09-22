@@ -1,4 +1,4 @@
-import { createConchDBService } from "../services";
+import { createConchDBService } from "../integrations";
 import readline from "node:readline";
 import { appEnvVariables } from "../appEnvVariables";
 import { pathToFileURL } from "node:url";

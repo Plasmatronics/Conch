@@ -1,8 +1,7 @@
 import format from "pg-format";
 import { conchesIdColumnName, tableNameToIdColumnMap } from "../../schemas";
 import { BuildQuery, Condition, QueryBuilder } from "./QueryBuilder";
-
-export type SortDirection = "ASC" | "DESC";
+import { SortDirection } from "../../types";
 
 export interface ColumnReference {
 	key: string;

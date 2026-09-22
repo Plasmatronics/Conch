@@ -1,7 +1,7 @@
 import express, { type Express } from "express";
 import { ConchService } from "./types";
 import { appEnvVariables } from "./appEnvVariables";
-import { createConchDBService, runStartupHealthCheck } from "./services";
+import { createConchDBService, runStartupHealthCheck } from "./integrations";
 import { mountApp } from "./app";
 import { ConchFamilyCache } from "./cache";
 import { LRUCacheWithDelete } from "mnemonist";
