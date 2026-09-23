@@ -6,6 +6,7 @@ import { mountApp } from "./app";
 import { ConchFamilyCache } from "./cache";
 import { LRUCacheWithDelete } from "mnemonist";
 import { AllFamilyRelations, ConchFamilyGraphFactory } from "./domain";
+import { CONCH_FAMILY_CACHE_CAPACITY } from "./config";
 
 const startServer = async (): Promise<void> => {
 	const {
@@ -18,7 +19,6 @@ const startServer = async (): Promise<void> => {
 		region,
 		caCertPath,
 		devPort,
-		conchFamilyCacheCapacity,
 	} = appEnvVariables;
 
 	const dbPoolClient = createConchDBService({
@@ -36,7 +36,7 @@ const startServer = async (): Promise<void> => {
 	const dbPool = await dbPoolClient.initializePool();
 
 	const lruCache = new LRUCacheWithDelete<number, AllFamilyRelations>(
-		Number(conchFamilyCacheCapacity),
+		CONCH_FAMILY_CACHE_CAPACITY,
 	);
 	const conchFamilyGraphFactory = new ConchFamilyGraphFactory();
 	const conchFamilyCache = new ConchFamilyCache(
