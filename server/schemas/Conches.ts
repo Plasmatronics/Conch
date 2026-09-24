@@ -5,6 +5,9 @@ import {
 	usersTableName,
 	apiDateSchema,
 } from "./shared";
+import { createdAtFilters } from "./shared/filters";
+import { idSchema } from "./utils";
+import { QueryParamConfig } from "../types";
 
 export const conchesSchema = z.object({
 	[conchesIdColumnName]: z.number(),
@@ -49,3 +52,42 @@ CREATE TABLE ${conchesTableName} (
 	admin_id integer NOT NULL REFERENCES ${usersTableName},
 	created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );`;
+
+/*
+	[conchesIdColumnName]: z.number(),
+	conch_name: z.string(),
+	confirmations_needed_for_referrals: z.number(),
+	admin_id: z.number(),
+	created_at: apiDateSchema,
+*/
+
+const fields = [
+	conchesIdColumnName,
+	"conch_name",
+	"confirmations_needed_for_referrals",
+	"admin_id",
+	"created_at",
+];
+export const conchesQueryParamConfig: QueryParamConfig = {
+	fields: fields,
+	sortFields: ["created_at", "conch_name", conchesIdColumnName],
+	filters: [
+		...createdAtFilters,
+		{
+			columnRef: "conch_name",
+			operator: "=",
+			param: "conch_name",
+			parseFn: (value: string) => conchesSchema.shape.conch_name.parse(value),
+		},
+		{
+			columnRef: "admin_id",
+			operator: "=",
+			param: "admin_id",
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+	],
+	defaultSortDir: "DESC",
+	defaultSortFields: ["created_at", conchesIdColumnName],
+	defaultLimit: 50,
+	defaultFields: fields,
+};

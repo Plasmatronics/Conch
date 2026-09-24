@@ -8,7 +8,9 @@ import {
 	membersIdColumnName,
 	membersTableName,
 } from "./shared";
+import { createdAtFilters } from "./shared/filters";
 import { mediaQuerySchema } from "./Media";
+import { QueryParamConfig } from "../types";
 
 const pointSchema = z.object({
 	type: z.literal("Point"),
@@ -31,7 +33,7 @@ export const membersSchema = z.object({
 	burial_location: pointSchema.nullable(),
 });
 
-export const memberQuerySchema = membersSchema
+export const memberPostQuerySchema = membersSchema
 	.pick({
 		first_name: true,
 		last_name: true,
@@ -48,7 +50,7 @@ export const membersCreateSchema = membersSchema
 		conch_id: true,
 	})
 	.extend({
-		photo_id: z.number().nullable().optional(),
+		photo: mediaQuerySchema.nullable(),
 		date_of_birth: apiDateSchema.nullable().optional(),
 		biography: z.string().nullable().optional(),
 		date_of_death: apiDateSchema.nullable().optional(),
@@ -87,3 +89,77 @@ CREATE TABLE ${membersTableName} (
 	death_location point,
 	burial_location point
 );`;
+
+export const membersQueryParamConfig: QueryParamConfig = {
+	fields: [
+		membersIdColumnName,
+		"created_at",
+		"first_name",
+		"last_name",
+		"photo",
+		"date_of_birth",
+		"biography",
+		"date_of_death",
+		"addresses",
+		"birth_location",
+		"death_location",
+		"burial_location",
+	],
+	sortFields: [
+		"created_at",
+		"first_name",
+		"last_name",
+		"date_of_birth",
+		"date_of_death",
+		membersIdColumnName,
+	],
+	filters: [
+		...createdAtFilters,
+		{
+			columnRef: "first_name",
+			operator: "=",
+			param: "first_name",
+			parseFn: (input: string) => z.string().parse(input),
+		},
+		{
+			columnRef: "last_name",
+			operator: "=",
+			param: "last_name",
+			parseFn: (input: string) => z.string().parse(input),
+		},
+		{
+			columnRef: "date_of_birth",
+			operator: "<=",
+			param: "max_date_of_birth",
+			parseFn: (input: string) => apiDateSchema.parse(input),
+		},
+		{
+			columnRef: "date_of_birth",
+			operator: ">=",
+			param: "min_date_of_birth",
+			parseFn: (input: string) => apiDateSchema.parse(input),
+		},
+		{
+			columnRef: "date_of_death",
+			operator: "<=",
+			param: "max_date_of_death",
+			parseFn: (input: string) => apiDateSchema.parse(input),
+		},
+		{
+			columnRef: "date_of_death",
+			operator: ">=",
+			param: "min_date_of_death",
+			parseFn: (input: string) => apiDateSchema.parse(input),
+		},
+	],
+	defaultSortDir: "DESC",
+	defaultSortFields: ["last_name", membersIdColumnName],
+	defaultLimit: 50,
+	defaultFields: [
+		membersIdColumnName,
+		"created_at",
+		"first_name",
+		"last_name",
+		"photo",
+	],
+};

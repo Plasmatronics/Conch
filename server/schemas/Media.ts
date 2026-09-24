@@ -6,6 +6,8 @@ import {
 	conchesTableName,
 	conchesIdColumnName,
 } from "./shared";
+import { createdAtFilters } from "./shared/filters";
+import { QueryParamConfig } from "../types";
 
 export type mediaType = "image" | "video" | "audio" | "document";
 export const mediaTypeEnum = `
@@ -53,3 +55,29 @@ CREATE TABLE ${mediaTableName} (
 	media_type media_type NOT NULL,
 	is_conch_cover_photo boolean NOT NULL DEFAULT FALSE
 );`;
+
+export const mediaQueryParamConfig: QueryParamConfig = {
+	fields: [
+		mediaIdColumnName,
+		"created_at",
+		conchesIdColumnName,
+		"storage_key",
+		"mime_type",
+		"media_type",
+		"is_conch_cover_photo",
+	],
+	sortFields: ["created_at", "media_type", mediaIdColumnName],
+	filters: [
+		...createdAtFilters,
+		{
+			columnRef: "media_type",
+			operator: "=",
+			param: "media_type",
+			parseFn: (value: string) => mediaSchema.shape.media_type.parse(value),
+		},
+	],
+	defaultSortDir: "DESC",
+	defaultSortFields: ["created_at", mediaIdColumnName],
+	defaultLimit: 50,
+	defaultFields: [mediaIdColumnName, "created_at", "storage_key", "media_type"],
+};

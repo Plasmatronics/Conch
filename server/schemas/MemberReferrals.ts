@@ -8,6 +8,9 @@ import {
 	membersTableName,
 	apiDateSchema,
 } from "./shared";
+import { createdAtFilters } from "./shared/filters";
+import { QueryParamConfig } from "../types";
+import { idSchema } from "./utils";
 
 export const memberReferralsSchema = z.object({
 	[memberReferralsIdColumnName]: z.number(),
@@ -65,3 +68,45 @@ CREATE TABLE ${memberReferralsTableName} (
 	spouse_id integer REFERENCES ${membersTableName},
 	count smallint NOT NULL DEFAULT 1
 );`;
+
+export const memberReferralsQueryParamConfig: QueryParamConfig = {
+	fields: [
+		memberReferralsIdColumnName,
+		"created_at",
+		"referred_first_name",
+		"referred_last_name",
+		"referrer_id",
+		conchesIdColumnName,
+		"parent_one_id",
+		"parent_two_id",
+		"child_id",
+		"spouse_id",
+		"count",
+	],
+	sortFields: [
+		"created_at",
+		memberReferralsIdColumnName,
+		"referred_last_name",
+		"referred_first_name",
+	],
+	filters: [
+		...createdAtFilters,
+		{
+			columnRef: "referrer_id",
+			operator: "=",
+			param: "referrer_id",
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+	],
+	defaultSortDir: "DESC",
+	defaultSortFields: ["created_at", memberReferralsIdColumnName],
+	defaultLimit: 50,
+	defaultFields: [
+		memberReferralsIdColumnName,
+		"created_at",
+		"referred_first_name",
+		"referred_last_name",
+		"referrer_id",
+		"count",
+	],
+};
