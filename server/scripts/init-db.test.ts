@@ -3,9 +3,10 @@ import { afterAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { createConchDBService } from "../integrations";
 import type { ConchDBService } from "../integrations";
 import { determineTopologicalOrderingOfTableCreation } from "./utils";
-import { enumCreationQueries, nodeToCreationQueryMap } from "../schemas";
+import { enumCreationQueries } from "../schemas";
 import { injectTablesIntoDB } from "./init-db";
 import { mockPool, mockPoolClient } from "../vitest.setup";
+import { nodeToCreationQueryMap } from "../schemas/shared/mappings";
 
 vi.mock("../integrations", () => ({
 	createConchDBService: vi.fn(),
@@ -19,11 +20,7 @@ const mockDetermineTopologicalOrdering = vi.mocked(
 	determineTopologicalOrderingOfTableCreation,
 );
 
-vi.mock("../schemas", () => ({
-	enumCreationQueries: [
-		"CREATE TYPE user_role AS ENUM ('admin', 'user');",
-		"CREATE TYPE post_status AS ENUM ('draft', 'published');",
-	],
+vi.mock("../schemas/shared/mappings", () => ({
 	nodeToCreationQueryMap: {
 		users: `
 			CREATE TABLE users (
@@ -41,6 +38,13 @@ vi.mock("../schemas", () => ({
 			);
 		`,
 	},
+}));
+
+vi.mock("../schemas", () => ({
+	enumCreationQueries: [
+		"CREATE TYPE user_role AS ENUM ('admin', 'user');",
+		"CREATE TYPE post_status AS ENUM ('draft', 'published');",
+	],
 }));
 
 const mockDBService = {

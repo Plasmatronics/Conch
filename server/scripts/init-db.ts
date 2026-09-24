@@ -1,9 +1,10 @@
-import { enumCreationQueries, nodeToCreationQueryMap } from "../schemas";
+import { enumCreationQueries } from "../schemas";
 import type { PoolClient } from "pg";
 import { determineTopologicalOrderingOfTableCreation } from "./utils";
 import { createConchDBService } from "../integrations";
 import { appEnvVariables } from "../appEnvVariables";
 import { pathToFileURL } from "node:url";
+import { nodeToCreationQueryMap } from "../schemas/shared/mappings";
 
 export const injectTablesIntoDB = async (): Promise<void> => {
 	const {
