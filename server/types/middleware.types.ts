@@ -1,7 +1,7 @@
 import { Condition, ConditionOperator } from "../queries";
 
 export type SortDirection = "ASC" | "DESC";
-export type ParseFunction = <ParsedVal>(input: string) => ParsedVal;
+export type ParseFunction = (input: string) => unknown;
 export interface Filter {
 	param: string;
 	columnRef: string;
@@ -9,22 +9,24 @@ export interface Filter {
 	parseFn: ParseFunction;
 }
 
-export interface QueryParamConfig {
-	filters: Filter[];
-	fields: string[];
-	sortFields: string[];
+interface MutableQueryParamConfig {
+	filters: ReadonlyArray<Filter>;
+	fields: ReadonlyArray<string>;
+	sortFields: ReadonlyArray<string>;
 
 	defaultLimit: number;
 	defaultSortDir: SortDirection;
-	defaultFields: string[];
-	defaultSortFields: string[];
+	defaultFields: ReadonlyArray<string>;
+	defaultSortFields: ReadonlyArray<string>;
 }
+export type QueryParamConfig = Readonly<MutableQueryParamConfig>;
 
-export interface ParsedQueryParams {
-	filters: Condition[];
-	fields: string[];
-	sortFields: string[];
+interface MutableParsedQueryParams {
+	filters: ReadonlyArray<Condition>;
+	fields: ReadonlyArray<string>;
+	sortFields: ReadonlyArray<string>;
 	limit: number;
 	sortDir: SortDirection;
 	lastSeenId?: number;
 }
+export type ParsedQueryParams = Readonly<MutableParsedQueryParams>;

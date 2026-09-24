@@ -14,9 +14,9 @@ import {
 } from "../../schemas";
 
 const parseFilters = (
-	allowedFilter: Filter[],
-	enteredFilters: [string, string][],
-): Condition[] => {
+	allowedFilter: ReadonlyArray<Filter>,
+	enteredFilters: ReadonlyArray<[string, string]>,
+): ReadonlyArray<Condition> => {
 	const filterMap: Record<string, [string, ConditionOperator, ParseFunction]> =
 		{};
 	for (const { param, columnRef, parseFn, operator } of allowedFilter) {
@@ -41,9 +41,9 @@ const parseFilters = (
 };
 
 const parseFields = (
-	allowedFields: string[],
-	enteredFields: string[],
-): string[] => {
+	allowedFields: ReadonlyArray<string>,
+	enteredFields: ReadonlyArray<string>,
+): ReadonlyArray<string> => {
 	const allowedFieldsSet = new Set(allowedFields);
 
 	const validatedFields: string[] = [];
@@ -87,7 +87,7 @@ export const parseQueryParams = (
 	);
 	if (!parsedSortFields.length) parsedSortFields = defaultSortFields;
 
-	const parsedLimit = limit ? LimitSchema.parse(Number(limit)) : defaultLimit;
+	const parsedLimit = limit ? LimitSchema.parse(limit) : defaultLimit;
 
 	const parsedSortDir = sortDir
 		? SortDirectionSchema.parse(sortDir)

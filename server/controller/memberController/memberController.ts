@@ -2,7 +2,6 @@ import { Pool, PoolClient } from "pg";
 import {
 	membersIdColumnName,
 	membersSchema,
-	memberQuerySchema,
 	membersTableName,
 	membersUpdateSchema,
 	postMembersTableName,
@@ -94,7 +93,7 @@ export const membersControllers = (dbPool: Pool) => {
 	const memberControllerFactory = new ControllerFactory({
 		dbPool,
 		crudFactory,
-		createSchema: memberQuerySchema,
+		createSchema: membersCreateSchema,
 		updateSchema: membersUpdateSchema,
 		tableSchema: membersSchema,
 		conchScoped: true,
