@@ -8,6 +8,7 @@ import {
 	usersSchema,
 	usersCreateSchema,
 	usersUpdateSchema,
+	usersQueryParamConfig,
 } from "../schemas";
 import { ControllerFactory } from "../controller";
 
@@ -37,5 +38,6 @@ export const createUserRoutes = (dbPool: Pool): Router => {
 			delete: "admin",
 		},
 		controllers.createControllers(),
+		usersQueryParamConfig,
 	);
 };

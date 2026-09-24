@@ -11,7 +11,7 @@ import { RouteFactory } from "./RouteFactory";
 import type { Controllers } from "../controller";
 import { mockPool } from "../vitest.setup";
 import { auth, errorHandlerMiddleware, verifySession } from "../middleware";
-import type { RouteAccessConfig } from "../types";
+import type { QueryParamConfig, RouteAccessConfig } from "../types";
 import { AppError } from "../errors";
 
 vi.mock("../middleware", async (importOriginal) => {
@@ -26,6 +26,23 @@ vi.mock("../middleware", async (importOriginal) => {
 
 const mockAuth = vi.mocked(auth);
 const mockVerifySession = vi.mocked(verifySession);
+
+const queryParamConfig: QueryParamConfig = {
+	filters: [
+		{
+			param: "memberId",
+			columnRef: "member_id",
+			operator: "=",
+			parseFn: Number,
+		},
+	],
+	fields: ["member_id", "name"],
+	sortFields: ["member_id", "created_at"],
+	defaultLimit: 25,
+	defaultSortDir: "DESC",
+	defaultFields: ["member_id", "name"],
+	defaultSortFields: ["member_id"],
+};
 
 const passthroughMiddleware: RequestHandler = (
 	_req: Request,
@@ -50,12 +67,17 @@ const createApp = (
 		patch: "member",
 		delete: "member",
 	},
+	config: QueryParamConfig = queryParamConfig,
 ) => {
 	const app = express();
 	app.use(express.json());
 	app.use(
 		"/users",
-		new RouteFactory(mockPool as never).createRoutes(accessConfig, controllers),
+		new RouteFactory(mockPool as never).createRoutes(
+			accessConfig,
+			controllers,
+			config,
+		),
 	);
 	app.use(errorHandlerMiddleware);
 	return app;
@@ -115,6 +137,26 @@ describe("RouteFactory", () => {
 	});
 
 	describe("controller dispatch", () => {
+		test("parses query parameters before dispatching the get-all controller", async () => {
+			const controllers = createControllers();
+			vi.mocked(controllers.getAll).mockImplementationOnce((_req, res) =>
+				res.status(200).json(res.locals.parsedQueryParams),
+			);
+
+			const response = await request(createApp(controllers)).get(
+				"/users?memberId=42&fields=name&sortFields=created_at&limit=10&sortDir=ASC&lastSeenId=91",
+			);
+
+			expect(response.body).toEqual({
+				filters: [{ key: "member_id", operator: "=", value: 42 }],
+				fields: ["name"],
+				sortFields: ["created_at"],
+				limit: 10,
+				sortDir: "ASC",
+				lastSeenId: 91,
+			});
+		});
+
 		test("dispatches each route to the injected controller", async () => {
 			const controllers = createControllers();
 			const app = createApp(controllers);

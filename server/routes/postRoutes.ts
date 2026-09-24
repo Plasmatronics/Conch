@@ -12,7 +12,8 @@ import {
 	addPostMedia,
 	deletePostMedia,
 } from "../controller";
-import { auth, verifySession } from "../middleware";
+import { auth, queryParamParser, verifySession } from "../middleware";
+import { postsQueryParamConfig } from "../schemas";
 
 export const createPostRoutes = (dbPool: Pool): Router => {
 	const postRouter = Router();
@@ -21,6 +22,7 @@ export const createPostRoutes = (dbPool: Pool): Router => {
 		"/members/:memberId",
 		verifySession(dbPool),
 		auth("member"),
+		queryParamParser(postsQueryParamConfig),
 		getMemberPosts(dbPool),
 	);
 
@@ -79,6 +81,7 @@ export const createPostRoutes = (dbPool: Pool): Router => {
 		"",
 		verifySession(dbPool),
 		auth("member"),
+		queryParamParser(postsQueryParamConfig),
 		getAllPosts(dbPool),
 	);
 

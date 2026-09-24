@@ -8,6 +8,7 @@ import {
 	claimsSchema,
 	claimsCreateSchema,
 	claimsUpdateSchema,
+	claimsQueryParamConfig,
 } from "../schemas";
 import { ControllerFactory } from "../controller";
 
@@ -36,5 +37,6 @@ export const createClaimRoutes = (dbPool: Pool): Router => {
 			delete: "admin",
 		},
 		controllers.createControllers(),
+		claimsQueryParamConfig,
 	);
 };

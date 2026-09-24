@@ -2,7 +2,13 @@ import { Router } from "express";
 import { Pool } from "pg";
 import { membersControllers } from "../controller";
 import { ConchFamilyCache } from "../cache";
-import { auth, verifySession, buildCacheEntry } from "../middleware";
+import {
+	auth,
+	verifySession,
+	buildCacheEntry,
+	queryParamParser,
+} from "../middleware";
+import { membersQueryParamConfig } from "../schemas";
 
 export const createMemberRoutes = (
 	dbPool: Pool,
@@ -17,7 +23,13 @@ export const createMemberRoutes = (
 		delete: deleteMember,
 	} = membersControllers(dbPool);
 
-	membersRouter.get("", verifySession(dbPool), auth("member"), getAllMembers);
+	membersRouter.get(
+		"",
+		verifySession(dbPool),
+		auth("member"),
+		queryParamParser(membersQueryParamConfig),
+		getAllMembers,
+	);
 
 	membersRouter.post(
 		"",
