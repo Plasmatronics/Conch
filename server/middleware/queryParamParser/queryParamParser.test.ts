@@ -5,6 +5,7 @@ import type { ParseFunction, QueryParamConfig } from "../../types";
 import { parseQueryParams, queryParamParser } from "./queryParamParser";
 
 const parseNumber = vi.fn((value: string) => Number(value));
+const parseString = vi.fn((value: string) => value);
 
 const queryParamConfig: QueryParamConfig = {
 	filters: [
@@ -16,11 +17,16 @@ const queryParamConfig: QueryParamConfig = {
 		},
 	],
 	fields: ["member_id", "name"],
-	sortFields: ["member_id", "created_at"],
+	sortFields: [
+		{ param: "member_id", parseFn: parseNumber },
+		{ param: "created_at", parseFn: parseString },
+	],
 	defaultLimit: 25,
 	defaultSortDir: "DESC",
 	defaultFields: ["member_id", "name"],
-	defaultSortFields: ["member_id"],
+	defaultSortFields: [
+		{ param: "member_id", parseFn: (input: string) => parseString },
+	],
 };
 
 describe("parseQueryParams", () => {
@@ -28,10 +34,9 @@ describe("parseQueryParams", () => {
 		expect(parseQueryParams(queryParamConfig, {})).toEqual({
 			filters: [],
 			fields: ["member_id", "name"],
-			sortFields: ["member_id"],
+			sortFields: { keys: ["member_id"] },
 			limit: 25,
 			sortDir: "DESC",
-			lastSeenId: undefined,
 		});
 	});
 
@@ -88,9 +93,33 @@ describe("parseQueryParams", () => {
 	test("keeps only allowed sort fields", () => {
 		expect(
 			parseQueryParams(queryParamConfig, {
-				sortFields: "created_at,password_hash,member_id",
+				sortKeys: "created_at,password_hash,member_id",
 			}).sortFields,
-		).toEqual(["created_at", "member_id"]);
+		).toEqual({ keys: ["created_at", "member_id"] });
+	});
+
+	test("parses cursor values using their sort-field parsers", () => {
+		expect(
+			parseQueryParams(queryParamConfig, {
+				sortKeys: "member_id,created_at",
+				cursorVals: ["42", "Smith, Jr."],
+				lastSeenId: "91",
+			}).sortFields,
+		).toEqual({
+			keys: ["member_id", "created_at"],
+			values: [42, "Smith, Jr."],
+			lastSeenId: 91,
+		});
+	});
+
+	test("rejects cursor keys and values with different lengths", () => {
+		expect(() =>
+			parseQueryParams(queryParamConfig, {
+				sortKeys: "member_id,created_at",
+				cursorVals: "42",
+				lastSeenId: "91",
+			}),
+		).toThrow("Cursor values and cursor keys must be of the same length");
 	});
 
 	test("parses a valid limit from the query string", () => {
@@ -113,10 +142,26 @@ describe("parseQueryParams", () => {
 		).toThrow();
 	});
 
-	test("parses the pagination cursor", () => {
-		expect(
-			parseQueryParams(queryParamConfig, { lastSeenId: "91" }).lastSeenId,
-		).toBe(91);
+	test("rejects cursor values without a last-seen ID", () => {
+		expect(() =>
+			parseQueryParams(queryParamConfig, {
+				sortKeys: "member_id",
+				cursorVals: "42",
+			}),
+		).toThrow(
+			"Cursor values must be entered in tandem with lastSeenId or not at all",
+		);
+	});
+
+	test("rejects a last-seen ID without cursor values", () => {
+		expect(() =>
+			parseQueryParams(queryParamConfig, {
+				sortKeys: "member_id",
+				lastSeenId: "91",
+			}),
+		).toThrow(
+			"Cursor values must be entered in tandem with lastSeenId or not at all",
+		);
 	});
 
 	test("rejects a malformed pagination cursor", () => {
@@ -137,7 +182,12 @@ describe("queryParamParser", () => {
 		const next = vi.fn() as unknown as NextFunction;
 
 		await queryParamParser(queryParamConfig)(
-			createRequest({ memberId: "42", lastSeenId: "91" }),
+			createRequest({
+				memberId: "42",
+				sortKeys: "member_id",
+				cursorVals: "42",
+				lastSeenId: "91",
+			}),
 			response,
 			next,
 		);
@@ -145,10 +195,13 @@ describe("queryParamParser", () => {
 		expect(response.locals.parsedQueryParams).toEqual({
 			filters: [{ key: "member_id", operator: "=", value: 42 }],
 			fields: ["member_id", "name"],
-			sortFields: ["member_id"],
+			sortFields: {
+				keys: ["member_id"],
+				values: [42],
+				lastSeenId: 91,
+			},
 			limit: 25,
 			sortDir: "DESC",
-			lastSeenId: 91,
 		});
 	});
 

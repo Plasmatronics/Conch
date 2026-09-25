@@ -4,14 +4,16 @@ import {
 	QueryParamConfig,
 	Filter,
 	ParseFunction,
+	SortField,
 } from "../../types";
-import { Condition, ConditionOperator } from "../../queries";
+import { Condition, ConditionOperator, CursorOptions } from "../../queries";
 import QueryString from "qs";
 import {
 	LastSeenIdSchema,
 	LimitSchema,
 	SortDirectionSchema,
 } from "../../schemas";
+import { AppError } from "../../errors";
 
 const parseFilters = (
 	allowedFilter: ReadonlyArray<Filter>,
@@ -26,7 +28,7 @@ const parseFilters = (
 	const validatedFilters: Condition[] = [];
 
 	for (const [queryKey, queryVal] of enteredFilters) {
-		if (!(queryKey in filterMap)) continue;
+		if (!filterMap[queryKey]) continue;
 
 		const [columnRef, operator, parseFn] = filterMap[queryKey];
 		const parsedVal = parseFn(queryVal);
@@ -54,12 +56,69 @@ const parseFields = (
 	return validatedFields;
 };
 
+const parseSortFields = (
+	allowedFields: ReadonlyArray<SortField>,
+	enteredCursorKeys: string[],
+	enteredCursorValues?: string[],
+	lastSeenId?: number,
+): Readonly<CursorOptions> => {
+	if (
+		enteredCursorValues &&
+		enteredCursorKeys.length !== enteredCursorValues.length
+	)
+		throw new AppError(
+			"Cursor values and cursor keys must be of the same length, or cursor values should be omitted entirely.",
+			400,
+		);
+	if (
+		(enteredCursorValues !== undefined && lastSeenId === undefined) ||
+		(lastSeenId !== undefined && enteredCursorValues === undefined)
+	)
+		throw new AppError(
+			"Cursor values must be entered in tandem with lastSeenId or not at all",
+			400,
+		);
+
+	const allowedFieldMap: Record<SortField["param"], SortField["parseFn"]> = {};
+	for (const { param, parseFn } of allowedFields)
+		allowedFieldMap[param] = parseFn;
+
+	const validatedCursorKeys: string[] = [];
+	const validatedCursorValues: unknown[] = [];
+	for (let i = 0; i < enteredCursorKeys.length; i++) {
+		const key = enteredCursorKeys[i];
+		if (!allowedFieldMap[key]) continue;
+		validatedCursorKeys.push(key);
+
+		const value = enteredCursorValues?.at(i) ?? undefined;
+		if (value !== undefined) {
+			const parsedValue = allowedFieldMap[key](value);
+			validatedCursorValues.push(parsedValue);
+		}
+	}
+
+	return validatedCursorValues.length
+		? {
+				keys: validatedCursorKeys,
+				values: validatedCursorValues,
+				lastSeenId: lastSeenId!,
+			}
+		: { keys: validatedCursorKeys };
+};
+
 export const parseQueryParams = (
 	queryParamConfig: QueryParamConfig,
 	queryObj: QueryString.ParsedQs,
 ): ParsedQueryParams => {
-	const { fields, sortFields, limit, lastSeenId, sortDir, ...filters } =
-		queryObj;
+	const {
+		fields,
+		sortKeys,
+		cursorVals,
+		limit,
+		lastSeenId,
+		sortDir,
+		...filters
+	} = queryObj;
 	const {
 		filters: allowableFiltersArr,
 		fields: allowableFieldsArr,
@@ -81,11 +140,20 @@ export const parseQueryParams = (
 	let parsedFields = parseFields(allowableFieldsArr, String(fields).split(","));
 	if (!parsedFields.length) parsedFields = defaultFields;
 
-	let parsedSortFields = parseFields(
+	let parsedSortFields = parseSortFields(
 		allowableSortFieldsArr,
-		String(sortFields).split(","),
+		String(sortKeys).split(","),
+		cursorVals
+			? Array.isArray(cursorVals)
+				? cursorVals.map(String)
+				: [String(cursorVals)]
+			: undefined,
+		lastSeenId ? LastSeenIdSchema.parse(lastSeenId) : undefined,
 	);
-	if (!parsedSortFields.length) parsedSortFields = defaultSortFields;
+	if (!parsedSortFields.keys.length)
+		parsedSortFields = {
+			keys: defaultSortFields.map((fieldObj) => fieldObj.param),
+		};
 
 	const parsedLimit = limit ? LimitSchema.parse(limit) : defaultLimit;
 
@@ -99,7 +167,6 @@ export const parseQueryParams = (
 		fields: parsedFields,
 		limit: parsedLimit,
 		sortDir: parsedSortDir,
-		lastSeenId: lastSeenId ? LastSeenIdSchema.parse(lastSeenId) : undefined,
 	};
 
 	return parsedQueryParams;
