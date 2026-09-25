@@ -74,9 +74,23 @@ const fields = [
 	"referrer_id",
 	"count",
 ];
+const sortFields = [
+	{
+		param: "created_at",
+		parseFn: (value: string) => apiDateSchema.parse(value),
+	},
+	{
+		param: "referrer_id",
+		parseFn: (value: string) => idSchema.parse(value),
+	},
+	{
+		param: userReferralsIdColumnName,
+		parseFn: (value: string) => idSchema.parse(value),
+	},
+];
 export const userReferralsQueryParamConfig: QueryParamConfig = {
 	fields: fields,
-	sortFields: ["created_at", "referrer_id", userReferralsIdColumnName],
+	sortFields,
 	filters: [
 		...createdAtFilters,
 		{
@@ -87,7 +101,16 @@ export const userReferralsQueryParamConfig: QueryParamConfig = {
 		},
 	],
 	defaultSortDir: "DESC",
-	defaultSortFields: ["created_at", userReferralsIdColumnName],
+	defaultSortFields: [
+		{
+			param: "created_at",
+			parseFn: (value: string) => apiDateSchema.parse(value),
+		},
+		{
+			param: userReferralsIdColumnName,
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+	],
 	defaultLimit: 50,
 	defaultFields: fields,
 };

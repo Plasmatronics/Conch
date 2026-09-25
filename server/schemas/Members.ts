@@ -11,6 +11,7 @@ import {
 import { createdAtFilters } from "./shared/filters";
 import { mediaQuerySchema } from "./Media";
 import { QueryParamConfig } from "../types";
+import { idSchema } from "./utils";
 
 const pointSchema = z.object({
 	type: z.literal("Point"),
@@ -90,6 +91,32 @@ CREATE TABLE ${membersTableName} (
 	burial_location point
 );`;
 
+const sortFields = [
+	{
+		param: "created_at",
+		parseFn: (value: string) => apiDateSchema.parse(value),
+	},
+	{
+		param: "first_name",
+		parseFn: (value: string) => membersSchema.shape.first_name.parse(value),
+	},
+	{
+		param: "last_name",
+		parseFn: (value: string) => membersSchema.shape.last_name.parse(value),
+	},
+	{
+		param: "date_of_birth",
+		parseFn: (value: string) => apiDateSchema.parse(value),
+	},
+	{
+		param: "date_of_death",
+		parseFn: (value: string) => apiDateSchema.parse(value),
+	},
+	{
+		param: membersIdColumnName,
+		parseFn: (value: string) => idSchema.parse(value),
+	},
+];
 export const membersQueryParamConfig: QueryParamConfig = {
 	fields: [
 		membersIdColumnName,
@@ -105,14 +132,7 @@ export const membersQueryParamConfig: QueryParamConfig = {
 		"death_location",
 		"burial_location",
 	],
-	sortFields: [
-		"created_at",
-		"first_name",
-		"last_name",
-		"date_of_birth",
-		"date_of_death",
-		membersIdColumnName,
-	],
+	sortFields,
 	filters: [
 		...createdAtFilters,
 		{
@@ -153,7 +173,16 @@ export const membersQueryParamConfig: QueryParamConfig = {
 		},
 	],
 	defaultSortDir: "DESC",
-	defaultSortFields: ["last_name", membersIdColumnName],
+	defaultSortFields: [
+		{
+			param: "last_name",
+			parseFn: (value: string) => membersSchema.shape.last_name.parse(value),
+		},
+		{
+			param: membersIdColumnName,
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+	],
 	defaultLimit: 50,
 	defaultFields: [
 		membersIdColumnName,

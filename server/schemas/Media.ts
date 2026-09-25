@@ -8,6 +8,7 @@ import {
 } from "./shared";
 import { createdAtFilters } from "./shared/filters";
 import { QueryParamConfig } from "../types";
+import { idSchema } from "./utils";
 
 export type mediaType = "image" | "video" | "audio" | "document";
 export const mediaTypeEnum = `
@@ -56,6 +57,20 @@ CREATE TABLE ${mediaTableName} (
 	is_conch_cover_photo boolean NOT NULL DEFAULT FALSE
 );`;
 
+const sortFields = [
+	{
+		param: "created_at",
+		parseFn: (value: string) => apiDateSchema.parse(value),
+	},
+	{
+		param: "media_type",
+		parseFn: (value: string) => mediaSchema.shape.media_type.parse(value),
+	},
+	{
+		param: mediaIdColumnName,
+		parseFn: (value: string) => idSchema.parse(value),
+	},
+];
 export const mediaQueryParamConfig: QueryParamConfig = {
 	fields: [
 		mediaIdColumnName,
@@ -66,7 +81,7 @@ export const mediaQueryParamConfig: QueryParamConfig = {
 		"media_type",
 		"is_conch_cover_photo",
 	],
-	sortFields: ["created_at", "media_type", mediaIdColumnName],
+	sortFields,
 	filters: [
 		...createdAtFilters,
 		{
@@ -77,7 +92,16 @@ export const mediaQueryParamConfig: QueryParamConfig = {
 		},
 	],
 	defaultSortDir: "DESC",
-	defaultSortFields: ["created_at", mediaIdColumnName],
+	defaultSortFields: [
+		{
+			param: "created_at",
+			parseFn: (value: string) => apiDateSchema.parse(value),
+		},
+		{
+			param: mediaIdColumnName,
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+	],
 	defaultLimit: 50,
 	defaultFields: [mediaIdColumnName, "created_at", "storage_key", "media_type"],
 };

@@ -69,6 +69,26 @@ CREATE TABLE ${memberReferralsTableName} (
 	count smallint NOT NULL DEFAULT 1
 );`;
 
+const sortFields = [
+	{
+		param: "created_at",
+		parseFn: (value: string) => apiDateSchema.parse(value),
+	},
+	{
+		param: memberReferralsIdColumnName,
+		parseFn: (value: string) => idSchema.parse(value),
+	},
+	{
+		param: "referred_last_name",
+		parseFn: (value: string) =>
+			memberReferralsSchema.shape.referred_last_name.parse(value),
+	},
+	{
+		param: "referred_first_name",
+		parseFn: (value: string) =>
+			memberReferralsSchema.shape.referred_first_name.parse(value),
+	},
+];
 export const memberReferralsQueryParamConfig: QueryParamConfig = {
 	fields: [
 		memberReferralsIdColumnName,
@@ -83,12 +103,7 @@ export const memberReferralsQueryParamConfig: QueryParamConfig = {
 		"spouse_id",
 		"count",
 	],
-	sortFields: [
-		"created_at",
-		memberReferralsIdColumnName,
-		"referred_last_name",
-		"referred_first_name",
-	],
+	sortFields,
 	filters: [
 		...createdAtFilters,
 		{
@@ -99,7 +114,16 @@ export const memberReferralsQueryParamConfig: QueryParamConfig = {
 		},
 	],
 	defaultSortDir: "DESC",
-	defaultSortFields: ["created_at", memberReferralsIdColumnName],
+	defaultSortFields: [
+		{
+			param: "created_at",
+			parseFn: (value: string) => apiDateSchema.parse(value),
+		},
+		{
+			param: memberReferralsIdColumnName,
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+	],
 	defaultLimit: 50,
 	defaultFields: [
 		memberReferralsIdColumnName,

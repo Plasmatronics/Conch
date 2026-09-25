@@ -57,7 +57,16 @@ const fields = [
 	usersIdColumnName,
 	membersIdColumnName,
 ];
-const sortFields = ["created_at", claimsIdColumnName];
+const sortFields = [
+	{
+		param: "created_at",
+		parseFn: (value: string) => apiDateSchema.parse(value),
+	},
+	{
+		param: claimsIdColumnName,
+		parseFn: (value: string) => idSchema.parse(value),
+	},
+];
 export const claimsQueryParamConfig: QueryParamConfig = {
 	fields: fields,
 	sortFields: sortFields,

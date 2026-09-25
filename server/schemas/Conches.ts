@@ -70,7 +70,20 @@ const fields = [
 ];
 export const conchesQueryParamConfig: QueryParamConfig = {
 	fields: fields,
-	sortFields: ["created_at", "conch_name", conchesIdColumnName],
+	sortFields: [
+		{
+			param: "created_at",
+			parseFn: (value: string) => apiDateSchema.parse(value),
+		},
+		{
+			param: "conch_name",
+			parseFn: (value: string) => conchesSchema.shape.conch_name.parse(value),
+		},
+		{
+			param: conchesIdColumnName,
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+	],
 	filters: [
 		...createdAtFilters,
 		{
@@ -87,7 +100,16 @@ export const conchesQueryParamConfig: QueryParamConfig = {
 		},
 	],
 	defaultSortDir: "DESC",
-	defaultSortFields: ["created_at", conchesIdColumnName],
+	defaultSortFields: [
+		{
+			param: "created_at",
+			parseFn: (value: string) => apiDateSchema.parse(value),
+		},
+		{
+			param: conchesIdColumnName,
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+	],
 	defaultLimit: 50,
 	defaultFields: fields,
 };

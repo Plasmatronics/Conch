@@ -130,9 +130,31 @@ const fields = [
 	"members",
 	"media",
 ];
+const sortFields = [
+	{
+		param: "created_at",
+		parseFn: (value: string) => apiDateSchema.parse(value),
+	},
+	{
+		param: "title",
+		parseFn: (value: string) => postsSchema.shape.title.parse(value),
+	},
+	{
+		param: "date",
+		parseFn: stringToStoryDateParser,
+	},
+	{
+		param: "author_id",
+		parseFn: (value: string) => idSchema.parse(value),
+	},
+	{
+		param: postsIdColumnName,
+		parseFn: (value: string) => idSchema.parse(value),
+	},
+];
 export const postsQueryParamConfig: QueryParamConfig = {
 	fields: fields,
-	sortFields: ["created_at", "title", "date", "author_id", postsIdColumnName],
+	sortFields,
 	filters: [
 		...createdAtFilters,
 		{
@@ -161,7 +183,16 @@ export const postsQueryParamConfig: QueryParamConfig = {
 		},
 	],
 	defaultSortDir: "DESC",
-	defaultSortFields: ["created_at", postsIdColumnName],
+	defaultSortFields: [
+		{
+			param: "created_at",
+			parseFn: (value: string) => apiDateSchema.parse(value),
+		},
+		{
+			param: postsIdColumnName,
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+	],
 	defaultLimit: 50,
 	defaultFields: fields,
 };

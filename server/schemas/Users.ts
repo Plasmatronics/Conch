@@ -2,6 +2,7 @@ import { z } from "zod";
 import { apiDateSchema, usersIdColumnName, usersTableName } from "./shared";
 import { createdAtFilters } from "./shared/filters";
 import { QueryParamConfig } from "../types";
+import { idSchema } from "./utils";
 
 export const createAppRoleEnumQuery = `
 CREATE TYPE app_role AS ENUM ('standard', 'admin');
@@ -90,9 +91,27 @@ const fields = [
 	"phone_number",
 	"app_role",
 ];
+const sortFields = [
+	{
+		param: "created_at",
+		parseFn: (value: string) => apiDateSchema.parse(value),
+	},
+	{
+		param: "first_name",
+		parseFn: (value: string) => usersSchema.shape.first_name.parse(value),
+	},
+	{
+		param: "last_name",
+		parseFn: (value: string) => usersSchema.shape.last_name.parse(value),
+	},
+	{
+		param: usersIdColumnName,
+		parseFn: (value: string) => idSchema.parse(value),
+	},
+];
 export const usersQueryParamConfig: QueryParamConfig = {
 	fields: fields,
-	sortFields: ["created_at", "first_name", "last_name", usersIdColumnName],
+	sortFields,
 	filters: [
 		...createdAtFilters,
 		{
@@ -103,7 +122,16 @@ export const usersQueryParamConfig: QueryParamConfig = {
 		},
 	],
 	defaultSortDir: "DESC",
-	defaultSortFields: ["created_at", usersIdColumnName],
+	defaultSortFields: [
+		{
+			param: "created_at",
+			parseFn: (value: string) => apiDateSchema.parse(value),
+		},
+		{
+			param: usersIdColumnName,
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+	],
 	defaultLimit: 50,
 	defaultFields: fields,
 };

@@ -69,9 +69,24 @@ const fields = [
 	"target_member_id",
 	"is_current",
 ];
+const sortFields = [
+	{
+		param: "created_at",
+		parseFn: (value: string) => apiDateSchema.parse(value),
+	},
+	{
+		param: "relationship_type",
+		parseFn: (value: string) =>
+			relationshipsSchema.shape.relationship_type.parse(value),
+	},
+	{
+		param: relationshipsIdColumnName,
+		parseFn: (value: string) => idSchema.parse(value),
+	},
+];
 export const relationshipsQueryParamConfig: QueryParamConfig = {
 	fields: fields,
-	sortFields: ["created_at", "relationship_type", relationshipsIdColumnName],
+	sortFields,
 	filters: [
 		...createdAtFilters,
 		{
@@ -101,7 +116,16 @@ export const relationshipsQueryParamConfig: QueryParamConfig = {
 		},
 	],
 	defaultSortDir: "DESC",
-	defaultSortFields: ["created_at", relationshipsIdColumnName],
+	defaultSortFields: [
+		{
+			param: "created_at",
+			parseFn: (value: string) => apiDateSchema.parse(value),
+		},
+		{
+			param: relationshipsIdColumnName,
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+	],
 	defaultLimit: 50,
 	defaultFields: fields,
 };
