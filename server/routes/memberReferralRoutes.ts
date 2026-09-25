@@ -8,6 +8,7 @@ import {
 	memberReferralsSchema,
 	memberReferralsCreateSchema,
 	memberReferralsUpdateSchema,
+	memberReferralsQueryParamConfig,
 } from "../schemas";
 import { ControllerFactory } from "../controller";
 
@@ -37,5 +38,6 @@ export const createMemberReferralRoutes = (dbPool: Pool): Router => {
 			delete: "admin",
 		},
 		controllers.createControllers(),
+		memberReferralsQueryParamConfig,
 	);
 };

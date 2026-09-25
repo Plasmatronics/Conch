@@ -2,6 +2,7 @@ import {
 	CreateQueryBuilder,
 	DeleteQueryBuilder,
 	ReadQueryBuilder,
+	ReadQueryParams,
 	UpdateQueryBuilder,
 } from "./QueryBuilders";
 import { BuildQuery } from "./QueryBuilders/QueryBuilder";
@@ -20,8 +21,13 @@ export class CRUDFactory {
 		this.idColumnName = idColumnName;
 	}
 
-	generateGetAll(conchId?: number): BuildQuery {
-		return new ReadQueryBuilder(this.tableName, conchId ?? null).build();
+	generateGetAll(
+		readQueryParams: ReadQueryParams,
+		conchId?: number,
+	): BuildQuery {
+		return new ReadQueryBuilder(this.tableName, conchId ?? null)
+			.applyQueryParams(readQueryParams)
+			.build();
 	}
 
 	generateGetOne(resourceId: number, conchId?: number): BuildQuery {

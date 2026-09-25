@@ -1,13 +1,19 @@
 import { Router } from "express";
 import { Pool } from "pg";
 import { ConchFamilyCache } from "../cache";
-import { auth, buildCacheEntry, verifySession } from "../middleware";
+import {
+	auth,
+	buildCacheEntry,
+	queryParamParser,
+	verifySession,
+} from "../middleware";
 import {
 	addRelationship,
 	deleteRelationship,
 	getAllRelationships,
 	updateRelationship,
 } from "../controller";
+import { relationshipsQueryParamConfig } from "../schemas";
 
 export const createRelationshipRoutes = (
 	dbPool: Pool,
@@ -19,6 +25,7 @@ export const createRelationshipRoutes = (
 		"/",
 		verifySession(dbPool),
 		auth("member"),
+		queryParamParser(relationshipsQueryParamConfig),
 		getAllRelationships(dbPool),
 	);
 

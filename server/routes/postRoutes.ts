@@ -12,20 +12,20 @@ import {
 	addPostMedia,
 	deletePostMedia,
 } from "../controller";
-import { auth, verifySession } from "../middleware";
+import { auth, queryParamParser, verifySession } from "../middleware";
+import { postsQueryParamConfig } from "../schemas";
 
 export const createPostRoutes = (dbPool: Pool): Router => {
 	const postRouter = Router();
 
-	//Get Member Posts
 	postRouter.get(
 		"/members/:memberId",
 		verifySession(dbPool),
 		auth("member"),
+		queryParamParser(postsQueryParamConfig),
 		getMemberPosts(dbPool),
 	);
 
-	//Nested Resource Operations
 	postRouter.post(
 		"/:postId/members",
 		verifySession(dbPool),
@@ -51,7 +51,6 @@ export const createPostRoutes = (dbPool: Pool): Router => {
 		deletePostMedia,
 	);
 
-	//Resource Id Operarations
 	postRouter.get(
 		"/:postId",
 		verifySession(dbPool),
@@ -72,7 +71,6 @@ export const createPostRoutes = (dbPool: Pool): Router => {
 		deletePost(dbPool),
 	);
 
-	//No Resource Id
 	postRouter.post(
 		"",
 		verifySession(dbPool),
@@ -83,6 +81,7 @@ export const createPostRoutes = (dbPool: Pool): Router => {
 		"",
 		verifySession(dbPool),
 		auth("member"),
+		queryParamParser(postsQueryParamConfig),
 		getAllPosts(dbPool),
 	);
 

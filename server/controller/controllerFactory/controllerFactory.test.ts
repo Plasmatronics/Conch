@@ -11,6 +11,13 @@ import { mockNextFunction, mockPool, mockResponse } from "../../vitest.setup";
 const resourceId = 42;
 const conchId = 7;
 const resource = { user_id: resourceId, name: "John" };
+const parsedQueryParams = {
+	filters: [{ key: "name", operator: "=" as const, value: "John" }],
+	fields: ["user_id", "name"],
+	pagination: { keys: ["user_id"] },
+	limit: 25,
+	sortDir: "ASC" as const,
+};
 
 const createSchema = z.object({
 	name: z.string(),
@@ -42,6 +49,7 @@ const createRequest = (
 const createResponse = () =>
 	({
 		...mockResponse,
+		locals: { parsedQueryParams },
 	}) as unknown as Response;
 
 const createFactory = () =>
@@ -101,7 +109,16 @@ describe("ControllerFactory", () => {
 
 			await controllers.getAll(createRequest(), response, mockNextFunction);
 
-			expect(mockCrudFactory.generateGetAll).toHaveBeenCalledWith(conchId);
+			expect(mockCrudFactory.generateGetAll).toHaveBeenCalledWith(
+				{
+					filters: parsedQueryParams.filters,
+					fields: [{ key: "user_id" }, { key: "name" }],
+					pagination: parsedQueryParams.pagination,
+					limit: parsedQueryParams.limit,
+					sortDir: parsedQueryParams.sortDir,
+				},
+				conchId,
+			);
 			expect(mockPool.query).toHaveBeenCalledWith("SELECT * FROM users", [
 				conchId,
 			]);

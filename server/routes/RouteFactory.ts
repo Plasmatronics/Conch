@@ -1,7 +1,7 @@
 import { RequestHandler, Router } from "express";
 import { Pool } from "pg";
-import { RouteAccessConfig } from "../types";
-import { auth, verifySession } from "../middleware";
+import { QueryParamConfig, RouteAccessConfig } from "../types";
+import { auth, verifySession, queryParamParser } from "../middleware";
 import { Controllers } from "../controller";
 
 export class RouteFactory {
@@ -10,6 +10,7 @@ export class RouteFactory {
 	createRoutes(
 		accessConfig: RouteAccessConfig,
 		controllers: Controllers,
+		queryParamConfig: QueryParamConfig,
 	): Router {
 		const {
 			getAll: getAllAccess,
@@ -33,6 +34,7 @@ export class RouteFactory {
 		if (getAllAccess !== "public")
 			getAllMiddlewares.push(verifySession(this.dbPool));
 		getAllMiddlewares.push(auth(getAllAccess));
+		getAllMiddlewares.push(queryParamParser(queryParamConfig));
 		router.get("", ...getAllMiddlewares, getAllController);
 
 		const postMiddlewares: RequestHandler[] = [];

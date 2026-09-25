@@ -5,6 +5,9 @@ import {
 	relationshipsIdColumnName,
 	relationshipsTableName,
 } from "./shared";
+import { createdAtFilters } from "./shared/filters";
+import { QueryParamConfig } from "../types";
+import { idSchema } from "./utils";
 
 export type Relationship = "spouse" | "child" | "pet" | "friend";
 
@@ -57,3 +60,72 @@ CREATE TABLE ${relationshipsTableName} (
 	target_member_id integer NOT NULL REFERENCES ${membersTableName},
 	is_current boolean DEFAULT true;
 );`;
+
+const fields = [
+	relationshipsIdColumnName,
+	"created_at",
+	"relationship_type",
+	"source_member_id",
+	"target_member_id",
+	"is_current",
+];
+const sortFields = [
+	{
+		param: "created_at",
+		parseFn: (value: string) => apiDateSchema.parse(value),
+	},
+	{
+		param: "relationship_type",
+		parseFn: (value: string) =>
+			relationshipsSchema.shape.relationship_type.parse(value),
+	},
+	{
+		param: relationshipsIdColumnName,
+		parseFn: (value: string) => idSchema.parse(value),
+	},
+];
+export const relationshipsQueryParamConfig: QueryParamConfig = {
+	fields: fields,
+	sortFields,
+	filters: [
+		...createdAtFilters,
+		{
+			columnRef: "source_member_id",
+			operator: "=",
+			param: "source_member_id",
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+		{
+			columnRef: "target_member_id",
+			operator: "=",
+			param: "target_member_id",
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+		{
+			columnRef: "relationship_type",
+			operator: "=",
+			param: "relationship_type",
+			parseFn: (value: string) =>
+				relationshipsSchema.shape.relationship_type.parse(value),
+		},
+		{
+			columnRef: "is_current",
+			operator: "=",
+			param: "is_current",
+			parseFn: (value: string) => z.coerce.boolean().parse(value),
+		},
+	],
+	defaultSortDir: "DESC",
+	defaultSortFields: [
+		{
+			param: "created_at",
+			parseFn: (value: string) => apiDateSchema.parse(value),
+		},
+		{
+			param: relationshipsIdColumnName,
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+	],
+	defaultLimit: 50,
+	defaultFields: fields,
+};

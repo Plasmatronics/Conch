@@ -7,7 +7,8 @@ import {
 	updateConch,
 	deleteConch,
 } from "../controller";
-import { auth, verifySession } from "../middleware";
+import { auth, queryParamParser, verifySession } from "../middleware";
+import { conchesQueryParamConfig } from "../schemas";
 
 export const createConchRoutes = (dbPool: Pool): Router => {
 	const conchRouter = Router();
@@ -16,6 +17,7 @@ export const createConchRoutes = (dbPool: Pool): Router => {
 		"",
 		verifySession(dbPool),
 		auth("authenticated"),
+		queryParamParser(conchesQueryParamConfig),
 		getAllPersonalConches(dbPool),
 	);
 

@@ -7,16 +7,37 @@ import {
 	postsTableName,
 	usersTableName,
 } from "./shared";
-import { memberQuerySchema } from "./Members";
+import { createdAtFilters } from "./shared/filters";
+import { memberPostQuerySchema } from "./Members";
 import { mediaCreateSchema, mediaQuerySchema } from "./Media";
 import { postMembersSchema } from "./PostMembers";
+import { QueryParamConfig } from "../types";
+import { idSchema } from "./utils";
 
-export type Season = "winter" | "spring" | "summer" | "fall";
+export enum Season {
+	winter,
+	spring,
+	summer,
+	fall,
+}
+export const seasonSchema = z
+	.enum(["winter", "spring", "summer", "fall"])
+	.nullable();
 
 export const storyDateSchema = z.object({
-	season: z.enum(["winter", "spring", "summer", "fall"]).nullable(),
+	season: seasonSchema,
 	year: z.number(),
 });
+
+const stringToStoryDateParser = (
+	input: string,
+): z.infer<typeof storyDateSchema> => {
+	const [querySeason, queryYear] = input.split("-");
+	const season = seasonSchema.parse(querySeason);
+	const year = z.coerce.number().parse(queryYear);
+
+	return { season, year };
+};
 
 export type StoryDate = z.infer<typeof storyDateSchema>;
 
@@ -37,7 +58,7 @@ export const postsSchema = z.object({
 });
 
 export const postQuerySchema = postsSchema.extend({
-	members: z.array(memberQuerySchema).default([]),
+	members: z.array(memberPostQuerySchema).default([]),
 	media: z.array(mediaQuerySchema).default([]),
 });
 
@@ -97,3 +118,81 @@ CREATE TABLE ${postsTableName} (
 	CHECK (year IS NULL OR year BETWEEN 1900 AND 2100),
 	CHECK (year IS NOT NULL OR season IS NULL)
 );`;
+
+const fields = [
+	postsIdColumnName,
+	"author_id",
+	"title",
+	"created_at",
+	"body_text",
+	"location",
+	"date",
+	"members",
+	"media",
+];
+const sortFields = [
+	{
+		param: "created_at",
+		parseFn: (value: string) => apiDateSchema.parse(value),
+	},
+	{
+		param: "title",
+		parseFn: (value: string) => postsSchema.shape.title.parse(value),
+	},
+	{
+		param: "date",
+		parseFn: stringToStoryDateParser,
+	},
+	{
+		param: "author_id",
+		parseFn: (value: string) => idSchema.parse(value),
+	},
+	{
+		param: postsIdColumnName,
+		parseFn: (value: string) => idSchema.parse(value),
+	},
+];
+export const postsQueryParamConfig: QueryParamConfig = {
+	fields: fields,
+	sortFields,
+	filters: [
+		...createdAtFilters,
+		{
+			columnRef: "author_id",
+			operator: "=",
+			param: "author_id",
+			parseFn: (input: string) => idSchema.parse(input),
+		},
+		{
+			columnRef: "members",
+			operator: "=",
+			param: "included_member",
+			parseFn: (input: string) => idSchema.parse(input),
+		},
+		{
+			columnRef: "date",
+			operator: "<=",
+			param: "max_date",
+			parseFn: stringToStoryDateParser,
+		},
+		{
+			columnRef: "date",
+			operator: ">=",
+			param: "min_date",
+			parseFn: stringToStoryDateParser,
+		},
+	],
+	defaultSortDir: "DESC",
+	defaultSortFields: [
+		{
+			param: "created_at",
+			parseFn: (value: string) => apiDateSchema.parse(value),
+		},
+		{
+			param: postsIdColumnName,
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+	],
+	defaultLimit: 50,
+	defaultFields: fields,
+};

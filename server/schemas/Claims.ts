@@ -10,6 +10,9 @@ import {
 	membersTableName,
 	usersTableName,
 } from "./shared";
+import { createdAtFilters } from "./shared/filters";
+import { idSchema } from "./utils";
+import { QueryParamConfig } from "../types";
 
 export const claimsSchema = z.object({
 	[claimsIdColumnName]: z.number(),
@@ -46,3 +49,50 @@ CREATE TABLE ${claimsTableName} (
 	${usersIdColumnName} integer NOT NULL REFERENCES ${usersTableName},
 	${membersIdColumnName} integer NOT NULL REFERENCES ${membersTableName}
 );`;
+
+const fields = [
+	claimsIdColumnName,
+	"created_at",
+	conchesIdColumnName,
+	usersIdColumnName,
+	membersIdColumnName,
+];
+const sortFields = [
+	{
+		param: "created_at",
+		parseFn: (value: string) => apiDateSchema.parse(value),
+	},
+	{
+		param: claimsIdColumnName,
+		parseFn: (value: string) => idSchema.parse(value),
+	},
+];
+export const claimsQueryParamConfig: QueryParamConfig = {
+	fields: fields,
+	sortFields: sortFields,
+	filters: [
+		...createdAtFilters,
+		{
+			columnRef: conchesIdColumnName,
+			operator: "=",
+			param: conchesIdColumnName,
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+		{
+			columnRef: usersIdColumnName,
+			operator: "=",
+			param: usersIdColumnName,
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+		{
+			columnRef: membersIdColumnName,
+			operator: "=",
+			param: membersIdColumnName,
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+	],
+	defaultSortDir: "DESC",
+	defaultSortFields: sortFields,
+	defaultLimit: 50,
+	defaultFields: fields,
+};

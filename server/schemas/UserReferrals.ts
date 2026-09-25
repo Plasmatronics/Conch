@@ -8,6 +8,9 @@ import {
 	userReferralsTableName,
 	usersTableName,
 } from "./shared";
+import { createdAtFilters } from "./shared/filters";
+import { QueryParamConfig } from "../types";
+import { idSchema } from "./utils";
 
 export const userReferralsSchema = z.object({
 	[userReferralsIdColumnName]: z.number(),
@@ -61,3 +64,53 @@ CREATE TABLE ${userReferralsTableName} (
 	${conchesIdColumnName} integer NOT NULL REFERENCES ${conchesTableName},
 	count smallint NOT NULL DEFAULT 1
 );`;
+
+const fields = [
+	userReferralsIdColumnName,
+	"created_at",
+	"referred_phone_number",
+	"referred_email",
+	"referred_member_id",
+	"referrer_id",
+	"count",
+];
+const sortFields = [
+	{
+		param: "created_at",
+		parseFn: (value: string) => apiDateSchema.parse(value),
+	},
+	{
+		param: "referrer_id",
+		parseFn: (value: string) => idSchema.parse(value),
+	},
+	{
+		param: userReferralsIdColumnName,
+		parseFn: (value: string) => idSchema.parse(value),
+	},
+];
+export const userReferralsQueryParamConfig: QueryParamConfig = {
+	fields: fields,
+	sortFields,
+	filters: [
+		...createdAtFilters,
+		{
+			columnRef: "referrer_id",
+			operator: "=",
+			param: "referrer_id",
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+	],
+	defaultSortDir: "DESC",
+	defaultSortFields: [
+		{
+			param: "created_at",
+			parseFn: (value: string) => apiDateSchema.parse(value),
+		},
+		{
+			param: userReferralsIdColumnName,
+			parseFn: (value: string) => idSchema.parse(value),
+		},
+	],
+	defaultLimit: 50,
+	defaultFields: fields,
+};
