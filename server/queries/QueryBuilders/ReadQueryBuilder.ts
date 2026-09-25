@@ -1,7 +1,7 @@
 import format from "pg-format";
 import { conchesIdColumnName } from "../../schemas";
 import { BuildQuery, Condition, QueryBuilder } from "./QueryBuilder";
-import { SortDirection } from "../../types";
+import { ParsedQueryParams, SortDirection } from "../../types";
 import { tableNameToIdColumnMap } from "../../schemas/shared/mappings";
 
 export interface ColumnReference {
@@ -39,6 +39,14 @@ export type CursorOptions =
 	| { keys: string[]; values?: never; lastSeenId?: never }
 	| { keys: string[]; values: unknown[]; lastSeenId: number };
 
+interface ReadQueryParams {
+	fields: ReadonlyArray<SelectField>;
+	filters: ReadonlyArray<Condition>;
+	pagination: Readonly<CursorOptions>;
+	limit: number;
+	sortDir: SortDirection;
+}
+
 const DEFAULT_LIMIT = 25;
 const MAX_LIMIT = 100;
 
@@ -54,13 +62,21 @@ export class ReadQueryBuilder extends QueryBuilder {
 	private tableAlias: string | null = null;
 	private pagination: CursorOptions | null = null;
 	private limit: number | null = null;
+	private sortDirection: SortDirection = "DESC";
 
-	constructor(
-		tableName: string,
-		conchId: string | null | number = null,
-		private sortDirection: SortDirection = "DESC",
-	) {
+	constructor(tableName: string, conchId: string | null | number = null) {
 		super(tableName, conchId);
+	}
+
+	applyQueryParams(queryParams: ReadQueryParams) {
+		const { filters, fields, pagination, limit, sortDir } = queryParams;
+
+		if (fields.length) this.addSelectFields([...fields]);
+		if (filters.length) this.addConditions([...filters]);
+		if (pagination.keys.length) this.paginate(pagination, sortDir);
+		this.addLimit(limit);
+
+		return this;
 	}
 
 	addAlias(alias: string) {
@@ -82,10 +98,11 @@ export class ReadQueryBuilder extends QueryBuilder {
 		return this;
 	}
 
-	paginate(options: CursorOptions) {
+	paginate(options: CursorOptions, sortDir: SortDirection) {
 		if (this.pagination)
 			throw new Error("Pagination has already been configured");
 		this.pagination = options;
+		this.sortDirection = sortDir;
 		return this;
 	}
 

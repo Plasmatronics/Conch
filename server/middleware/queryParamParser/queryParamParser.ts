@@ -163,7 +163,7 @@ export const parseQueryParams = (
 
 	const parsedQueryParams: ParsedQueryParams = {
 		filters: parsedFilters,
-		sortFields: parsedSortFields,
+		pagination: parsedSortFields,
 		fields: parsedFields,
 		limit: parsedLimit,
 		sortDir: parsedSortDir,

@@ -34,7 +34,7 @@ describe("parseQueryParams", () => {
 		expect(parseQueryParams(queryParamConfig, {})).toEqual({
 			filters: [],
 			fields: ["member_id", "name"],
-			sortFields: { keys: ["member_id"] },
+			pagination: { keys: ["member_id"] },
 			limit: 25,
 			sortDir: "DESC",
 		});
@@ -94,7 +94,7 @@ describe("parseQueryParams", () => {
 		expect(
 			parseQueryParams(queryParamConfig, {
 				sortKeys: "created_at,password_hash,member_id",
-			}).sortFields,
+			}).pagination,
 		).toEqual({ keys: ["created_at", "member_id"] });
 	});
 
@@ -104,7 +104,7 @@ describe("parseQueryParams", () => {
 				sortKeys: "member_id,created_at",
 				cursorVals: ["42", "Smith, Jr."],
 				lastSeenId: "91",
-			}).sortFields,
+			}).pagination,
 		).toEqual({
 			keys: ["member_id", "created_at"],
 			values: [42, "Smith, Jr."],
@@ -195,7 +195,7 @@ describe("queryParamParser", () => {
 		expect(response.locals.parsedQueryParams).toEqual({
 			filters: [{ key: "member_id", operator: "=", value: 42 }],
 			fields: ["member_id", "name"],
-			sortFields: {
+			pagination: {
 				keys: ["member_id"],
 				values: [42],
 				lastSeenId: 91,

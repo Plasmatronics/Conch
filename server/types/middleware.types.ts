@@ -29,7 +29,7 @@ export type QueryParamConfig = Readonly<MutableQueryParamConfig>;
 interface MutableParsedQueryParams {
 	filters: ReadonlyArray<Condition>;
 	fields: ReadonlyArray<string>;
-	sortFields: Readonly<CursorOptions>;
+	pagination: Readonly<CursorOptions>;
 	limit: number;
 	sortDir: SortDirection;
 }

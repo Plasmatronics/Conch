@@ -13,6 +13,7 @@ import { mockPool } from "../vitest.setup";
 import { auth, errorHandlerMiddleware, verifySession } from "../middleware";
 import type { QueryParamConfig, RouteAccessConfig } from "../types";
 import { AppError } from "../errors";
+import { idSchema } from "../schemas";
 
 vi.mock("../middleware", async (importOriginal) => {
 	const actual = await importOriginal<typeof import("../middleware")>();
@@ -37,11 +38,16 @@ const queryParamConfig: QueryParamConfig = {
 		},
 	],
 	fields: ["member_id", "name"],
-	sortFields: ["member_id", "created_at"],
+	sortFields: [
+		{ param: "member_id", parseFn: Number },
+		{ param: "created_at", parseFn: String },
+	],
 	defaultLimit: 25,
 	defaultSortDir: "DESC",
 	defaultFields: ["member_id", "name"],
-	defaultSortFields: ["member_id"],
+	defaultSortFields: [
+		{ param: "member_id", parseFn: (input: string) => idSchema.parse(input) },
+	],
 };
 
 const passthroughMiddleware: RequestHandler = (
@@ -144,16 +150,19 @@ describe("RouteFactory", () => {
 			);
 
 			const response = await request(createApp(controllers)).get(
-				"/users?memberId=42&fields=name&sortFields=created_at&limit=10&sortDir=ASC&lastSeenId=91",
+				"/users?memberId=42&fields=name&sortKeys=created_at&cursorVals=2026-09-24&limit=10&sortDir=ASC&lastSeenId=91",
 			);
 
 			expect(response.body).toEqual({
 				filters: [{ key: "member_id", operator: "=", value: 42 }],
 				fields: ["name"],
-				sortFields: ["created_at"],
+				pagination: {
+					keys: ["created_at"],
+					values: ["2026-09-24"],
+					lastSeenId: 91,
+				},
 				limit: 10,
 				sortDir: "ASC",
-				lastSeenId: 91,
 			});
 		});
 
