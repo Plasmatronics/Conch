@@ -1,11 +1,8 @@
-import {
-	CreateQueryBuilder,
-	DeleteQueryBuilder,
-	ReadQueryBuilder,
-	ReadQueryParams,
-	UpdateQueryBuilder,
-} from "./QueryBuilders";
-import { BuildQuery } from "./QueryBuilders/QueryBuilder";
+import { CreateQueryBuilder } from "./CreateQueryBuilder";
+import { DeleteQueryBuilder } from "./DeleteQueryBuilder";
+import { ReadQueryBuilder, ReadQueryParams } from "./ReadQueryBuilder";
+import { UpdateQueryBuilder } from "./UpdateQueryBuilder";
+import { BuildQuery } from "./QueryBuilder";
 
 interface CRUDFactoryConfig {
 	tableName: string;

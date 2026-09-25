@@ -13,12 +13,3 @@ export interface KeyValuePair {
 export interface Condition extends KeyValuePair {
 	operator: ConditionOperator;
 }
-
-export abstract class QueryBuilder {
-	constructor(
-		protected tableName: string,
-		protected conchId: string | number | null = null,
-	) {}
-
-	abstract build(): BuildQuery;
-}

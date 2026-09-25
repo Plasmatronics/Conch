@@ -13,7 +13,7 @@ import {
 } from "../../schemas";
 import { AppError } from "../../errors";
 import z from "zod";
-import { BuildQuery } from "../../queries/QueryBuilders/QueryBuilder";
+import { BuildQuery } from "../../queries";
 
 export const getAllRelationships =
 	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {

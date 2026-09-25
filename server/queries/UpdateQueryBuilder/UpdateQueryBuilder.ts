@@ -1,13 +1,24 @@
 import format from "pg-format";
-import { BuildQuery, QueryBuilder, Condition } from "./QueryBuilder";
+import {
+	BuildQuery,
+	KeyValuePair,
+	QueryBuilder,
+	Condition,
+} from "../QueryBuilder";
 import { conchesIdColumnName } from "../../schemas";
 
-export class DeleteQueryBuilder extends QueryBuilder {
+export class UpdateQueryBuilder extends QueryBuilder {
 	private returningFields: string[] = [];
+	private updateFields: KeyValuePair[] = [];
 	private conditions: Condition[] = [];
 
 	constructor(tableName: string, conchId: string | null | number = null) {
 		super(tableName, conchId);
+	}
+
+	addUpdateFields(fields: KeyValuePair[]) {
+		this.updateFields.push(...fields);
+		return this;
 	}
 
 	addConditions(fields: Condition[]) {
@@ -30,7 +41,17 @@ export class DeleteQueryBuilder extends QueryBuilder {
 	}
 
 	build(): BuildQuery {
+		if (!this.updateFields.length)
+			throw new Error("Must provide fields to update");
+
 		const values: unknown[] = [];
+
+		const updateStrs: string[] = [];
+		for (const { key, value } of this.updateFields) {
+			const updateStr = format(`%I = $${values.length + 1}`, key);
+			updateStrs.push(updateStr);
+			values.push(value);
+		}
 
 		const conditions: string[] = [];
 		let isConchIdIncluded = false;
@@ -50,7 +71,8 @@ export class DeleteQueryBuilder extends QueryBuilder {
 		);
 
 		const query = `
-		${format(`DELETE FROM %I `, this.tableName)}
+		${format(`UPDATE %I SET `, this.tableName)}
+		${updateStrs.join(", ")}
 		${conditions.length ? "WHERE " : ""}${conditions.join(" AND ")}
 		${returning.length ? "RETURNING " : ""}${returning.join(", ")}`.trim();
 

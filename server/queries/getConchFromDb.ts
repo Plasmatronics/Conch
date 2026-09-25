@@ -5,7 +5,7 @@ import {
 	conchesSchema,
 	conchesTableName,
 } from "../schemas";
-import { ReadQueryBuilder } from "./QueryBuilders";
+import { ReadQueryBuilder } from "./ReadQueryBuilder";
 
 export const getConchFromDb = async (
 	dbPool: Pool,
