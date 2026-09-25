@@ -7,23 +7,48 @@ const crudFactory = new CRUDFactory({
 	idColumnName: "user_id",
 });
 
+const createReadQueryParams = () => ({
+	fields: [],
+	filters: [],
+	pagination: { keys: [] },
+	limit: 25,
+	sortDir: "DESC" as const,
+});
+
 describe("crudFactory", () => {
 	describe("generateGetAll", () => {
 		test("scopes results to a conch when a conch ID is provided", () => {
-			const result = crudFactory.generateGetAll(7);
+			const result = crudFactory.generateGetAll(createReadQueryParams(), 7);
 
 			expect(result).toEqual({
-				query: "SELECT * FROM users WHERE conch_id = $1",
+				query: "SELECT * FROM users WHERE conch_id = $1 LIMIT 25",
 				values: [7],
 			});
 		});
 
 		test("generates a query to retrieve all rows from a table", () => {
-			const result = crudFactory.generateGetAll();
+			const result = crudFactory.generateGetAll(createReadQueryParams());
 
 			expect(result).toEqual({
-				query: "SELECT * FROM users",
+				query: "SELECT * FROM users LIMIT 25",
 				values: [],
+			});
+		});
+
+		test("applies the provided read query parameters", () => {
+			const result = crudFactory.generateGetAll({
+				fields: [{ key: "user_id" }, { key: "name" }],
+				filters: [{ key: "name", operator: "=", value: "John" }],
+				pagination: { keys: ["user_id"] },
+				limit: 10,
+				sortDir: "ASC",
+			});
+
+			expect(result).toEqual({
+				query:
+					"SELECT user_id, name FROM users WHERE name = $1 " +
+					"ORDER BY user_id ASC LIMIT 10",
+				values: ["John"],
 			});
 		});
 
@@ -31,10 +56,10 @@ describe("crudFactory", () => {
 			const result = new CRUDFactory({
 				tableName: "user accounts",
 				idColumnName: "user_id",
-			}).generateGetAll();
+			}).generateGetAll(createReadQueryParams());
 
 			expect(result).toEqual({
-				query: 'SELECT * FROM "user accounts"',
+				query: 'SELECT * FROM "user accounts" LIMIT 25',
 				values: [],
 			});
 		});

@@ -1,7 +1,7 @@
 import format from "pg-format";
 import { conchesIdColumnName } from "../../schemas";
 import { BuildQuery, Condition, QueryBuilder } from "./QueryBuilder";
-import { ParsedQueryParams, SortDirection } from "../../types";
+import { SortDirection } from "../../types";
 import { tableNameToIdColumnMap } from "../../schemas/shared/mappings";
 
 export interface ColumnReference {
@@ -39,7 +39,7 @@ export type CursorOptions =
 	| { keys: string[]; values?: never; lastSeenId?: never }
 	| { keys: string[]; values: unknown[]; lastSeenId: number };
 
-interface ReadQueryParams {
+export interface ReadQueryParams {
 	fields: ReadonlyArray<SelectField>;
 	filters: ReadonlyArray<Condition>;
 	pagination: Readonly<CursorOptions>;

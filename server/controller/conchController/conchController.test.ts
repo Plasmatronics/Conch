@@ -60,6 +60,15 @@ const mockRequest = {
 
 const mockResponse = {
 	...defaultResponse,
+	locals: {
+		parsedQueryParams: {
+			filters: [],
+			fields: [],
+			pagination: { keys: [] },
+			limit: 25,
+			sortDir: "DESC",
+		},
+	},
 } as unknown as Response;
 
 beforeEach(() => {
@@ -222,6 +231,7 @@ describe("conchController", () => {
 				normalizeSql(`
 		SELECT * FROM ${conchesTableName}
 		WHERE ${conchesIdColumnName} = ANY($1)
+		LIMIT 25
 	`),
 			);
 			expect(values).toEqual([[1, 2, 3]]);
