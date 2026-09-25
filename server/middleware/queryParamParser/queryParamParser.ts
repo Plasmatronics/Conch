@@ -175,8 +175,12 @@ export const parseQueryParams = (
 export const queryParamParser =
 	(queryParamConfig: QueryParamConfig) =>
 	async (req: Request, res: Response, next: NextFunction) => {
-		const parsedQueryParams = parseQueryParams(queryParamConfig, req.query);
-		res.locals.parsedQueryParams = parsedQueryParams;
+		try {
+			const parsedQueryParams = parseQueryParams(queryParamConfig, req.query);
+			res.locals.parsedQueryParams = parsedQueryParams;
 
-		next();
+			next();
+		} catch (err) {
+			return next(err);
+		}
 	};
