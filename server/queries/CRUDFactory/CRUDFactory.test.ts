@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { CRUDFactory } from "./CRUDFactory";
-import { normalizeSql } from "../vitest.setup";
+import { normalizeSql } from "../../vitest.setup";
 
 const crudFactory = new CRUDFactory({
 	tableName: "users",
