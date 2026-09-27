@@ -69,39 +69,55 @@ CREATE TABLE ${memberReferralsTableName} (
 	count smallint NOT NULL DEFAULT 1
 );`;
 
-const sortFields = [
+const sortFields: QueryParamConfig["sortFields"] = [
 	{
 		param: "created_at",
-		parseFn: (value: string) => apiDateSchema.parse(value),
+		schema: apiDateSchema,
 	},
 	{
 		param: memberReferralsIdColumnName,
-		parseFn: (value: string) => idSchema.parse(value),
+		schema: idSchema,
 	},
 	{
 		param: "referred_last_name",
-		parseFn: (value: string) =>
-			memberReferralsSchema.shape.referred_last_name.parse(value),
+		schema: memberReferralsSchema.shape.referred_last_name,
 	},
 	{
 		param: "referred_first_name",
-		parseFn: (value: string) =>
-			memberReferralsSchema.shape.referred_first_name.parse(value),
+		schema: memberReferralsSchema.shape.referred_first_name,
 	},
 ];
 export const memberReferralsQueryParamConfig: QueryParamConfig = {
 	fields: [
-		memberReferralsIdColumnName,
-		"created_at",
-		"referred_first_name",
-		"referred_last_name",
-		"referrer_id",
-		conchesIdColumnName,
-		"parent_one_id",
-		"parent_two_id",
-		"child_id",
-		"spouse_id",
-		"count",
+		{
+			param: memberReferralsIdColumnName,
+			schema: memberReferralsSchema.shape[memberReferralsIdColumnName],
+		},
+		{ param: "created_at", schema: memberReferralsSchema.shape.created_at },
+		{
+			param: "referred_first_name",
+			schema: memberReferralsSchema.shape.referred_first_name,
+		},
+		{
+			param: "referred_last_name",
+			schema: memberReferralsSchema.shape.referred_last_name,
+		},
+		{ param: "referrer_id", schema: memberReferralsSchema.shape.referrer_id },
+		{
+			param: conchesIdColumnName,
+			schema: memberReferralsSchema.shape[conchesIdColumnName],
+		},
+		{
+			param: "parent_one_id",
+			schema: memberReferralsSchema.shape.parent_one_id,
+		},
+		{
+			param: "parent_two_id",
+			schema: memberReferralsSchema.shape.parent_two_id,
+		},
+		{ param: "child_id", schema: memberReferralsSchema.shape.child_id },
+		{ param: "spouse_id", schema: memberReferralsSchema.shape.spouse_id },
+		{ param: "count", schema: memberReferralsSchema.shape.count },
 	],
 	sortFields,
 	filters: [
@@ -110,27 +126,36 @@ export const memberReferralsQueryParamConfig: QueryParamConfig = {
 			columnRef: "referrer_id",
 			operator: "=",
 			param: "referrer_id",
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 	],
 	defaultSortDir: "DESC",
 	defaultSortFields: [
 		{
 			param: "created_at",
-			parseFn: (value: string) => apiDateSchema.parse(value),
+			schema: apiDateSchema,
 		},
 		{
 			param: memberReferralsIdColumnName,
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 	],
 	defaultLimit: 50,
 	defaultFields: [
-		memberReferralsIdColumnName,
-		"created_at",
-		"referred_first_name",
-		"referred_last_name",
-		"referrer_id",
-		"count",
+		{
+			param: memberReferralsIdColumnName,
+			schema: memberReferralsSchema.shape[memberReferralsIdColumnName],
+		},
+		{ param: "created_at", schema: memberReferralsSchema.shape.created_at },
+		{
+			param: "referred_first_name",
+			schema: memberReferralsSchema.shape.referred_first_name,
+		},
+		{
+			param: "referred_last_name",
+			schema: memberReferralsSchema.shape.referred_last_name,
+		},
+		{ param: "referrer_id", schema: memberReferralsSchema.shape.referrer_id },
+		{ param: "count", schema: memberReferralsSchema.shape.count },
 	],
 };

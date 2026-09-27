@@ -82,31 +82,31 @@ CREATE TABLE ${usersTableName} (
 	app_role app_role NOT NULL DEFAULT 'standard'
 );`;
 
-const fields = [
-	usersIdColumnName,
-	"created_at",
-	"first_name",
-	"last_name",
-	"email",
-	"phone_number",
-	"app_role",
+const fields: QueryParamConfig["fields"] = [
+	{ param: usersIdColumnName, schema: usersSchema.shape[usersIdColumnName] },
+	{ param: "created_at", schema: usersSchema.shape.created_at },
+	{ param: "first_name", schema: usersSchema.shape.first_name },
+	{ param: "last_name", schema: usersSchema.shape.last_name },
+	{ param: "email", schema: usersSchema.shape.email },
+	{ param: "phone_number", schema: usersSchema.shape.phone_number },
+	{ param: "app_role", schema: usersSchema.shape.app_role },
 ];
-const sortFields = [
+const sortFields: QueryParamConfig["sortFields"] = [
 	{
 		param: "created_at",
-		parseFn: (value: string) => apiDateSchema.parse(value),
+		schema: apiDateSchema,
 	},
 	{
 		param: "first_name",
-		parseFn: (value: string) => usersSchema.shape.first_name.parse(value),
+		schema: usersSchema.shape.first_name,
 	},
 	{
 		param: "last_name",
-		parseFn: (value: string) => usersSchema.shape.last_name.parse(value),
+		schema: usersSchema.shape.last_name,
 	},
 	{
 		param: usersIdColumnName,
-		parseFn: (value: string) => idSchema.parse(value),
+		schema: idSchema,
 	},
 ];
 export const usersQueryParamConfig: QueryParamConfig = {
@@ -118,18 +118,18 @@ export const usersQueryParamConfig: QueryParamConfig = {
 			columnRef: "app_role",
 			operator: "=",
 			param: "app_role",
-			parseFn: (value: string) => usersSchema.shape.app_role.parse(value),
+			schema: usersSchema.shape.app_role,
 		},
 	],
 	defaultSortDir: "DESC",
 	defaultSortFields: [
 		{
 			param: "created_at",
-			parseFn: (value: string) => apiDateSchema.parse(value),
+			schema: apiDateSchema,
 		},
 		{
 			param: usersIdColumnName,
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 	],
 	defaultLimit: 50,

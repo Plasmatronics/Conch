@@ -57,7 +57,7 @@ export class ControllerFactory {
 		) => {
 			try {
 				const conchId = this.parseConchId(req);
-				const { filters, fields, pagination, limit, sortDir } =
+				const { filters, fields, pagination, limit, sortDir, rowSchema } =
 					res.locals.parsedQueryParams!;
 
 				const { query, values } = this.crudFactory.generateGetAll(
@@ -74,7 +74,7 @@ export class ControllerFactory {
 				);
 
 				const queryResponse = await this.dbPool.query(query, values);
-				const rows = this.tableSchema.array().parse(queryResponse.rows);
+				const rows = rowSchema.array().parse(queryResponse.rows);
 
 				return res.status(200).json(rows);
 			} catch (err: unknown) {

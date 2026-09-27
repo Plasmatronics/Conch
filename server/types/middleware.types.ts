@@ -1,28 +1,28 @@
+import z from "zod";
 import { Condition, ConditionOperator, CursorOptions } from "../queries";
 
 export type SortDirection = "ASC" | "DESC";
-export type ParseFunction = (input: string) => unknown;
 
-export interface SortField {
+export interface Field {
 	param: string;
-	parseFn: ParseFunction;
+	schema: z.ZodType;
 }
 export interface Filter {
 	param: string;
 	columnRef: string;
 	operator: ConditionOperator;
-	parseFn: ParseFunction;
+	schema: z.ZodType;
 }
 
 interface MutableQueryParamConfig {
 	filters: ReadonlyArray<Filter>;
-	fields: ReadonlyArray<string>;
-	sortFields: ReadonlyArray<SortField>;
+	fields: ReadonlyArray<Field>;
+	sortFields: ReadonlyArray<Field>;
 
 	defaultLimit: number;
 	defaultSortDir: SortDirection;
-	defaultFields: ReadonlyArray<string>;
-	defaultSortFields: ReadonlyArray<SortField>;
+	defaultFields: ReadonlyArray<Field>;
+	defaultSortFields: ReadonlyArray<Field>;
 }
 export type QueryParamConfig = Readonly<MutableQueryParamConfig>;
 
@@ -32,5 +32,6 @@ interface MutableParsedQueryParams {
 	pagination: Readonly<CursorOptions>;
 	limit: number;
 	sortDir: SortDirection;
+	rowSchema: Readonly<z.ZodObject<z.ZodRawShape>>;
 }
 export type ParsedQueryParams = Readonly<MutableParsedQueryParams>;

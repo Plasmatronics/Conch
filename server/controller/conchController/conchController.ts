@@ -49,7 +49,7 @@ export const getAllPersonalConches =
 	(dbPool: Pool) => async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const personalConchesIds = req.user!.serverIds;
-			const { filters, fields, pagination, limit, sortDir } =
+			const { filters, fields, pagination, limit, sortDir, rowSchema } =
 				res.locals.parsedQueryParams!;
 
 			const { query, values } = new ReadQueryBuilder(conchesTableName, null)
@@ -72,8 +72,8 @@ export const getAllPersonalConches =
 
 			const getPersonalConchesRes = await dbPool.query(query, values);
 
-			const personalConches = z
-				.array(conchesSchema)
+			const personalConches = rowSchema
+				.array()
 				.parse(getPersonalConchesRes.rows);
 
 			return res.status(200).json(personalConches);

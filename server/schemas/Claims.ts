@@ -50,21 +50,27 @@ CREATE TABLE ${claimsTableName} (
 	${membersIdColumnName} integer NOT NULL REFERENCES ${membersTableName}
 );`;
 
-const fields = [
-	claimsIdColumnName,
-	"created_at",
-	conchesIdColumnName,
-	usersIdColumnName,
-	membersIdColumnName,
+const fields: QueryParamConfig["fields"] = [
+	{ param: claimsIdColumnName, schema: claimsSchema.shape[claimsIdColumnName] },
+	{ param: "created_at", schema: claimsSchema.shape.created_at },
+	{
+		param: conchesIdColumnName,
+		schema: claimsSchema.shape[conchesIdColumnName],
+	},
+	{ param: usersIdColumnName, schema: claimsSchema.shape[usersIdColumnName] },
+	{
+		param: membersIdColumnName,
+		schema: claimsSchema.shape[membersIdColumnName],
+	},
 ];
-const sortFields = [
+const sortFields: QueryParamConfig["sortFields"] = [
 	{
 		param: "created_at",
-		parseFn: (value: string) => apiDateSchema.parse(value),
+		schema: apiDateSchema,
 	},
 	{
 		param: claimsIdColumnName,
-		parseFn: (value: string) => idSchema.parse(value),
+		schema: idSchema,
 	},
 ];
 export const claimsQueryParamConfig: QueryParamConfig = {
@@ -76,19 +82,19 @@ export const claimsQueryParamConfig: QueryParamConfig = {
 			columnRef: conchesIdColumnName,
 			operator: "=",
 			param: conchesIdColumnName,
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 		{
 			columnRef: usersIdColumnName,
 			operator: "=",
 			param: usersIdColumnName,
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 		{
 			columnRef: membersIdColumnName,
 			operator: "=",
 			param: membersIdColumnName,
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 	],
 	defaultSortDir: "DESC",

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import {} from "./Conches";
 import {
 	apiDateSchema,
 	conchesIdColumnName,
@@ -91,46 +90,49 @@ CREATE TABLE ${membersTableName} (
 	burial_location point
 );`;
 
-const sortFields = [
+const sortFields: QueryParamConfig["sortFields"] = [
 	{
 		param: "created_at",
-		parseFn: (value: string) => apiDateSchema.parse(value),
+		schema: apiDateSchema,
 	},
 	{
 		param: "first_name",
-		parseFn: (value: string) => membersSchema.shape.first_name.parse(value),
+		schema: membersSchema.shape.first_name,
 	},
 	{
 		param: "last_name",
-		parseFn: (value: string) => membersSchema.shape.last_name.parse(value),
+		schema: membersSchema.shape.last_name,
 	},
 	{
 		param: "date_of_birth",
-		parseFn: (value: string) => apiDateSchema.parse(value),
+		schema: apiDateSchema,
 	},
 	{
 		param: "date_of_death",
-		parseFn: (value: string) => apiDateSchema.parse(value),
+		schema: apiDateSchema,
 	},
 	{
 		param: membersIdColumnName,
-		parseFn: (value: string) => idSchema.parse(value),
+		schema: idSchema,
 	},
 ];
 export const membersQueryParamConfig: QueryParamConfig = {
 	fields: [
-		membersIdColumnName,
-		"created_at",
-		"first_name",
-		"last_name",
-		"photo",
-		"date_of_birth",
-		"biography",
-		"date_of_death",
-		"addresses",
-		"birth_location",
-		"death_location",
-		"burial_location",
+		{
+			param: membersIdColumnName,
+			schema: membersSchema.shape[membersIdColumnName],
+		},
+		{ param: "created_at", schema: membersSchema.shape.created_at },
+		{ param: "first_name", schema: membersSchema.shape.first_name },
+		{ param: "last_name", schema: membersSchema.shape.last_name },
+		{ param: "photo", schema: membersCreateSchema.shape.photo },
+		{ param: "date_of_birth", schema: membersSchema.shape.date_of_birth },
+		{ param: "biography", schema: membersSchema.shape.biography },
+		{ param: "date_of_death", schema: membersSchema.shape.date_of_death },
+		{ param: "addresses", schema: membersSchema.shape.addresses },
+		{ param: "birth_location", schema: membersSchema.shape.birth_location },
+		{ param: "death_location", schema: membersSchema.shape.death_location },
+		{ param: "burial_location", schema: membersSchema.shape.burial_location },
 	],
 	sortFields,
 	filters: [
@@ -139,56 +141,59 @@ export const membersQueryParamConfig: QueryParamConfig = {
 			columnRef: "first_name",
 			operator: "=",
 			param: "first_name",
-			parseFn: (input: string) => z.string().parse(input),
+			schema: z.string(),
 		},
 		{
 			columnRef: "last_name",
 			operator: "=",
 			param: "last_name",
-			parseFn: (input: string) => z.string().parse(input),
+			schema: z.string(),
 		},
 		{
 			columnRef: "date_of_birth",
 			operator: "<=",
 			param: "max_date_of_birth",
-			parseFn: (input: string) => apiDateSchema.parse(input),
+			schema: apiDateSchema,
 		},
 		{
 			columnRef: "date_of_birth",
 			operator: ">=",
 			param: "min_date_of_birth",
-			parseFn: (input: string) => apiDateSchema.parse(input),
+			schema: apiDateSchema,
 		},
 		{
 			columnRef: "date_of_death",
 			operator: "<=",
 			param: "max_date_of_death",
-			parseFn: (input: string) => apiDateSchema.parse(input),
+			schema: apiDateSchema,
 		},
 		{
 			columnRef: "date_of_death",
 			operator: ">=",
 			param: "min_date_of_death",
-			parseFn: (input: string) => apiDateSchema.parse(input),
+			schema: apiDateSchema,
 		},
 	],
 	defaultSortDir: "DESC",
 	defaultSortFields: [
 		{
 			param: "last_name",
-			parseFn: (value: string) => membersSchema.shape.last_name.parse(value),
+			schema: membersSchema.shape.last_name,
 		},
 		{
 			param: membersIdColumnName,
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 	],
 	defaultLimit: 50,
 	defaultFields: [
-		membersIdColumnName,
-		"created_at",
-		"first_name",
-		"last_name",
-		"photo",
+		{
+			param: membersIdColumnName,
+			schema: membersSchema.shape[membersIdColumnName],
+		},
+		{ param: "created_at", schema: membersSchema.shape.created_at },
+		{ param: "first_name", schema: membersSchema.shape.first_name },
+		{ param: "last_name", schema: membersSchema.shape.last_name },
+		{ param: "photo", schema: membersCreateSchema.shape.photo },
 	],
 };
