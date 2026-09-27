@@ -61,27 +61,33 @@ CREATE TABLE ${conchesTableName} (
 	created_at: apiDateSchema,
 */
 
-const fields = [
-	conchesIdColumnName,
-	"conch_name",
-	"confirmations_needed_for_referrals",
-	"admin_id",
-	"created_at",
+const fields: QueryParamConfig["fields"] = [
+	{
+		param: conchesIdColumnName,
+		schema: conchesSchema.shape[conchesIdColumnName],
+	},
+	{ param: "conch_name", schema: conchesSchema.shape.conch_name },
+	{
+		param: "confirmations_needed_for_referrals",
+		schema: conchesSchema.shape.confirmations_needed_for_referrals,
+	},
+	{ param: "admin_id", schema: conchesSchema.shape.admin_id },
+	{ param: "created_at", schema: conchesSchema.shape.created_at },
 ];
 export const conchesQueryParamConfig: QueryParamConfig = {
 	fields: fields,
 	sortFields: [
 		{
 			param: "created_at",
-			parseFn: (value: string) => apiDateSchema.parse(value),
+			schema: apiDateSchema,
 		},
 		{
 			param: "conch_name",
-			parseFn: (value: string) => conchesSchema.shape.conch_name.parse(value),
+			schema: conchesSchema.shape.conch_name,
 		},
 		{
 			param: conchesIdColumnName,
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 	],
 	filters: [
@@ -90,24 +96,24 @@ export const conchesQueryParamConfig: QueryParamConfig = {
 			columnRef: "conch_name",
 			operator: "=",
 			param: "conch_name",
-			parseFn: (value: string) => conchesSchema.shape.conch_name.parse(value),
+			schema: conchesSchema.shape.conch_name,
 		},
 		{
 			columnRef: "admin_id",
 			operator: "=",
 			param: "admin_id",
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 	],
 	defaultSortDir: "DESC",
 	defaultSortFields: [
 		{
 			param: "created_at",
-			parseFn: (value: string) => apiDateSchema.parse(value),
+			schema: apiDateSchema,
 		},
 		{
 			param: conchesIdColumnName,
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 	],
 	defaultLimit: 50,

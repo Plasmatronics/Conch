@@ -1,11 +1,17 @@
 import type { NextFunction, Request, Response } from "express";
 import { describe, expect, test, vi } from "vitest";
+import z from "zod";
 
-import type { ParseFunction, QueryParamConfig } from "../../types";
+import type { QueryParamConfig } from "../../types";
 import { parseQueryParams, queryParamParser } from "./queryParamParser";
 
-const parseNumber = vi.fn((value: string) => Number(value));
-const parseString = vi.fn((value: string) => value);
+const numberSchema = z.coerce.number();
+const stringSchema = z.string();
+
+const fields: QueryParamConfig["fields"] = [
+	{ param: "member_id", schema: numberSchema },
+	{ param: "name", schema: stringSchema },
+];
 
 const queryParamConfig: QueryParamConfig = {
 	filters: [
@@ -13,20 +19,18 @@ const queryParamConfig: QueryParamConfig = {
 			param: "memberId",
 			columnRef: "member_id",
 			operator: "=",
-			parseFn: parseNumber as unknown as ParseFunction,
+			schema: numberSchema,
 		},
 	],
-	fields: ["member_id", "name"],
+	fields,
 	sortFields: [
-		{ param: "member_id", parseFn: parseNumber },
-		{ param: "created_at", parseFn: parseString },
+		{ param: "member_id", schema: numberSchema },
+		{ param: "created_at", schema: stringSchema },
 	],
 	defaultLimit: 25,
 	defaultSortDir: "DESC",
-	defaultFields: ["member_id", "name"],
-	defaultSortFields: [
-		{ param: "member_id", parseFn: (input: string) => parseString },
-	],
+	defaultFields: fields,
+	defaultSortFields: [{ param: "member_id", schema: stringSchema }],
 };
 
 describe("parseQueryParams", () => {
@@ -37,6 +41,7 @@ describe("parseQueryParams", () => {
 			pagination: { keys: ["member_id"] },
 			limit: 25,
 			sortDir: "DESC",
+			rowSchema: expect.any(z.ZodObject),
 		});
 	});
 
@@ -62,9 +67,9 @@ describe("parseQueryParams", () => {
 			filters: [
 				{
 					...queryParamConfig.filters[0],
-					parseFn: vi.fn(() => {
+					schema: z.string().transform(() => {
 						throw error;
-					}) as unknown as ParseFunction,
+					}),
 				},
 			],
 		};
@@ -80,6 +85,20 @@ describe("parseQueryParams", () => {
 				fields: "name,password_hash,member_id",
 			}).fields,
 		).toEqual(["name", "member_id"]);
+	});
+
+	test("builds a response schema from the selected fields", () => {
+		const { rowSchema } = parseQueryParams(queryParamConfig, {
+			fields: "name,member_id",
+		});
+
+		expect(
+			rowSchema.parse({
+				name: "Ada",
+				member_id: "42",
+				password_hash: "not returned",
+			}),
+		).toEqual({ name: "Ada", member_id: 42 });
 	});
 
 	test("uses default response fields when none of the requested fields are allowed", () => {
@@ -202,6 +221,7 @@ describe("queryParamParser", () => {
 			},
 			limit: 25,
 			sortDir: "DESC",
+			rowSchema: expect.any(z.ZodObject),
 		});
 	});
 

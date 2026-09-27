@@ -65,27 +65,36 @@ CREATE TABLE ${userReferralsTableName} (
 	count smallint NOT NULL DEFAULT 1
 );`;
 
-const fields = [
-	userReferralsIdColumnName,
-	"created_at",
-	"referred_phone_number",
-	"referred_email",
-	"referred_member_id",
-	"referrer_id",
-	"count",
+const fields: QueryParamConfig["fields"] = [
+	{
+		param: userReferralsIdColumnName,
+		schema: userReferralsSchema.shape[userReferralsIdColumnName],
+	},
+	{ param: "created_at", schema: userReferralsSchema.shape.created_at },
+	{
+		param: "referred_phone_number",
+		schema: userReferralsSchema.shape.referred_phone_number,
+	},
+	{ param: "referred_email", schema: userReferralsSchema.shape.referred_email },
+	{
+		param: "referred_member_id",
+		schema: userReferralsSchema.shape.referred_member_id,
+	},
+	{ param: "referrer_id", schema: userReferralsSchema.shape.referrer_id },
+	{ param: "count", schema: userReferralsSchema.shape.count },
 ];
-const sortFields = [
+const sortFields: QueryParamConfig["sortFields"] = [
 	{
 		param: "created_at",
-		parseFn: (value: string) => apiDateSchema.parse(value),
+		schema: apiDateSchema,
 	},
 	{
 		param: "referrer_id",
-		parseFn: (value: string) => idSchema.parse(value),
+		schema: idSchema,
 	},
 	{
 		param: userReferralsIdColumnName,
-		parseFn: (value: string) => idSchema.parse(value),
+		schema: idSchema,
 	},
 ];
 export const userReferralsQueryParamConfig: QueryParamConfig = {
@@ -97,18 +106,18 @@ export const userReferralsQueryParamConfig: QueryParamConfig = {
 			columnRef: "referrer_id",
 			operator: "=",
 			param: "referrer_id",
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 	],
 	defaultSortDir: "DESC",
 	defaultSortFields: [
 		{
 			param: "created_at",
-			parseFn: (value: string) => apiDateSchema.parse(value),
+			schema: apiDateSchema,
 		},
 		{
 			param: userReferralsIdColumnName,
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 	],
 	defaultLimit: 50,

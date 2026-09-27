@@ -3,8 +3,7 @@ import {
 	ParsedQueryParams,
 	QueryParamConfig,
 	Filter,
-	ParseFunction,
-	SortField,
+	Field,
 } from "../../types";
 import { Condition, ConditionOperator, CursorOptions } from "../../queries";
 import QueryString from "qs";
@@ -14,15 +13,18 @@ import {
 	SortDirectionSchema,
 } from "../../schemas";
 import { AppError } from "../../errors";
+import z from "zod";
 
 const parseFilters = (
 	allowedFilter: ReadonlyArray<Filter>,
 	enteredFilters: ReadonlyArray<[string, string]>,
 ): ReadonlyArray<Condition> => {
-	const filterMap: Record<string, [string, ConditionOperator, ParseFunction]> =
-		{};
-	for (const { param, columnRef, parseFn, operator } of allowedFilter) {
-		filterMap[param] = [columnRef, operator, parseFn];
+	const filterMap: Record<
+		string,
+		[string, ConditionOperator, Filter["schema"]]
+	> = {};
+	for (const { param, columnRef, schema, operator } of allowedFilter) {
+		filterMap[param] = [columnRef, operator, schema];
 	}
 
 	const validatedFilters: Condition[] = [];
@@ -30,8 +32,8 @@ const parseFilters = (
 	for (const [queryKey, queryVal] of enteredFilters) {
 		if (!filterMap[queryKey]) continue;
 
-		const [columnRef, operator, parseFn] = filterMap[queryKey];
-		const parsedVal = parseFn(queryVal);
+		const [columnRef, operator, schema] = filterMap[queryKey];
+		const parsedVal = schema.parse(queryVal);
 		validatedFilters.push({
 			key: columnRef,
 			operator,
@@ -43,21 +45,35 @@ const parseFilters = (
 };
 
 const parseFields = (
-	allowedFields: ReadonlyArray<string>,
+	allowedFields: ReadonlyArray<Field>,
 	enteredFields: ReadonlyArray<string>,
-): ReadonlyArray<string> => {
-	const allowedFieldsSet = new Set(allowedFields);
+	defaultFields: ReadonlyArray<Field>,
+): {
+	schema: ParsedQueryParams["rowSchema"];
+	fields: ParsedQueryParams["fields"];
+} => {
+	const allowedFieldsMap: Record<string, Field["schema"]> = {};
+	for (const { param, schema } of allowedFields)
+		allowedFieldsMap[param] = schema;
 
-	const validatedFields: string[] = [];
+	const parsedFieldsMap = new Map<string, Field["schema"]>();
 	for (const field of enteredFields) {
-		if (allowedFieldsSet.has(field)) validatedFields.push(field);
+		if (allowedFieldsMap[field])
+			parsedFieldsMap.set(field, allowedFieldsMap[field]);
+	}
+	if (!parsedFieldsMap.size) {
+		for (const { param, schema } of defaultFields)
+			parsedFieldsMap.set(param, schema);
 	}
 
-	return validatedFields;
+	return {
+		fields: [...parsedFieldsMap.keys()],
+		schema: z.object(Object.fromEntries(parsedFieldsMap)),
+	};
 };
 
 const parseSortFields = (
-	allowedFields: ReadonlyArray<SortField>,
+	allowedFields: ReadonlyArray<Field>,
 	enteredCursorKeys: string[],
 	enteredCursorValues?: string[],
 	lastSeenId?: number,
@@ -79,9 +95,9 @@ const parseSortFields = (
 			400,
 		);
 
-	const allowedFieldMap: Record<SortField["param"], SortField["parseFn"]> = {};
-	for (const { param, parseFn } of allowedFields)
-		allowedFieldMap[param] = parseFn;
+	const allowedFieldMap: Record<Field["param"], Field["schema"]> = {};
+	for (const { param, schema } of allowedFields)
+		allowedFieldMap[param] = schema;
 
 	const validatedCursorKeys: string[] = [];
 	const validatedCursorValues: unknown[] = [];
@@ -92,7 +108,7 @@ const parseSortFields = (
 
 		const value = enteredCursorValues?.at(i) ?? undefined;
 		if (value !== undefined) {
-			const parsedValue = allowedFieldMap[key](value);
+			const parsedValue = allowedFieldMap[key].parse(value);
 			validatedCursorValues.push(parsedValue);
 		}
 	}
@@ -137,8 +153,11 @@ export const parseQueryParams = (
 		),
 	);
 
-	let parsedFields = parseFields(allowableFieldsArr, String(fields).split(","));
-	if (!parsedFields.length) parsedFields = defaultFields;
+	const { schema, fields: parsedFields } = parseFields(
+		allowableFieldsArr,
+		String(fields).split(","),
+		defaultFields,
+	);
 
 	let parsedSortFields = parseSortFields(
 		allowableSortFieldsArr,
@@ -167,6 +186,7 @@ export const parseQueryParams = (
 		fields: parsedFields,
 		limit: parsedLimit,
 		sortDir: parsedSortDir,
+		rowSchema: schema,
 	};
 
 	return parsedQueryParams;

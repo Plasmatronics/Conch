@@ -6,6 +6,7 @@ import express, {
 	type Response,
 } from "express";
 import request from "supertest";
+import z from "zod";
 
 import { RouteFactory } from "./RouteFactory";
 import type { Controllers } from "../controller";
@@ -27,6 +28,11 @@ vi.mock("../middleware", async (importOriginal) => {
 
 const mockAuth = vi.mocked(auth);
 const mockVerifySession = vi.mocked(verifySession);
+const numberSchema = z.string().transform(Number);
+const fields: QueryParamConfig["fields"] = [
+	{ param: "member_id", schema: z.number() },
+	{ param: "name", schema: z.string() },
+];
 
 const queryParamConfig: QueryParamConfig = {
 	filters: [
@@ -34,20 +40,18 @@ const queryParamConfig: QueryParamConfig = {
 			param: "memberId",
 			columnRef: "member_id",
 			operator: "=",
-			parseFn: Number,
+			schema: numberSchema,
 		},
 	],
-	fields: ["member_id", "name"],
+	fields,
 	sortFields: [
-		{ param: "member_id", parseFn: Number },
-		{ param: "created_at", parseFn: String },
+		{ param: "member_id", schema: numberSchema },
+		{ param: "created_at", schema: z.string() },
 	],
 	defaultLimit: 25,
 	defaultSortDir: "DESC",
-	defaultFields: ["member_id", "name"],
-	defaultSortFields: [
-		{ param: "member_id", parseFn: (input: string) => idSchema.parse(input) },
-	],
+	defaultFields: fields,
+	defaultSortFields: [{ param: "member_id", schema: idSchema }],
 };
 
 const passthroughMiddleware: RequestHandler = (
@@ -145,9 +149,13 @@ describe("RouteFactory", () => {
 	describe("controller dispatch", () => {
 		test("parses query parameters before dispatching the get-all controller", async () => {
 			const controllers = createControllers();
-			vi.mocked(controllers.getAll).mockImplementationOnce((_req, res) =>
-				res.status(200).json(res.locals.parsedQueryParams),
-			);
+			vi.mocked(controllers.getAll).mockImplementationOnce((_req, res) => {
+				const { filters, fields, pagination, limit, sortDir } =
+					res.locals.parsedQueryParams!;
+				return res
+					.status(200)
+					.json({ filters, fields, pagination, limit, sortDir });
+			});
 
 			const response = await request(createApp(controllers)).get(
 				"/users?memberId=42&fields=name&sortKeys=created_at&cursorVals=2026-09-24&limit=10&sortDir=ASC&lastSeenId=91",

@@ -61,27 +61,38 @@ CREATE TABLE ${relationshipsTableName} (
 	is_current boolean DEFAULT true;
 );`;
 
-const fields = [
-	relationshipsIdColumnName,
-	"created_at",
-	"relationship_type",
-	"source_member_id",
-	"target_member_id",
-	"is_current",
+const fields: QueryParamConfig["fields"] = [
+	{
+		param: relationshipsIdColumnName,
+		schema: relationshipsSchema.shape[relationshipsIdColumnName],
+	},
+	{ param: "created_at", schema: relationshipsSchema.shape.created_at },
+	{
+		param: "relationship_type",
+		schema: relationshipsSchema.shape.relationship_type,
+	},
+	{
+		param: "source_member_id",
+		schema: relationshipsSchema.shape.source_member_id,
+	},
+	{
+		param: "target_member_id",
+		schema: relationshipsSchema.shape.target_member_id,
+	},
+	{ param: "is_current", schema: relationshipsSchema.shape.is_current },
 ];
-const sortFields = [
+const sortFields: QueryParamConfig["sortFields"] = [
 	{
 		param: "created_at",
-		parseFn: (value: string) => apiDateSchema.parse(value),
+		schema: apiDateSchema,
 	},
 	{
 		param: "relationship_type",
-		parseFn: (value: string) =>
-			relationshipsSchema.shape.relationship_type.parse(value),
+		schema: relationshipsSchema.shape.relationship_type,
 	},
 	{
 		param: relationshipsIdColumnName,
-		parseFn: (value: string) => idSchema.parse(value),
+		schema: idSchema,
 	},
 ];
 export const relationshipsQueryParamConfig: QueryParamConfig = {
@@ -93,37 +104,36 @@ export const relationshipsQueryParamConfig: QueryParamConfig = {
 			columnRef: "source_member_id",
 			operator: "=",
 			param: "source_member_id",
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 		{
 			columnRef: "target_member_id",
 			operator: "=",
 			param: "target_member_id",
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 		{
 			columnRef: "relationship_type",
 			operator: "=",
 			param: "relationship_type",
-			parseFn: (value: string) =>
-				relationshipsSchema.shape.relationship_type.parse(value),
+			schema: relationshipsSchema.shape.relationship_type,
 		},
 		{
 			columnRef: "is_current",
 			operator: "=",
 			param: "is_current",
-			parseFn: (value: string) => z.coerce.boolean().parse(value),
+			schema: z.coerce.boolean(),
 		},
 	],
 	defaultSortDir: "DESC",
 	defaultSortFields: [
 		{
 			param: "created_at",
-			parseFn: (value: string) => apiDateSchema.parse(value),
+			schema: apiDateSchema,
 		},
 		{
 			param: relationshipsIdColumnName,
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 	],
 	defaultLimit: 50,

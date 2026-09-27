@@ -39,6 +39,8 @@ const stringToStoryDateParser = (
 	return { season, year };
 };
 
+const stringToStoryDateSchema = z.string().transform(stringToStoryDateParser);
+
 export type StoryDate = z.infer<typeof storyDateSchema>;
 
 export const postsSchema = z.object({
@@ -119,37 +121,40 @@ CREATE TABLE ${postsTableName} (
 	CHECK (year IS NOT NULL OR season IS NULL)
 );`;
 
-const fields = [
-	postsIdColumnName,
-	"author_id",
-	"title",
-	"created_at",
-	"body_text",
-	"location",
-	"date",
-	"members",
-	"media",
+const fields: QueryParamConfig["fields"] = [
+	{
+		param: postsIdColumnName,
+		schema: postQuerySchema.shape[postsIdColumnName],
+	},
+	{ param: "author_id", schema: postQuerySchema.shape.author_id },
+	{ param: "title", schema: postQuerySchema.shape.title },
+	{ param: "created_at", schema: postQuerySchema.shape.created_at },
+	{ param: "body_text", schema: postQuerySchema.shape.body_text },
+	{ param: "location", schema: postQuerySchema.shape.location },
+	{ param: "date", schema: postQuerySchema.shape.date },
+	{ param: "members", schema: postQuerySchema.shape.members },
+	{ param: "media", schema: postQuerySchema.shape.media },
 ];
-const sortFields = [
+const sortFields: QueryParamConfig["sortFields"] = [
 	{
 		param: "created_at",
-		parseFn: (value: string) => apiDateSchema.parse(value),
+		schema: apiDateSchema,
 	},
 	{
 		param: "title",
-		parseFn: (value: string) => postsSchema.shape.title.parse(value),
+		schema: postsSchema.shape.title,
 	},
 	{
 		param: "date",
-		parseFn: stringToStoryDateParser,
+		schema: stringToStoryDateSchema,
 	},
 	{
 		param: "author_id",
-		parseFn: (value: string) => idSchema.parse(value),
+		schema: idSchema,
 	},
 	{
 		param: postsIdColumnName,
-		parseFn: (value: string) => idSchema.parse(value),
+		schema: idSchema,
 	},
 ];
 export const postsQueryParamConfig: QueryParamConfig = {
@@ -161,36 +166,36 @@ export const postsQueryParamConfig: QueryParamConfig = {
 			columnRef: "author_id",
 			operator: "=",
 			param: "author_id",
-			parseFn: (input: string) => idSchema.parse(input),
+			schema: idSchema,
 		},
 		{
 			columnRef: "members",
 			operator: "=",
 			param: "included_member",
-			parseFn: (input: string) => idSchema.parse(input),
+			schema: idSchema,
 		},
 		{
 			columnRef: "date",
 			operator: "<=",
 			param: "max_date",
-			parseFn: stringToStoryDateParser,
+			schema: stringToStoryDateSchema,
 		},
 		{
 			columnRef: "date",
 			operator: ">=",
 			param: "min_date",
-			parseFn: stringToStoryDateParser,
+			schema: stringToStoryDateSchema,
 		},
 	],
 	defaultSortDir: "DESC",
 	defaultSortFields: [
 		{
 			param: "created_at",
-			parseFn: (value: string) => apiDateSchema.parse(value),
+			schema: apiDateSchema,
 		},
 		{
 			param: postsIdColumnName,
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 	],
 	defaultLimit: 50,

@@ -67,6 +67,7 @@ const mockResponse = {
 			pagination: { keys: [] },
 			limit: 25,
 			sortDir: "DESC",
+			rowSchema: conchesSchema,
 		},
 	},
 } as unknown as Response;

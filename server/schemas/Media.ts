@@ -57,29 +57,35 @@ CREATE TABLE ${mediaTableName} (
 	is_conch_cover_photo boolean NOT NULL DEFAULT FALSE
 );`;
 
-const sortFields = [
+const sortFields: QueryParamConfig["sortFields"] = [
 	{
 		param: "created_at",
-		parseFn: (value: string) => apiDateSchema.parse(value),
+		schema: apiDateSchema,
 	},
 	{
 		param: "media_type",
-		parseFn: (value: string) => mediaSchema.shape.media_type.parse(value),
+		schema: mediaSchema.shape.media_type,
 	},
 	{
 		param: mediaIdColumnName,
-		parseFn: (value: string) => idSchema.parse(value),
+		schema: idSchema,
 	},
 ];
 export const mediaQueryParamConfig: QueryParamConfig = {
 	fields: [
-		mediaIdColumnName,
-		"created_at",
-		conchesIdColumnName,
-		"storage_key",
-		"mime_type",
-		"media_type",
-		"is_conch_cover_photo",
+		{ param: mediaIdColumnName, schema: mediaSchema.shape[mediaIdColumnName] },
+		{ param: "created_at", schema: mediaSchema.shape.created_at },
+		{
+			param: conchesIdColumnName,
+			schema: mediaSchema.shape[conchesIdColumnName],
+		},
+		{ param: "storage_key", schema: mediaSchema.shape.storage_key },
+		{ param: "mime_type", schema: mediaSchema.shape.mime_type },
+		{ param: "media_type", schema: mediaSchema.shape.media_type },
+		{
+			param: "is_conch_cover_photo",
+			schema: mediaSchema.shape.is_conch_cover_photo,
+		},
 	],
 	sortFields,
 	filters: [
@@ -88,20 +94,25 @@ export const mediaQueryParamConfig: QueryParamConfig = {
 			columnRef: "media_type",
 			operator: "=",
 			param: "media_type",
-			parseFn: (value: string) => mediaSchema.shape.media_type.parse(value),
+			schema: mediaSchema.shape.media_type,
 		},
 	],
 	defaultSortDir: "DESC",
 	defaultSortFields: [
 		{
 			param: "created_at",
-			parseFn: (value: string) => apiDateSchema.parse(value),
+			schema: apiDateSchema,
 		},
 		{
 			param: mediaIdColumnName,
-			parseFn: (value: string) => idSchema.parse(value),
+			schema: idSchema,
 		},
 	],
 	defaultLimit: 50,
-	defaultFields: [mediaIdColumnName, "created_at", "storage_key", "media_type"],
+	defaultFields: [
+		{ param: mediaIdColumnName, schema: mediaSchema.shape[mediaIdColumnName] },
+		{ param: "created_at", schema: mediaSchema.shape.created_at },
+		{ param: "storage_key", schema: mediaSchema.shape.storage_key },
+		{ param: "media_type", schema: mediaSchema.shape.media_type },
+	],
 };
