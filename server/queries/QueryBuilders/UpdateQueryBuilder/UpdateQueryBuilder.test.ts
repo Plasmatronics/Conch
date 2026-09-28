@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { normalizeSql } from "../../vitest.setup";
+import { normalizeSql } from "../../../vitest.setup";
 import { UpdateQueryBuilder } from "./UpdateQueryBuilder";
 
 const testTable = "posts";

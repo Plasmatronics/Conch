@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import { claimsSchema, claimsTableName, usersIdColumnName } from "../schemas";
 import z from "zod";
-import { ReadQueryBuilder } from "./ReadQueryBuilder";
+import { ReadQueryBuilder } from "./QueryBuilders/ReadQueryBuilder";
 
 export const getAllUsersConches = async (
 	dbPool: Pool,

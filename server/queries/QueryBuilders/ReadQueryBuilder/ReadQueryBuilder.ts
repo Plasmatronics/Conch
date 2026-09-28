@@ -1,8 +1,8 @@
 import format from "pg-format";
-import { conchesIdColumnName } from "../../schemas";
+import { conchesIdColumnName } from "../../../schemas";
 import { BuildQuery, QueryBuilder } from "../QueryBuilder";
-import { SortDirection } from "../../types";
-import { tableNameToIdColumnMap } from "../../schemas/shared/mappings";
+import { SortDirection } from "../../../types";
+import { tableNameToIdColumnMap } from "../../../schemas/shared/mappings";
 import {
 	CursorOptions,
 	Join,
