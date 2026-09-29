@@ -1,6 +1,6 @@
 import format from "pg-format";
 import { BuildQuery, KeyValuePair, QueryBuilder } from "../QueryBuilder";
-import { conchesIdColumnName } from "../../schemas";
+import { conchesIdColumnName } from "../../../schemas";
 
 export class CreateQueryBuilder extends QueryBuilder {
 	private returningFields: string[] = [];
