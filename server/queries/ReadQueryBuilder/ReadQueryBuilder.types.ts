@@ -25,6 +25,13 @@ export interface JoinCondition {
 	right: ColumnReference;
 }
 
+export interface ExistsCondition {
+	tableName: string;
+	tableAlias?: string;
+	joins?: Join[];
+	conditions?: (ReadCondition | JoinCondition)[];
+}
+
 export interface Join {
 	tableName: string;
 	alias: string;

@@ -524,6 +524,189 @@ describe("ReadQueryBuilder", () => {
 		});
 	});
 
+	describe("exists conditions", () => {
+		test("builds a correlated exists subquery", () => {
+			const result = new ReadQueryBuilder(testTable, 42)
+				.addAlias("p")
+				.addExistsConditions([
+					{
+						tableName: "post_members",
+						tableAlias: "pm",
+						conditions: [
+							{
+								left: { tableAlias: "pm", key: testId },
+								right: { tableAlias: "p", key: testId },
+							},
+							{
+								tableAlias: "pm",
+								key: "member_id",
+								operator: "=",
+								value: 7,
+							},
+						],
+					},
+				])
+				.build();
+
+			expect(result).toEqual({
+				query: normalizeSql(`
+					SELECT * FROM posts AS p
+					WHERE EXISTS (
+						SELECT * FROM post_members AS pm
+						WHERE pm.member_id = $1
+						AND pm.post_id = p.post_id
+					)
+					AND p.conch_id = $2
+				`),
+				values: [7, 42],
+			});
+		});
+
+		test("keeps placeholders ordered across outer and exists conditions", () => {
+			const result = new ReadQueryBuilder(testTable, 42)
+				.addAlias("p")
+				.addConditions([
+					{
+						tableAlias: "p",
+						key: "author_id",
+						operator: "=",
+						value: 5,
+					},
+				])
+				.addInConditions([
+					{
+						tableAlias: "p",
+						key: "status",
+						values: ["draft", "published"],
+					},
+				])
+				.addExistsConditions([
+					{
+						tableName: "post_members",
+						tableAlias: "pm",
+						conditions: [
+							{
+								tableAlias: "pm",
+								key: "member_id",
+								operator: "=",
+								value: 7,
+							},
+						],
+					},
+				])
+				.addAnyConditions([
+					{
+						tableAlias: "p",
+						key: "author_id",
+						values: [5, 6],
+					},
+				])
+				.build();
+
+			expect(result).toEqual({
+				query: normalizeSql(`
+					SELECT * FROM posts AS p
+					WHERE p.author_id = $1
+					AND p.status IN ($2, $3)
+					AND EXISTS (
+						SELECT * FROM post_members AS pm
+						WHERE pm.member_id = $4
+					)
+					AND p.author_id = ANY($5)
+					AND p.conch_id = $6
+				`),
+				values: [5, "draft", "published", 7, [5, 6], 42],
+			});
+		});
+
+		test("increments the offset across multiple exists subqueries", () => {
+			const result = new ReadQueryBuilder(testTable, 42)
+				.addExistsConditions([
+					{
+						tableName: "post_members",
+						conditions: [{ key: "member_id", operator: "=", value: 7 }],
+					},
+					{
+						tableName: "post_media",
+						conditions: [{ key: "media_id", operator: "=", value: 9 }],
+					},
+				])
+				.build();
+
+			expect(result).toEqual({
+				query: normalizeSql(`
+					SELECT * FROM posts
+					WHERE EXISTS (
+						SELECT * FROM post_members
+						WHERE member_id = $1
+					)
+					AND EXISTS (
+						SELECT * FROM post_media
+						WHERE media_id = $2
+					)
+					AND conch_id = $3
+				`),
+				values: [7, 9, 42],
+			});
+		});
+
+		test("supports joins inside an exists subquery", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.addAlias("p")
+				.addExistsConditions([
+					{
+						tableName: "post_members",
+						tableAlias: "pm",
+						joins: [
+							{
+								tableName: "members",
+								alias: "m",
+								on: [
+									{
+										left: { tableAlias: "pm", key: "member_id" },
+										right: { tableAlias: "m", key: "member_id" },
+									},
+								],
+							},
+						],
+						conditions: [
+							{
+								tableAlias: "m",
+								key: "last_name",
+								operator: "=",
+								value: "Smith",
+							},
+						],
+					},
+				])
+				.build();
+
+			expect(result).toEqual({
+				query: normalizeSql(`
+					SELECT * FROM posts AS p
+					WHERE EXISTS (
+						SELECT * FROM post_members AS pm
+						INNER JOIN members AS m
+						ON pm.member_id = m.member_id
+						WHERE m.last_name = $1
+					)
+				`),
+				values: ["Smith"],
+			});
+		});
+
+		test("applies a supplied value offset", () => {
+			const result = new ReadQueryBuilder(testTable)
+				.addConditions([{ key: "status", operator: "=", value: "published" }])
+				.build(3);
+
+			expect(result).toEqual({
+				query: "SELECT * FROM posts WHERE status = $4",
+				values: ["published"],
+			});
+		});
+	});
+
 	describe("query composition", () => {
 		test("joins tables with one or more column conditions", () => {
 			const result = new ReadQueryBuilder(testTable)
