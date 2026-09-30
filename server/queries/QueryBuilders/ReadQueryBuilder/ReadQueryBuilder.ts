@@ -5,7 +5,9 @@ import { SortDirection } from "../../../types";
 import { tableNameToIdColumnMap } from "../../../schemas/shared/mappings";
 import {
 	CursorOptions,
+	ExistsCondition,
 	Join,
+	JoinCondition,
 	ReadCondition,
 	ReadQueryParams,
 	SelectField,
@@ -20,6 +22,8 @@ const columnSql = (key: string, tableAlias?: string): string =>
 
 export class ReadQueryBuilder extends QueryBuilder {
 	private conditions: ReadCondition[] = [];
+	private correlationConditions: JoinCondition[] = [];
+	private existsConditions: ExistsCondition[] = [];
 	private inConditions: SetCondition[] = [];
 	private anyConditions: SetCondition[] = [];
 	private selectFields: SelectField[] = [];
@@ -76,6 +80,16 @@ export class ReadQueryBuilder extends QueryBuilder {
 		return this;
 	}
 
+	private addCorrelationConditions(conditions: JoinCondition[]) {
+		this.correlationConditions.push(...conditions);
+		return this;
+	}
+
+	addExistsConditions(conditions: ExistsCondition[]) {
+		this.existsConditions.push(...conditions);
+		return this;
+	}
+
 	addInConditions(conditions: SetCondition[]) {
 		this.inConditions.push(...conditions);
 		return this;
@@ -112,16 +126,25 @@ export class ReadQueryBuilder extends QueryBuilder {
 		);
 	}
 
-	build(): BuildQuery {
+	build(valueOffset = 0): BuildQuery {
 		const values: unknown[] = [];
 		const conditions: string[] = [];
 		let isConchIdIncluded = false;
+		const bind = (value: unknown) => {
+			values.push(value);
+			return `$${valueOffset + values.length}`;
+		};
 
 		for (const { key, tableAlias, operator, value } of this.conditions) {
 			if (key === conchesIdColumnName) isConchIdIncluded = true;
 			const column = columnSql(key, tableAlias);
-			conditions.push(`${column} ${operator} $${values.length + 1}`);
-			values.push(value);
+			conditions.push(`${column} ${operator} ${bind(value)}`);
+		}
+
+		for (const { left, right } of this.correlationConditions) {
+			conditions.push(
+				`${columnSql(left.key, left.tableAlias)} = ${columnSql(right.key, right.tableAlias)}`,
+			);
 		}
 
 		for (const { key, tableAlias, values: inValues } of this.inConditions) {
@@ -129,25 +152,55 @@ export class ReadQueryBuilder extends QueryBuilder {
 				conditions.push("FALSE");
 				continue;
 			}
-			const placeholders = inValues.map((value) => {
-				values.push(value);
-				return `$${values.length}`;
-			});
+			const placeholders = inValues.map(bind);
 			conditions.push(
 				`${columnSql(key, tableAlias)} IN (${placeholders.join(", ")})`,
 			);
 		}
 
+		for (const {
+			tableName,
+			tableAlias,
+			joins = [],
+			conditions: existsConditions = [],
+		} of this.existsConditions) {
+			const existsQueryBuilder = new ReadQueryBuilder(tableName);
+
+			if (tableAlias) existsQueryBuilder.addAlias(tableAlias);
+
+			for (const join of joins) existsQueryBuilder.addJoin(join);
+
+			const valueConditions: ReadCondition[] = [];
+			const correlationConditions: JoinCondition[] = [];
+
+			for (const condition of existsConditions) {
+				if ("left" in condition) correlationConditions.push(condition);
+				else valueConditions.push(condition);
+			}
+
+			existsQueryBuilder
+				.addConditions(valueConditions)
+				.addCorrelationConditions(correlationConditions);
+
+			const existsValueOffset = valueOffset + values.length;
+
+			const { query: existsQuery, values: existsValues } =
+				existsQueryBuilder.build(existsValueOffset);
+
+			conditions.push(`EXISTS (${existsQuery})`);
+			values.push(...existsValues);
+		}
+
 		for (const { key, tableAlias, values: anyValues } of this.anyConditions) {
-			values.push(anyValues);
-			conditions.push(`${columnSql(key, tableAlias)} = ANY($${values.length})`);
+			conditions.push(
+				`${columnSql(key, tableAlias)} = ANY(${bind(anyValues)})`,
+			);
 		}
 
 		if (!isConchIdIncluded && this.conchId !== null) {
 			conditions.push(
-				`${columnSql(conchesIdColumnName, this.tableAlias ?? undefined)} = $${values.length + 1}`,
+				`${columnSql(conchesIdColumnName, this.tableAlias ?? undefined)} = ${bind(this.conchId)}`,
 			);
-			values.push(this.conchId);
 		}
 
 		const orderArr: string[] = [];
@@ -201,6 +254,7 @@ export class ReadQueryBuilder extends QueryBuilder {
 					)
 					.join(" AND ")}`,
 		);
+
 		const query = [
 			`SELECT ${projection} FROM ${source}`,
 			joins.join(" "),
