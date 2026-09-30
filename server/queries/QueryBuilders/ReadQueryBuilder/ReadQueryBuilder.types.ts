@@ -1,5 +1,5 @@
 import { Condition } from "../QueryBuilder";
-import { SortDirection } from "../../types";
+import { SortDirection } from "../../../types";
 
 export interface ColumnReference {
 	key: string;
