@@ -1,5 +1,8 @@
 {
 	"extends": "../tsconfig.base.json",
 	"include": ["**/*.ts"],
-	"compilerOptions": { "ignoreDeprecations": "6.0" }
+	"compilerOptions": {
+		"module": "ESNext",
+		"moduleResolution": "Bundler"
+	}
 }
